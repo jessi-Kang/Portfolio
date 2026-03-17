@@ -1,3 +1,5 @@
+import { cloudSet, cloudDelete } from '../utils/db'
+
 const STORAGE_KEY = 'portfolio_case_studies'
 
 export const defaultCaseStudies = [
@@ -120,8 +122,10 @@ export function loadCaseStudies() {
 
 export function saveCaseStudies(data) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
+  cloudSet('case_studies', { items: data })
 }
 
 export function resetCaseStudies() {
   localStorage.removeItem(STORAGE_KEY)
+  cloudDelete('case_studies')
 }

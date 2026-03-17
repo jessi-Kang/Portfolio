@@ -9,6 +9,7 @@ import Admin from './components/Admin'
 import AuthGate from './components/AuthGate'
 import AdminLogin from './components/AdminLogin'
 import { isAdminSessionValid } from './utils/crypto'
+import { syncFromCloud, isCloudEnabled } from './utils/db'
 
 function TokenExpiryBanner({ expiresAt }) {
   const [visible, setVisible] = useState(true)
@@ -66,12 +67,27 @@ function App() {
   const [visitorAuth, setVisitorAuth] = useState(false)
   const [tokenExpiresAt, setTokenExpiresAt] = useState(null)
   const [adminAuth, setAdminAuth] = useState(isAdminSessionValid)
+  const [cloudReady, setCloudReady] = useState(!isCloudEnabled)
+
+  useEffect(() => {
+    if (isCloudEnabled) {
+      syncFromCloud().finally(() => setCloudReady(true))
+    }
+  }, [])
 
   useEffect(() => {
     const onHash = () => setIsAdmin(window.location.hash === '#admin')
     window.addEventListener('hashchange', onHash)
     return () => window.removeEventListener('hashchange', onHash)
   }, [])
+
+  if (!cloudReady) {
+    return (
+      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
+        <div className="text-gray-500 text-sm animate-pulse">Loading...</div>
+      </div>
+    )
+  }
 
   if (isAdmin) {
     if (!adminAuth) {

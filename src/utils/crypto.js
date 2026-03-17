@@ -1,3 +1,5 @@
+import { cloudSet, cloudDelete } from './db'
+
 const ADMIN_KEY = 'portfolio_admin_hash'
 const TOKENS_KEY = 'portfolio_access_tokens'
 const ADMIN_SESSION_KEY = 'portfolio_admin_session'
@@ -113,6 +115,7 @@ export function getAccessTokens() {
 
 function saveAccessTokens(tokens) {
   localStorage.setItem(TOKENS_KEY, JSON.stringify(tokens))
+  cloudSet('tokens', { items: tokens })
 }
 
 export function createAccessToken(label, expiresAt) {
@@ -164,6 +167,7 @@ export function getAccessLog() {
 
 function saveAccessLog(log) {
   localStorage.setItem(ACCESS_LOG_KEY, JSON.stringify(log))
+  cloudSet('access_log', { items: log })
 }
 
 export function recordAccess(tokenId, tokenLabel) {
@@ -184,6 +188,7 @@ export function getAccessLogForToken(tokenId) {
 
 export function clearAccessLog() {
   localStorage.removeItem(ACCESS_LOG_KEY)
+  cloudDelete('access_log')
 }
 
 // --- AuthGate Config ---
@@ -212,10 +217,12 @@ export function loadAuthGateConfig() {
 
 export function saveAuthGateConfig(config) {
   localStorage.setItem(AUTH_GATE_KEY, JSON.stringify(config))
+  cloudSet('authgate', config)
 }
 
 export function resetAuthGateConfig() {
   localStorage.removeItem(AUTH_GATE_KEY)
+  cloudDelete('authgate')
   return defaultAuthGateConfig
 }
 
@@ -246,10 +253,12 @@ export function loadResumeConfig() {
 
 export function saveResumeConfig(config) {
   localStorage.setItem(RESUME_KEY, JSON.stringify(config))
+  cloudSet('resume', config)
 }
 
 export function resetResumeConfig() {
   localStorage.removeItem(RESUME_KEY)
+  cloudDelete('resume')
   return defaultResumeConfig
 }
 
@@ -272,10 +281,12 @@ export function loadHeroConfig() {
 
 export function saveHeroConfig(config) {
   localStorage.setItem(HERO_KEY, JSON.stringify(config))
+  cloudSet('hero', config)
 }
 
 export function resetHeroConfig() {
   localStorage.removeItem(HERO_KEY)
+  cloudDelete('hero')
   return defaultHeroConfig
 }
 
@@ -302,9 +313,11 @@ export function loadContactConfig() {
 
 export function saveContactConfig(config) {
   localStorage.setItem(CONTACT_KEY, JSON.stringify(config))
+  cloudSet('contact', config)
 }
 
 export function resetContactConfig() {
   localStorage.removeItem(CONTACT_KEY)
+  cloudDelete('contact')
   return defaultContactConfig
 }
