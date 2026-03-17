@@ -3,10 +3,13 @@ const STORAGE_KEY = 'portfolio_case_studies'
 export const defaultCaseStudies = [
   {
     id: 'delivery-ml',
+    company: '',
     title: '배달 ML',
     subtitle: '배달 시간 예측 모델 고도화',
     period: '2020 - 2021',
     icon: '🛵',
+    tabLabels: { problem: '문제정의', approach: 'ML접근', results: '결과지표' },
+    failedLabel: '실패한 실험',
     tabs: {
       problem:
         '배달 예상 시간이 실제와 평균 15분 이상 차이나 고객 불만이 급증했습니다. 기존 규칙 기반 시스템은 날씨, 교통, 주문 밀집도 등 변수를 반영하지 못했고, CS 인입률이 월 12%에 달했습니다.',
@@ -35,10 +38,13 @@ export const defaultCaseStudies = [
   },
   {
     id: 'content-recommendation',
+    company: '',
     title: '콘텐츠 추천',
     subtitle: '개인화 콘텐츠 추천 시스템',
     period: '2021 - 2023',
     icon: '🎯',
+    tabLabels: { problem: '문제정의', approach: 'ML접근', results: '결과지표' },
+    failedLabel: '실패한 실험',
     tabs: {
       problem:
         '월간 활성 사용자 대비 콘텐츠 소비율이 23%에 불과했습니다. 사용자들이 원하는 콘텐츠를 찾지 못해 평균 세션 시간이 2.1분으로 짧았고, 이탈률이 높았습니다.',
@@ -67,10 +73,13 @@ export const defaultCaseStudies = [
   },
   {
     id: 'ai-character',
+    company: '',
     title: 'AI 캐릭터',
     subtitle: 'AI 캐릭터 대화 서비스',
     period: '2023 - 현재',
     icon: '🤖',
+    tabLabels: { problem: '문제정의', approach: 'ML접근', results: '결과지표' },
+    failedLabel: '실패한 실험',
     tabs: {
       problem:
         '기존 챗봇은 정해진 시나리오 외 대화에서 부자연스러운 응답을 생성했습니다. 사용자 리텐션이 첫 주 40%에서 한 달 뒤 8%로 급락했고, 평균 대화 턴 수가 3.2회에 불과했습니다.',

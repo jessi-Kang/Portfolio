@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import Hero from './components/Hero'
 import Timeline from './components/Timeline'
 import CaseStudies from './components/CaseStudies'
+import Resume from './components/Resume'
 import Contact from './components/Contact'
 import Admin from './components/Admin'
 import AuthGate from './components/AuthGate'
@@ -96,6 +97,7 @@ function App() {
       <Hero />
       <Timeline />
       <CaseStudies />
+      <Resume />
       <Contact />
     </div>
   )

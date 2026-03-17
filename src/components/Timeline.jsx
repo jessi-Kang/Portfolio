@@ -10,11 +10,11 @@ export default function Timeline() {
   }
 
   return (
-    <SectionWrapper id="timeline" className="overflow-hidden">
+    <SectionWrapper id="timeline" className="overflow-visible">
       <h2 className="text-2xl md:text-3xl font-bold text-center mb-12">Journey</h2>
 
-      <div className="overflow-x-auto pb-4 -mx-6 px-6">
-        <div className="flex items-center justify-center min-w-max gap-0">
+      <div className="overflow-x-auto pb-4 -mx-6 px-6 overflow-y-visible">
+        <div className="flex items-center justify-center min-w-max gap-0 py-2">
           {studies.map((study, index) => (
             <div key={study.id} className="flex items-center">
               {/* Node */}

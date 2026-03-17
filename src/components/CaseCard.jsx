@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import CounterAnimation from './ui/CounterAnimation'
 
-const tabLabels = {
+const defaultTabLabels = {
   problem: '문제정의',
   approach: 'ML접근',
   results: '결과지표',
@@ -12,6 +12,9 @@ export default function CaseCard({ study }) {
   const [activeTab, setActiveTab] = useState('problem')
   const [showFailures, setShowFailures] = useState(false)
 
+  const tabLabels = study.tabLabels || defaultTabLabels
+  const failedLabel = study.failedLabel || '실패한 실험'
+
   return (
     <div id={study.id} className="bg-gray-900 rounded-2xl p-6 md:p-8 scroll-mt-24">
       {/* Header */}
@@ -19,7 +22,10 @@ export default function CaseCard({ study }) {
         <span className="text-3xl">{study.icon}</span>
         <div>
           <h3 className="text-xl md:text-2xl font-bold">{study.title}</h3>
-          <p className="text-gray-400 text-sm">{study.subtitle} &middot; {study.period}</p>
+          <p className="text-gray-400 text-sm">
+            {study.company && <>{study.company} &middot; </>}
+            {study.subtitle} &middot; {study.period}
+          </p>
         </div>
       </div>
 
@@ -81,7 +87,7 @@ export default function CaseCard({ study }) {
         >
           ▶
         </motion.span>
-        실패한 실험 ({study.failedExperiments.length})
+        {failedLabel} ({study.failedExperiments.length})
       </button>
 
       <AnimatePresence>

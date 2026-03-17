@@ -9,6 +9,12 @@ import {
   loadHeroConfig,
   saveHeroConfig,
   resetHeroConfig,
+  loadAuthGateConfig,
+  saveAuthGateConfig,
+  resetAuthGateConfig,
+  loadResumeConfig,
+  saveResumeConfig,
+  resetResumeConfig,
   clearAdminSession,
 } from '../utils/crypto'
 
@@ -64,6 +70,10 @@ function Field({ label, value, onChange, type = 'text', className = '' }) {
 function CaseEditor({ study, onChange }) {
   const update = (key, value) => onChange({ ...study, [key]: value })
   const updateTab = (key, value) => onChange({ ...study, tabs: { ...study.tabs, [key]: value } })
+  const updateTabLabel = (key, value) => onChange({ ...study, tabLabels: { ...(study.tabLabels || { problem: '문제정의', approach: 'ML접근', results: '결과지표' }), [key]: value } })
+
+  const tabLabels = study.tabLabels || { problem: '문제정의', approach: 'ML접근', results: '결과지표' }
+  const failedLabel = study.failedLabel || '실패한 실험'
 
   return (
     <div className="bg-gray-900 rounded-xl p-5 space-y-4">
@@ -72,22 +82,32 @@ function CaseEditor({ study, onChange }) {
         <h3 className="text-lg font-bold">{study.title || '새 케이스'}</h3>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
         <Field label="아이콘" value={study.icon} onChange={(v) => update('icon', v)} />
+        <Field label="회사" value={study.company || ''} onChange={(v) => update('company', v)} />
         <Field label="제목" value={study.title} onChange={(v) => update('title', v)} />
         <Field label="부제" value={study.subtitle} onChange={(v) => update('subtitle', v)} />
         <Field label="기간" value={study.period} onChange={(v) => update('period', v)} />
       </div>
 
       <div className="space-y-3">
-        <h4 className="text-sm font-semibold text-accent">탭 콘텐츠</h4>
+        <div className="flex items-center justify-between">
+          <h4 className="text-sm font-semibold text-accent">탭 콘텐츠</h4>
+        </div>
         {[
-          ['problem', '문제정의'],
-          ['approach', 'ML접근'],
-          ['results', '결과지표'],
+          ['problem', tabLabels.problem],
+          ['approach', tabLabels.approach],
+          ['results', tabLabels.results],
         ].map(([key, label]) => (
           <div key={key}>
-            <label className="block text-xs text-gray-500 mb-1">{label}</label>
+            <div className="flex items-center gap-2 mb-1">
+              <input
+                value={label}
+                onChange={(e) => updateTabLabel(key, e.target.value)}
+                className="bg-gray-800 border border-gray-700 rounded px-2 py-0.5 text-xs text-accent font-medium w-24 focus:outline-none focus:border-accent"
+              />
+              <span className="text-xs text-gray-600">탭 라벨</span>
+            </div>
             <textarea
               value={study.tabs[key]}
               onChange={(e) => updateTab(key, e.target.value)}
@@ -120,7 +140,14 @@ function CaseEditor({ study, onChange }) {
 
       <div className="space-y-2">
         <div className="flex justify-between items-center">
-          <h4 className="text-sm font-semibold text-accent">실패한 실험</h4>
+          <div className="flex items-center gap-2">
+            <input
+              value={failedLabel}
+              onChange={(e) => update('failedLabel', e.target.value)}
+              className="bg-gray-800 border border-gray-700 rounded px-2 py-0.5 text-xs text-accent font-semibold w-28 focus:outline-none focus:border-accent"
+            />
+            <span className="text-xs text-gray-600">섹션 라벨</span>
+          </div>
           <button
             onClick={() => update('failedExperiments', [...study.failedExperiments, { title: '', description: '' }])}
             className="text-xs text-accent hover:text-accent-light cursor-pointer"
@@ -333,10 +360,22 @@ function TokenManager() {
                   </svg>
                 </div>
 
-                {/* Expanded: access log + actions */}
+                {/* Expanded: token value + access log + actions */}
                 {isExpanded && (
                   <div className="px-4 pb-3 space-y-3 border-t border-gray-700/50">
                     <div className="pt-3">
+                      <p className="text-xs font-medium text-gray-400 mb-1.5">발급된 토큰</p>
+                      <div className="flex gap-2 items-center">
+                        <code className="flex-1 bg-gray-900 px-3 py-2 rounded text-xs font-mono text-gray-300 select-all break-all">{t.token}</code>
+                        <button
+                          onClick={(e) => { e.stopPropagation(); navigator.clipboard.writeText(t.token) }}
+                          className="shrink-0 px-2.5 py-1.5 text-xs border border-gray-700 rounded hover:border-accent text-gray-400 hover:text-accent cursor-pointer"
+                        >
+                          복사
+                        </button>
+                      </div>
+                    </div>
+                    <div>
                       <p className="text-xs font-medium text-gray-400 mb-2">접속 이력</p>
                       <TokenAccessLog tokenId={t.id} />
                     </div>
@@ -454,6 +493,304 @@ function HeroEditor() {
   )
 }
 
+/* ─── AuthGate Editor ─── */
+
+function AuthGateEditor() {
+  const [config, setConfig] = useState(loadAuthGateConfig)
+  const [saved, setSaved] = useState(false)
+
+  const update = (key, value) => setConfig((prev) => ({ ...prev, [key]: value }))
+
+  const handleSave = () => {
+    saveAuthGateConfig(config)
+    setSaved(true)
+    setTimeout(() => setSaved(false), 2000)
+  }
+
+  const handleReset = () => {
+    if (window.confirm('접속 화면을 기본값으로 초기화하시겠습니까?')) {
+      const defaults = resetAuthGateConfig()
+      setConfig(defaults)
+    }
+  }
+
+  return (
+    <div className="bg-gray-900 rounded-xl p-5 space-y-4">
+      <div className="flex items-center justify-between">
+        <h3 className="text-lg font-bold flex items-center gap-2">
+          <span className="text-accent">🔒</span> 접속 화면 편집
+        </h3>
+        <div className="flex gap-2">
+          <button onClick={handleReset} className="px-3 py-1.5 text-xs border border-gray-700 rounded-lg hover:border-red-500 text-gray-300 cursor-pointer">
+            초기화
+          </button>
+          <button onClick={handleSave} className="px-4 py-1.5 text-xs bg-accent hover:bg-accent-light text-white rounded-lg font-medium cursor-pointer">
+            {saved ? '저장됨 ✓' : '저장'}
+          </button>
+        </div>
+      </div>
+
+      <div className="space-y-3">
+        <div>
+          <label className="block text-xs text-gray-500 mb-1">태그라인 (상단 작은 텍스트)</label>
+          <input
+            value={config.tagline}
+            onChange={(e) => update('tagline', e.target.value)}
+            className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-accent"
+          />
+        </div>
+        <div>
+          <label className="block text-xs text-gray-500 mb-1">헤드라인 (줄바꿈: \n으로 구분, 두번째 줄은 강조색)</label>
+          <textarea
+            value={config.headline}
+            onChange={(e) => update('headline', e.target.value)}
+            rows={2}
+            className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm text-white resize-y focus:outline-none focus:border-accent"
+          />
+        </div>
+        <div>
+          <label className="block text-xs text-gray-500 mb-1">서브타이틀</label>
+          <textarea
+            value={config.subtitle}
+            onChange={(e) => update('subtitle', e.target.value)}
+            rows={2}
+            className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm text-white resize-y focus:outline-none focus:border-accent"
+          />
+        </div>
+
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className="block text-xs text-gray-500 mb-1">카드 제목</label>
+            <input
+              value={config.cardTitle}
+              onChange={(e) => update('cardTitle', e.target.value)}
+              className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-accent"
+            />
+          </div>
+          <div>
+            <label className="block text-xs text-gray-500 mb-1">카드 설명</label>
+            <input
+              value={config.cardDescription}
+              onChange={(e) => update('cardDescription', e.target.value)}
+              className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-accent"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-xs text-gray-500 mb-1">버튼 텍스트</label>
+          <input
+            value={config.buttonText}
+            onChange={(e) => update('buttonText', e.target.value)}
+            className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-accent"
+          />
+        </div>
+
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className="block text-xs text-gray-500 mb-1">연락 이메일</label>
+            <input
+              value={config.contactEmail}
+              onChange={(e) => update('contactEmail', e.target.value)}
+              className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-accent"
+            />
+          </div>
+          <div>
+            <label className="block text-xs text-gray-500 mb-1">연락 안내 문구</label>
+            <input
+              value={config.contactMessage}
+              onChange={(e) => update('contactMessage', e.target.value)}
+              className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-accent"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-xs text-gray-500 mb-1">연락 힌트 (이메일 아래 작은 텍스트)</label>
+          <input
+            value={config.contactHint}
+            onChange={(e) => update('contactHint', e.target.value)}
+            className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-accent"
+          />
+        </div>
+      </div>
+
+      {/* Preview */}
+      <div className="border border-gray-800 rounded-lg p-4 bg-gray-950/50">
+        <p className="text-xs text-gray-500 mb-2">미리보기</p>
+        <p className="text-accent text-xs font-medium tracking-wider uppercase">{config.tagline}</p>
+        <p className="text-lg font-bold mt-1 whitespace-pre-line">{config.headline}</p>
+        <p className="text-gray-400 text-sm mt-1">{config.subtitle}</p>
+        <div className="mt-3 bg-gray-800/50 rounded-lg p-3 text-center">
+          <p className="text-sm font-medium">{config.cardTitle}</p>
+          <p className="text-xs text-gray-500">{config.cardDescription}</p>
+          <span className="inline-block mt-2 px-4 py-1.5 bg-accent/20 text-accent text-xs rounded-full">{config.buttonText}</span>
+        </div>
+        <p className="text-gray-500 text-xs mt-2 text-center">{config.contactMessage}</p>
+        <p className="text-accent text-xs text-center">{config.contactEmail}</p>
+      </div>
+    </div>
+  )
+}
+
+/* ─── Resume Editor ─── */
+
+function ResumeEditor() {
+  const [resume, setResume] = useState(loadResumeConfig)
+  const [saved, setSaved] = useState(false)
+
+  const handleSave = () => {
+    saveResumeConfig(resume)
+    setSaved(true)
+    setTimeout(() => setSaved(false), 2000)
+  }
+
+  const handleReset = () => {
+    if (window.confirm('이력서를 기본값으로 초기화하시겠습니까?')) {
+      const defaults = resetResumeConfig()
+      setResume(defaults)
+    }
+  }
+
+  const updateList = (key, index, field, value) => {
+    const arr = [...resume[key]]
+    arr[index] = { ...arr[index], [field]: value }
+    setResume({ ...resume, [key]: arr })
+  }
+
+  const addItem = (key, template) => {
+    setResume({ ...resume, [key]: [...resume[key], template] })
+  }
+
+  const removeItem = (key, index) => {
+    setResume({ ...resume, [key]: resume[key].filter((_, i) => i !== index) })
+  }
+
+  const moveItem = (key, index, dir) => {
+    const target = index + dir
+    if (target < 0 || target >= resume[key].length) return
+    const arr = [...resume[key]]
+    ;[arr[index], arr[target]] = [arr[target], arr[index]]
+    setResume({ ...resume, [key]: arr })
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="bg-gray-900 rounded-xl p-5 space-y-4">
+        <div className="flex items-center justify-between">
+          <h3 className="text-lg font-bold flex items-center gap-2">
+            <span className="text-accent">🎓</span> 학력
+          </h3>
+          <button
+            onClick={() => addItem('education', { school: '', degree: '', period: '' })}
+            className="text-xs text-accent hover:text-accent-light cursor-pointer"
+          >
+            + 추가
+          </button>
+        </div>
+        {resume.education.map((edu, i) => (
+          <div key={i} className="flex gap-2 items-end flex-wrap">
+            <Field label="학교명" value={edu.school} onChange={(v) => updateList('education', i, 'school', v)} className="flex-1 min-w-[120px]" />
+            <Field label="학위/전공" value={edu.degree} onChange={(v) => updateList('education', i, 'degree', v)} className="flex-1 min-w-[120px]" />
+            <Field label="기간" value={edu.period} onChange={(v) => updateList('education', i, 'period', v)} className="w-32" />
+            <div className="flex gap-1 shrink-0">
+              {i > 0 && <button onClick={() => moveItem('education', i, -1)} className="px-1.5 py-2 text-gray-400 hover:text-white text-xs cursor-pointer">↑</button>}
+              {i < resume.education.length - 1 && <button onClick={() => moveItem('education', i, 1)} className="px-1.5 py-2 text-gray-400 hover:text-white text-xs cursor-pointer">↓</button>}
+              <button onClick={() => removeItem('education', i)} className="px-2 py-2 text-red-400 hover:text-red-300 cursor-pointer">✕</button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="bg-gray-900 rounded-xl p-5 space-y-4">
+        <div className="flex items-center justify-between">
+          <h3 className="text-lg font-bold flex items-center gap-2">
+            <span className="text-accent">💼</span> 경력
+          </h3>
+          <button
+            onClick={() => addItem('work', { company: '', title: '', period: '', description: '' })}
+            className="text-xs text-accent hover:text-accent-light cursor-pointer"
+          >
+            + 추가
+          </button>
+        </div>
+        {resume.work.map((job, i) => (
+          <div key={i} className="bg-gray-800/50 rounded-lg p-3 space-y-2">
+            <div className="flex gap-2 items-end flex-wrap">
+              <Field label="회사명" value={job.company} onChange={(v) => updateList('work', i, 'company', v)} className="flex-1 min-w-[120px]" />
+              <Field label="직책/직위" value={job.title} onChange={(v) => updateList('work', i, 'title', v)} className="flex-1 min-w-[120px]" />
+              <Field label="기간" value={job.period} onChange={(v) => updateList('work', i, 'period', v)} className="w-32" />
+              <div className="flex gap-1 shrink-0">
+                {i > 0 && <button onClick={() => moveItem('work', i, -1)} className="px-1.5 py-2 text-gray-400 hover:text-white text-xs cursor-pointer">↑</button>}
+                {i < resume.work.length - 1 && <button onClick={() => moveItem('work', i, 1)} className="px-1.5 py-2 text-gray-400 hover:text-white text-xs cursor-pointer">↓</button>}
+                <button onClick={() => removeItem('work', i)} className="px-2 py-2 text-red-400 hover:text-red-300 cursor-pointer">✕</button>
+              </div>
+            </div>
+            <div>
+              <label className="block text-xs text-gray-500 mb-1">업무 설명 (선택)</label>
+              <textarea
+                value={job.description}
+                onChange={(e) => updateList('work', i, 'description', e.target.value)}
+                rows={2}
+                className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm text-white resize-y focus:outline-none focus:border-accent"
+              />
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="bg-gray-900 rounded-xl p-5 space-y-4">
+        <div className="flex items-center justify-between">
+          <h3 className="text-lg font-bold flex items-center gap-2">
+            <span className="text-accent">⭐</span> 활동
+          </h3>
+          <button
+            onClick={() => addItem('activities', { year: '', category: '', summary: '' })}
+            className="text-xs text-accent hover:text-accent-light cursor-pointer"
+          >
+            + 추가
+          </button>
+        </div>
+        {resume.activities.map((act, i) => (
+          <div key={i} className="flex gap-2 items-end flex-wrap">
+            <Field label="년도" value={act.year} onChange={(v) => updateList('activities', i, 'year', v)} className="w-20" />
+            <Field label="구분" value={act.category} onChange={(v) => updateList('activities', i, 'category', v)} className="w-24" />
+            <Field label="내용 요약" value={act.summary} onChange={(v) => updateList('activities', i, 'summary', v)} className="flex-1 min-w-[200px]" />
+            <div className="flex gap-1 shrink-0">
+              {i > 0 && <button onClick={() => moveItem('activities', i, -1)} className="px-1.5 py-2 text-gray-400 hover:text-white text-xs cursor-pointer">↑</button>}
+              {i < resume.activities.length - 1 && <button onClick={() => moveItem('activities', i, 1)} className="px-1.5 py-2 text-gray-400 hover:text-white text-xs cursor-pointer">↓</button>}
+              <button onClick={() => removeItem('activities', i)} className="px-2 py-2 text-red-400 hover:text-red-300 cursor-pointer">✕</button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="bg-gray-900 rounded-xl p-5 space-y-4">
+        <h3 className="text-lg font-bold flex items-center gap-2">
+          <span className="text-accent">👤</span> 자기소개
+        </h3>
+        <p className="text-xs text-gray-500">마크다운을 지원합니다. (## 제목, **굵게**, *기울임*, - 목록, [링크](URL))</p>
+        <textarea
+          value={resume.selfIntro}
+          onChange={(e) => setResume({ ...resume, selfIntro: e.target.value })}
+          rows={10}
+          placeholder="자기소개를 마크다운으로 작성하세요..."
+          className="w-full bg-gray-800 border border-gray-700 rounded px-4 py-3 text-sm text-white resize-y focus:outline-none focus:border-accent font-mono"
+        />
+      </div>
+
+      <div className="flex justify-end gap-2">
+        <button onClick={handleReset} className="px-3 py-1.5 text-xs border border-gray-700 rounded-lg hover:border-red-500 text-gray-300 cursor-pointer">
+          초기화
+        </button>
+        <button onClick={handleSave} className="px-4 py-1.5 text-xs bg-accent hover:bg-accent-light text-white rounded-lg font-medium cursor-pointer">
+          {saved ? '저장됨 ✓' : '저장'}
+        </button>
+      </div>
+    </div>
+  )
+}
+
 /* ─── Main Admin ─── */
 
 export default function Admin() {
@@ -479,10 +816,13 @@ export default function Admin() {
       ...studies,
       {
         id: `case-${Date.now()}`,
+        company: '',
         title: '',
         subtitle: '',
         period: '',
         icon: '📌',
+        tabLabels: { problem: '문제정의', approach: 'ML접근', results: '결과지표' },
+        failedLabel: '실패한 실험',
         tabs: { problem: '', approach: '', results: '' },
         beforeAfter: [],
         failedExperiments: [],
@@ -494,6 +834,14 @@ export default function Admin() {
     if (window.confirm('이 케이스를 삭제하시겠습니까?')) {
       setStudies(studies.filter((_, i) => i !== index))
     }
+  }
+
+  const handleMoveCase = (index, direction) => {
+    const target = index + direction
+    if (target < 0 || target >= studies.length) return
+    const arr = [...studies]
+    ;[arr[index], arr[target]] = [arr[target], arr[index]]
+    setStudies(arr)
   }
 
   const handleExport = () => {
@@ -531,10 +879,27 @@ export default function Admin() {
     window.location.reload()
   }
 
-  const tabs = [
-    { id: 'cases', label: '케이스 관리' },
-    { id: 'hero', label: '히어로 편집' },
-    { id: 'tokens', label: '접속 토큰' },
+  const tabGroups = [
+    {
+      label: '콘텐츠',
+      tabs: [
+        { id: 'cases', label: '케이스' },
+        { id: 'resume', label: '이력서' },
+      ],
+    },
+    {
+      label: '화면 설정',
+      tabs: [
+        { id: 'authgate', label: '접속 화면' },
+        { id: 'hero', label: '히어로' },
+      ],
+    },
+    {
+      label: '접속 관리',
+      tabs: [
+        { id: 'tokens', label: '토큰' },
+      ],
+    },
   ]
 
   return (
@@ -574,19 +939,24 @@ export default function Admin() {
         </div>
 
         {/* Tab bar */}
-        <div className="max-w-3xl mx-auto px-4 flex gap-1">
-          {tabs.map((t) => (
-            <button
-              key={t.id}
-              onClick={() => setTab(t.id)}
-              className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors cursor-pointer ${
-                tab === t.id
-                  ? 'border-accent text-accent'
-                  : 'border-transparent text-gray-500 hover:text-gray-300'
-              }`}
-            >
-              {t.label}
-            </button>
+        <div className="max-w-3xl mx-auto px-4 flex gap-0 overflow-x-auto">
+          {tabGroups.map((group, gi) => (
+            <div key={gi} className="flex items-center">
+              {gi > 0 && <div className="w-px h-5 bg-gray-800 mx-1 shrink-0" />}
+              {group.tabs.map((t) => (
+                <button
+                  key={t.id}
+                  onClick={() => setTab(t.id)}
+                  className={`px-3 py-2 text-sm font-medium border-b-2 transition-colors cursor-pointer whitespace-nowrap ${
+                    tab === t.id
+                      ? 'border-accent text-accent'
+                      : 'border-transparent text-gray-500 hover:text-gray-300'
+                  }`}
+                >
+                  {t.label}
+                </button>
+              ))}
+            </div>
           ))}
         </div>
       </div>
@@ -597,12 +967,30 @@ export default function Admin() {
           <>
             {studies.map((study, i) => (
               <div key={study.id} className="relative">
-                <button
-                  onClick={() => handleRemoveCase(i)}
-                  className="absolute -top-2 -right-2 z-10 w-7 h-7 bg-red-900/80 hover:bg-red-800 text-red-300 rounded-full text-xs flex items-center justify-center cursor-pointer"
-                >
-                  ✕
-                </button>
+                <div className="absolute -top-2 -right-2 z-10 flex gap-1">
+                  {i > 0 && (
+                    <button
+                      onClick={() => handleMoveCase(i, -1)}
+                      className="w-7 h-7 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-full text-xs flex items-center justify-center cursor-pointer"
+                    >
+                      ↑
+                    </button>
+                  )}
+                  {i < studies.length - 1 && (
+                    <button
+                      onClick={() => handleMoveCase(i, 1)}
+                      className="w-7 h-7 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-full text-xs flex items-center justify-center cursor-pointer"
+                    >
+                      ↓
+                    </button>
+                  )}
+                  <button
+                    onClick={() => handleRemoveCase(i)}
+                    className="w-7 h-7 bg-red-900/80 hover:bg-red-800 text-red-300 rounded-full text-xs flex items-center justify-center cursor-pointer"
+                  >
+                    ✕
+                  </button>
+                </div>
                 <CaseEditor
                   study={study}
                   onChange={(updated) => {
@@ -622,6 +1010,8 @@ export default function Admin() {
           </>
         )}
 
+        {tab === 'resume' && <ResumeEditor />}
+        {tab === 'authgate' && <AuthGateEditor />}
         {tab === 'hero' && <HeroEditor />}
         {tab === 'tokens' && <TokenManager />}
       </div>
