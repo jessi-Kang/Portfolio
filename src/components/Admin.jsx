@@ -609,13 +609,17 @@ function TokensSection() {
   const flash = (msg) => { setToast(msg); setTimeout(() => setToast(''), 2000) }
   const refresh = () => setTokens(getAccessTokens())
 
+  const copyToken = (token) => {
+    navigator.clipboard.writeText(token).then(() => flash('토큰이 클립보드에 복사되었습니다'))
+  }
+
   const handleCreate = () => {
     if (!label.trim()) return
     const expiresAt = Date.now() + expDays * 24 * 60 * 60 * 1000
-    createAccessToken(label.trim(), expiresAt)
+    const token = createAccessToken(label.trim(), expiresAt)
     setLabel('')
     refresh()
-    flash('토큰 생성 완료')
+    navigator.clipboard.writeText(token).then(() => flash('토큰 생성 및 복사 완료'))
   }
 
   const handleRevoke = (id) => { if (confirm('이 토큰을 폐기하시겠습니까?')) { revokeAccessToken(id); refresh() } }
@@ -662,6 +666,7 @@ function TokensSection() {
                   </p>
                 </div>
                 <div className="flex gap-2 shrink-0">
+                  <button onClick={() => copyToken(t.token)} className="px-2 py-1 text-xs text-accent hover:text-accent-light border border-gray-700 rounded-lg cursor-pointer">복사</button>
                   {logs.length > 0 && (
                     <button onClick={() => setExpandedToken(isExpanded ? null : t.id)} className="px-2 py-1 text-xs text-gray-400 hover:text-white border border-gray-700 rounded-lg cursor-pointer">
                       로그 {logs.length}
@@ -680,8 +685,8 @@ function TokensSection() {
                 <div className="mt-3 pt-3 border-t border-gray-800 space-y-1">
                   {logs.map((log, i) => (
                     <div key={i} className="flex items-center gap-3 text-xs text-gray-500">
-                      <span>{formatDate(log.at)}</span>
-                      <span>{parseBrowser(log.ua)} · {parseOS(log.ua)}</span>
+                      <span>{formatDate(log.accessedAt)}</span>
+                      <span>{parseBrowser(log.userAgent)} · {parseOS(log.userAgent)}</span>
                     </div>
                   ))}
                 </div>
