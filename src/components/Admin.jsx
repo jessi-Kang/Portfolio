@@ -611,7 +611,8 @@ function TokensSection() {
 
   const handleCreate = () => {
     if (!label.trim()) return
-    createAccessToken(label.trim(), expDays)
+    const expiresAt = Date.now() + expDays * 24 * 60 * 60 * 1000
+    createAccessToken(label.trim(), expiresAt)
     setLabel('')
     refresh()
     flash('토큰 생성 완료')
