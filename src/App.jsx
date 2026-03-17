@@ -77,7 +77,7 @@ function App() {
     if (!adminAuth) {
       return <AdminLogin onSuccess={() => setAdminAuth(true)} />
     }
-    return <Admin />
+    return <Admin onLogout={() => setAdminAuth(false)} />
   }
 
   if (!visitorAuth) {

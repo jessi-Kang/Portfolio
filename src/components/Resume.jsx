@@ -67,6 +67,9 @@ export default function Resume() {
   const hasEducation = resume.education?.some((e) => e.school)
   const hasWork = resume.work?.some((w) => w.company)
   const hasActivities = resume.activities?.some((a) => a.summary)
+  const hasSelfIntro = !!resume.selfIntro
+
+  if (!hasEducation && !hasWork && !hasActivities && !hasSelfIntro) return null
 
   return (
     <SectionWrapper id="resume">
