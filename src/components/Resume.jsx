@@ -1,59 +1,7 @@
 import { motion } from 'framer-motion'
 import SectionWrapper from './ui/SectionWrapper'
+import MarkdownRenderer from './ui/MarkdownRenderer'
 import { loadResumeConfig } from '../utils/crypto'
-
-function SimpleMarkdown({ text }) {
-  if (!text) return null
-  const lines = text.split('\n')
-  const elements = []
-  let listItems = []
-
-  const flushList = () => {
-    if (listItems.length > 0) {
-      elements.push(
-        <ul key={`ul-${elements.length}`} className="list-disc list-inside space-y-1 text-gray-300">
-          {listItems.map((item, i) => <li key={i}>{processInline(item)}</li>)}
-        </ul>
-      )
-      listItems = []
-    }
-  }
-
-  const processInline = (line) => {
-    const parts = []
-    const regex = /(\*\*(.+?)\*\*|\*(.+?)\*|\[(.+?)\]\((.+?)\))/g
-    let lastIndex = 0
-    let match
-    while ((match = regex.exec(line)) !== null) {
-      if (match.index > lastIndex) parts.push(line.slice(lastIndex, match.index))
-      if (match[2]) parts.push(<strong key={match.index} className="text-white font-semibold">{match[2]}</strong>)
-      else if (match[3]) parts.push(<em key={match.index}>{match[3]}</em>)
-      else if (match[4]) parts.push(<a key={match.index} href={match[5]} target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">{match[4]}</a>)
-      lastIndex = match.index + match[0].length
-    }
-    if (lastIndex < line.length) parts.push(line.slice(lastIndex))
-    return parts.length ? parts : line
-  }
-
-  for (const line of lines) {
-    if (line.startsWith('- ') || line.startsWith('* ')) {
-      listItems.push(line.slice(2))
-    } else {
-      flushList()
-      if (line.startsWith('### ')) {
-        elements.push(<h4 key={elements.length} className="text-white font-semibold mt-4 mb-1">{line.slice(4)}</h4>)
-      } else if (line.startsWith('## ')) {
-        elements.push(<h3 key={elements.length} className="text-white font-bold text-lg mt-5 mb-2">{line.slice(3)}</h3>)
-      } else if (line.trim() === '') {
-        elements.push(<div key={elements.length} className="h-2" />)
-      } else {
-        elements.push(<p key={elements.length} className="text-gray-300 leading-relaxed">{processInline(line)}</p>)
-      }
-    }
-  }
-  flushList()
-  return <div className="space-y-1">{elements}</div>
-}
 
 const fadeUp = {
   initial: { opacity: 0, y: 20 },
@@ -119,7 +67,7 @@ export default function Resume() {
                     <span className="text-gray-500 text-sm shrink-0">{job.period}</span>
                   </div>
                   {job.description && (
-                    <p className="text-gray-400 text-sm mt-2 leading-relaxed">{job.description}</p>
+                    <div className="text-gray-400 text-sm mt-2 leading-relaxed"><MarkdownRenderer content={job.description} /></div>
                   )}
                 </div>
               ))}
@@ -158,7 +106,7 @@ export default function Resume() {
               자기소개
             </h3>
             <div className="bg-gray-900 rounded-xl p-6">
-              <SimpleMarkdown text={resume.selfIntro} />
+              <MarkdownRenderer content={resume.selfIntro} />
             </div>
           </motion.div>
         )}

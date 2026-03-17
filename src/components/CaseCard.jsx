@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import CounterAnimation from './ui/CounterAnimation'
+import MarkdownRenderer from './ui/MarkdownRenderer'
 
 const defaultTabLabels = {
   problem: '문제정의',
@@ -56,7 +57,7 @@ export default function CaseCard({ study }) {
           transition={{ duration: 0.2 }}
           className="text-gray-300 leading-relaxed mb-8"
         >
-          {study.tabs[activeTab]}
+          <MarkdownRenderer content={study.tabs[activeTab]} />
         </motion.div>
       </AnimatePresence>
 
@@ -103,7 +104,7 @@ export default function CaseCard({ study }) {
               {study.failedExperiments.map((exp, i) => (
                 <div key={i} className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
                   <h4 className="text-sm font-semibold text-red-400 mb-1">{exp.title}</h4>
-                  <p className="text-gray-400 text-sm leading-relaxed">{exp.description}</p>
+                  <div className="text-gray-400 text-sm leading-relaxed"><MarkdownRenderer content={exp.description} /></div>
                 </div>
               ))}
             </div>
