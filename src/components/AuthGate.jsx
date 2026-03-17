@@ -16,7 +16,7 @@ export default function AuthGate({ onSuccess }) {
 
     await new Promise((r) => setTimeout(r, 300))
 
-    if (token.trim() === `#${ADMIN_PATH}`) {
+    if (token.trim().toLowerCase() === '#admin') {
       window.location.hash = ADMIN_PATH
       setLoading(false)
       return
