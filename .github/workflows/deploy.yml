@@ -27,6 +27,7 @@ jobs:
 
       - name: Install and Build
         env:
+          VITE_BASE_PATH: /Portfolio/
           VITE_ADMIN_SALT: ${{ secrets.VITE_ADMIN_SALT }}
           VITE_ADMIN_HASH: ${{ secrets.VITE_ADMIN_HASH }}
         run: |
