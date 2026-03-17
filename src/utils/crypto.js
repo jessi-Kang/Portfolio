@@ -77,28 +77,28 @@ export async function verifyAdminPasscode(passcode) {
 
 export function createAdminSession() {
   const id = generateSessionId()
-  const expires = Date.now() + 2 * 60 * 60 * 1000 // 2 hours
-  sessionStorage.setItem(ADMIN_SESSION_KEY, JSON.stringify({ id, expires }))
+  const expires = Date.now() + 24 * 60 * 60 * 1000 // 24 hours
+  localStorage.setItem(ADMIN_SESSION_KEY, JSON.stringify({ id, expires }))
 }
 
 export function isAdminSessionValid() {
-  const raw = sessionStorage.getItem(ADMIN_SESSION_KEY)
+  const raw = localStorage.getItem(ADMIN_SESSION_KEY)
   if (!raw) return false
   const { expires } = JSON.parse(raw)
   if (Date.now() > expires) {
-    sessionStorage.removeItem(ADMIN_SESSION_KEY)
+    localStorage.removeItem(ADMIN_SESSION_KEY)
     return false
   }
   return true
 }
 
 export function clearAdminSession() {
-  sessionStorage.removeItem(ADMIN_SESSION_KEY)
+  localStorage.removeItem(ADMIN_SESSION_KEY)
 }
 
 export function resetAdminPasscode() {
   localStorage.removeItem(ADMIN_KEY)
-  sessionStorage.removeItem(ADMIN_SESSION_KEY)
+  localStorage.removeItem(ADMIN_SESSION_KEY)
 }
 
 // --- Visitor Access Tokens ---
