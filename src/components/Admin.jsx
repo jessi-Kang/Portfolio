@@ -15,6 +15,9 @@ import {
   loadResumeConfig,
   saveResumeConfig,
   resetResumeConfig,
+  loadContactConfig,
+  saveContactConfig,
+  resetContactConfig,
   clearAdminSession,
 } from '../utils/crypto'
 
@@ -558,25 +561,6 @@ function AuthGateEditor() {
           />
         </div>
 
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <label className="block text-xs text-gray-500 mb-1">카드 제목</label>
-            <input
-              value={config.cardTitle}
-              onChange={(e) => update('cardTitle', e.target.value)}
-              className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-accent"
-            />
-          </div>
-          <div>
-            <label className="block text-xs text-gray-500 mb-1">카드 설명</label>
-            <input
-              value={config.cardDescription}
-              onChange={(e) => update('cardDescription', e.target.value)}
-              className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-accent"
-            />
-          </div>
-        </div>
-
         <div>
           <label className="block text-xs text-gray-500 mb-1">버튼 텍스트</label>
           <input
@@ -622,12 +606,106 @@ function AuthGateEditor() {
         <p className="text-lg font-bold mt-1 whitespace-pre-line">{config.headline}</p>
         <p className="text-gray-400 text-sm mt-1">{config.subtitle}</p>
         <div className="mt-3 bg-gray-800/50 rounded-lg p-3 text-center">
-          <p className="text-sm font-medium">{config.cardTitle}</p>
-          <p className="text-xs text-gray-500">{config.cardDescription}</p>
-          <span className="inline-block mt-2 px-4 py-1.5 bg-accent/20 text-accent text-xs rounded-full">{config.buttonText}</span>
+          <div className="bg-gray-700/50 rounded px-3 py-2 mb-2 text-gray-500 text-xs">접속 코드 입력란</div>
+          <span className="inline-block px-4 py-1.5 bg-accent/20 text-accent text-xs rounded-full">{config.buttonText}</span>
         </div>
         <p className="text-gray-500 text-xs mt-2 text-center">{config.contactMessage}</p>
         <p className="text-accent text-xs text-center">{config.contactEmail}</p>
+      </div>
+    </div>
+  )
+}
+
+/* ─── Contact Editor ─── */
+
+function ContactEditor() {
+  const [config, setConfig] = useState(loadContactConfig)
+  const [saved, setSaved] = useState(false)
+
+  const update = (key, value) => setConfig((prev) => ({ ...prev, [key]: value }))
+
+  const handleSave = () => {
+    saveContactConfig(config)
+    setSaved(true)
+    setTimeout(() => setSaved(false), 2000)
+  }
+
+  const handleReset = () => {
+    if (window.confirm('연락처를 기본값으로 초기화하시겠습니까?')) {
+      const defaults = resetContactConfig()
+      setConfig(defaults)
+    }
+  }
+
+  return (
+    <div className="bg-gray-900 rounded-xl p-5 space-y-4">
+      <div className="flex items-center justify-between">
+        <h3 className="text-lg font-bold flex items-center gap-2">
+          <span className="text-accent">📧</span> 연락처 편집
+        </h3>
+        <div className="flex gap-2">
+          <button onClick={handleReset} className="px-3 py-1.5 text-xs border border-gray-700 rounded-lg hover:border-red-500 text-gray-300 cursor-pointer">
+            초기화
+          </button>
+          <button onClick={handleSave} className="px-4 py-1.5 text-xs bg-accent hover:bg-accent-light text-white rounded-lg font-medium cursor-pointer">
+            {saved ? '저장됨 ✓' : '저장'}
+          </button>
+        </div>
+      </div>
+
+      <div className="space-y-3">
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className="block text-xs text-gray-500 mb-1">섹션 제목</label>
+            <input
+              value={config.heading}
+              onChange={(e) => update('heading', e.target.value)}
+              className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-accent"
+            />
+          </div>
+          <div>
+            <label className="block text-xs text-gray-500 mb-1">안내 문구</label>
+            <input
+              value={config.message}
+              onChange={(e) => update('message', e.target.value)}
+              className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-accent"
+            />
+          </div>
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className="block text-xs text-gray-500 mb-1">이메일</label>
+            <input
+              value={config.email}
+              onChange={(e) => update('email', e.target.value)}
+              className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-accent"
+            />
+          </div>
+          <div>
+            <label className="block text-xs text-gray-500 mb-1">LinkedIn 라벨</label>
+            <input
+              value={config.linkedinLabel}
+              onChange={(e) => update('linkedinLabel', e.target.value)}
+              className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-accent"
+            />
+          </div>
+        </div>
+        <div>
+          <label className="block text-xs text-gray-500 mb-1">LinkedIn URL</label>
+          <input
+            value={config.linkedinUrl}
+            onChange={(e) => update('linkedinUrl', e.target.value)}
+            className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-accent"
+          />
+        </div>
+        <div>
+          <label className="block text-xs text-gray-500 mb-1">저작권 표시</label>
+          <input
+            value={config.copyright}
+            onChange={(e) => update('copyright', e.target.value)}
+            className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-accent"
+          />
+        </div>
       </div>
     </div>
   )
@@ -881,21 +959,19 @@ export default function Admin() {
 
   const tabGroups = [
     {
-      label: '콘텐츠',
       tabs: [
         { id: 'cases', label: '케이스' },
         { id: 'resume', label: '이력서' },
       ],
     },
     {
-      label: '화면 설정',
       tabs: [
-        { id: 'authgate', label: '접속 화면' },
         { id: 'hero', label: '히어로' },
+        { id: 'authgate', label: '접속 화면' },
+        { id: 'contact', label: '연락처' },
       ],
     },
     {
-      label: '접속 관리',
       tabs: [
         { id: 'tokens', label: '토큰' },
       ],
@@ -1011,8 +1087,9 @@ export default function Admin() {
         )}
 
         {tab === 'resume' && <ResumeEditor />}
-        {tab === 'authgate' && <AuthGateEditor />}
         {tab === 'hero' && <HeroEditor />}
+        {tab === 'authgate' && <AuthGateEditor />}
+        {tab === 'contact' && <ContactEditor />}
         {tab === 'tokens' && <TokenManager />}
       </div>
     </div>

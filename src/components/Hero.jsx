@@ -1,13 +1,21 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import TypingAnimation from './ui/TypingAnimation'
-import { loadHeroConfig } from '../utils/crypto'
+import { loadHeroConfig, loadResumeConfig } from '../utils/crypto'
+import { loadCaseStudies } from '../data/caseStudies'
 
 export default function Hero() {
   const [hero] = useState(loadHeroConfig)
+  const hasCases = loadCaseStudies().some((s) => s.title)
+  const resume = loadResumeConfig()
+  const hasResume =
+    resume.education?.some((e) => e.school) ||
+    resume.work?.some((w) => w.company) ||
+    resume.activities?.some((a) => a.summary) ||
+    !!resume.selfIntro
 
-  const scrollToCases = () => {
-    document.getElementById('case-studies')?.scrollIntoView({ behavior: 'smooth' })
+  const scrollTo = (id) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
   }
 
   return (
@@ -45,17 +53,35 @@ export default function Hero() {
         {hero.subtitle}
       </motion.p>
 
-      <motion.button
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.6 }}
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        onClick={scrollToCases}
-        className="mt-10 px-8 py-3 bg-accent hover:bg-accent-light text-white font-medium rounded-full transition-colors cursor-pointer"
-      >
-        {hero.ctaText}
-      </motion.button>
+      {(hasCases || hasResume) && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.6 }}
+          className="mt-10 flex items-center gap-3"
+        >
+          {hasCases && (
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => scrollTo('case-studies')}
+              className="px-8 py-3 bg-accent hover:bg-accent-light text-white font-medium rounded-full transition-colors cursor-pointer"
+            >
+              {hero.ctaText}
+            </motion.button>
+          )}
+          {hasResume && (
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => scrollTo('resume')}
+              className="px-8 py-3 border border-gray-700 hover:border-accent text-gray-300 hover:text-accent font-medium rounded-full transition-colors cursor-pointer"
+            >
+              Resume
+            </motion.button>
+          )}
+        </motion.div>
+      )}
 
       {/* Scroll indicator */}
       <motion.div

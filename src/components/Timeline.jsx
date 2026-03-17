@@ -4,6 +4,9 @@ import { loadCaseStudies } from '../data/caseStudies'
 
 export default function Timeline() {
   const studies = loadCaseStudies()
+  const hasContent = studies.some((s) => s.title)
+
+  if (!hasContent) return null
 
   const scrollToCase = (id) => {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })

@@ -4,6 +4,9 @@ import { loadCaseStudies } from '../data/caseStudies'
 
 export default function CaseStudies() {
   const studies = loadCaseStudies()
+  const hasContent = studies.some((s) => s.title)
+
+  if (!hasContent) return null
 
   return (
     <SectionWrapper id="case-studies">

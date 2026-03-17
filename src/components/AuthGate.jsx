@@ -30,7 +30,7 @@ export default function AuthGate({ onSuccess }) {
 
   return (
     <div className="relative min-h-screen bg-gray-950 flex flex-col items-center justify-center px-6 text-center overflow-hidden">
-      {/* Background gradient - same as Hero */}
+      {/* Background gradient */}
       <div className="absolute inset-0 bg-gradient-to-b from-accent/10 via-transparent to-transparent pointer-events-none" />
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-accent/5 rounded-full blur-3xl" />
@@ -74,7 +74,7 @@ export default function AuthGate({ onSuccess }) {
         {config.subtitle}
       </motion.p>
 
-      {/* Auth Card */}
+      {/* Auth Card - input only */}
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
@@ -82,18 +82,6 @@ export default function AuthGate({ onSuccess }) {
         className="relative w-full max-w-md mt-12"
       >
         <div className="bg-gray-900/60 backdrop-blur-xl rounded-2xl p-8 border border-gray-800/60 shadow-2xl">
-          <div className="flex items-center justify-center gap-3 mb-6">
-            <div className="w-10 h-10 shrink-0 bg-accent/10 rounded-full flex items-center justify-center">
-              <svg className="w-5 h-5 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
-              </svg>
-            </div>
-            <div className="text-left">
-              <h2 className="text-base font-semibold text-white">{config.cardTitle}</h2>
-              <p className="text-xs text-gray-500">{config.cardDescription}</p>
-            </div>
-          </div>
-
           <form onSubmit={handleSubmit} className="space-y-4">
             <input
               type="text"
@@ -150,7 +138,6 @@ export default function AuthGate({ onSuccess }) {
           <p className="text-gray-600 text-xs">{config.contactHint}</p>
         </motion.div>
       </motion.div>
-
     </div>
   )
 }

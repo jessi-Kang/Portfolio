@@ -257,3 +257,33 @@ export function resetHeroConfig() {
   localStorage.removeItem(HERO_KEY)
   return defaultHeroConfig
 }
+
+// --- Contact Config ---
+
+const CONTACT_KEY = 'portfolio_contact_config'
+
+const defaultContactConfig = {
+  heading: 'Contact',
+  message: '함께 일하고 싶으시다면 연락주세요.',
+  email: 'hello@example.com',
+  linkedinUrl: 'https://linkedin.com/in/',
+  linkedinLabel: 'LinkedIn',
+  copyright: '© 2026. All rights reserved.',
+}
+
+export function loadContactConfig() {
+  try {
+    const raw = localStorage.getItem(CONTACT_KEY)
+    if (raw) return { ...defaultContactConfig, ...JSON.parse(raw) }
+  } catch {}
+  return defaultContactConfig
+}
+
+export function saveContactConfig(config) {
+  localStorage.setItem(CONTACT_KEY, JSON.stringify(config))
+}
+
+export function resetContactConfig() {
+  localStorage.removeItem(CONTACT_KEY)
+  return defaultContactConfig
+}
