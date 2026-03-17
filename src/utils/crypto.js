@@ -57,6 +57,9 @@ export function isEnvAdmin() {
   return hasEnvAdmin
 }
 
+// Admin URL path — derived from hash to prevent guessing
+export const ADMIN_PATH = import.meta.env.VITE_ADMIN_PATH || (ENV_HASH ? ENV_HASH.slice(0, 12) : 'admin')
+
 export async function setupAdminPasscode(passcode) {
   const salt = generateSalt()
   const hash = await deriveKey(passcode, salt)

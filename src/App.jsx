@@ -8,7 +8,7 @@ import Contact from './components/Contact'
 import Admin from './components/Admin'
 import AuthGate from './components/AuthGate'
 import AdminLogin from './components/AdminLogin'
-import { isAdminSessionValid } from './utils/crypto'
+import { isAdminSessionValid, ADMIN_PATH } from './utils/crypto'
 import { syncFromCloud, isCloudEnabled } from './utils/db'
 
 function TokenExpiryBanner({ expiresAt }) {
@@ -62,7 +62,8 @@ function TokenExpiryBanner({ expiresAt }) {
 }
 
 function App() {
-  const [isAdmin, setIsAdmin] = useState(window.location.hash === '#admin')
+  const adminHash = `#${ADMIN_PATH}`
+  const [isAdmin, setIsAdmin] = useState(window.location.hash === adminHash)
   // Visitor auth is memory-only: refresh = re-auth required
   const [visitorAuth, setVisitorAuth] = useState(false)
   const [tokenExpiresAt, setTokenExpiresAt] = useState(null)
@@ -76,10 +77,10 @@ function App() {
   }, [])
 
   useEffect(() => {
-    const onHash = () => setIsAdmin(window.location.hash === '#admin')
+    const onHash = () => setIsAdmin(window.location.hash === adminHash)
     window.addEventListener('hashchange', onHash)
     return () => window.removeEventListener('hashchange', onHash)
-  }, [])
+  }, [adminHash])
 
   if (!cloudReady) {
     return (
@@ -93,7 +94,7 @@ function App() {
     if (!adminAuth) {
       return <AdminLogin onSuccess={() => setAdminAuth(true)} />
     }
-    return <Admin onLogout={() => setAdminAuth(false)} />
+    return <Admin onLogout={() => setAdminAuth(false)} onViewPortfolio={() => { setVisitorAuth(true); window.location.hash = '' }} />
   }
 
   if (!visitorAuth) {

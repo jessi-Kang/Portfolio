@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { verifyAccessToken, recordAccess, loadAuthGateConfig } from '../utils/crypto'
+import { verifyAccessToken, recordAccess, loadAuthGateConfig, ADMIN_PATH } from '../utils/crypto'
 
 export default function AuthGate({ onSuccess }) {
   const [token, setToken] = useState('')
@@ -16,8 +16,8 @@ export default function AuthGate({ onSuccess }) {
 
     await new Promise((r) => setTimeout(r, 300))
 
-    if (token.trim().toLowerCase() === 'admin') {
-      window.location.hash = 'admin'
+    if (token.trim() === `#${ADMIN_PATH}`) {
+      window.location.hash = ADMIN_PATH
       setLoading(false)
       return
     }
@@ -27,7 +27,7 @@ export default function AuthGate({ onSuccess }) {
       recordAccess(result.id, result.label)
       onSuccess(result.expiresAt)
     } else {
-      setError('유효하지 않거나 만료된 접속 코드입니다.')
+      setError('유효하지 않거나 만료된 접속 토큰입니다.')
     }
     setLoading(false)
   }
@@ -93,7 +93,7 @@ export default function AuthGate({ onSuccess }) {
               type="text"
               value={token}
               onChange={(e) => { setToken(e.target.value); setError('') }}
-              placeholder="접속 코드를 입력하세요"
+              placeholder="접속 토큰을 입력하세요"
               autoFocus
               spellCheck={false}
               autoComplete="off"
@@ -133,7 +133,7 @@ export default function AuthGate({ onSuccess }) {
             {config.contactMessage}
           </p>
           <a
-            href={`mailto:${config.contactEmail}?subject=포트폴리오 접속 코드 요청`}
+            href={`mailto:${config.contactEmail}?subject=포트폴리오 접속 토큰 요청`}
             className="inline-flex items-center gap-2 text-accent hover:text-accent-light text-sm font-medium transition-colors"
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>

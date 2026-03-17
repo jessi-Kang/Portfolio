@@ -633,7 +633,7 @@ function TokensSection() {
 
   return (
     <div>
-      <SectionHeader title="접속 토큰" description="방문자에게 발급할 접속 코드를 관리합니다" />
+      <SectionHeader title="접속 토큰" description="방문자에게 발급할 접속 토큰을 관리합니다" />
 
       <div className="bg-gray-900 rounded-xl p-5 mb-6">
         <h3 className="text-sm font-semibold text-accent mb-3">새 토큰 생성</h3>
@@ -817,7 +817,7 @@ const SECTION_MAP = {
   account: AccountSection,
 }
 
-export default function Admin({ onLogout }) {
+export default function Admin({ onLogout, onViewPortfolio }) {
   const [activeSection, setActiveSection] = useState('cases')
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
@@ -854,7 +854,12 @@ export default function Admin({ onLogout }) {
             </div>
           ))}
         </nav>
-        <div className="p-4 border-t border-gray-800">
+        <div className="p-4 border-t border-gray-800 space-y-1">
+          {onViewPortfolio && (
+            <button onClick={onViewPortfolio} className="w-full px-3 py-2 text-sm text-accent hover:bg-accent/10 rounded-lg transition-colors cursor-pointer">
+              포트폴리오 보기
+            </button>
+          )}
           <button onClick={handleLogout} className="w-full px-3 py-2 text-sm text-gray-400 hover:text-red-400 hover:bg-gray-800/50 rounded-lg transition-colors cursor-pointer">
             로그아웃
           </button>
@@ -873,7 +878,10 @@ export default function Admin({ onLogout }) {
             </svg>
           </button>
           <h1 className="text-sm font-bold">관리자</h1>
-          <button onClick={handleLogout} className="text-xs text-gray-400 hover:text-red-400 cursor-pointer">로그아웃</button>
+          <div className="flex items-center gap-3">
+            {onViewPortfolio && <button onClick={onViewPortfolio} className="text-xs text-accent cursor-pointer">보기</button>}
+            <button onClick={handleLogout} className="text-xs text-gray-400 hover:text-red-400 cursor-pointer">로그아웃</button>
+          </div>
         </div>
 
         {mobileMenuOpen && (
