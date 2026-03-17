@@ -26,6 +26,9 @@ jobs:
           node-version: 22
 
       - name: Install and Build
+        env:
+          VITE_ADMIN_SALT: ${{ secrets.VITE_ADMIN_SALT }}
+          VITE_ADMIN_HASH: ${{ secrets.VITE_ADMIN_HASH }}
         run: |
           npm ci
           npm run build
