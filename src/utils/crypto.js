@@ -202,7 +202,7 @@ export function resetAuthGateConfig() {
 
 const RESUME_KEY = 'portfolio_resume_config'
 
-const defaultResumeConfig = {
+export const defaultResumeConfig = {
   education: [
     { school: '', degree: '', period: '' },
   ],
