@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import {
   isAdminSetup,
+  isEnvAdmin,
   setupAdminPasscode,
   verifyAdminPasscode,
   createAdminSession,
@@ -9,6 +10,7 @@ import {
 
 export default function AdminLogin({ onSuccess }) {
   const [isSetup] = useState(isAdminSetup)
+  const envAdmin = isEnvAdmin()
   const [passcode, setPasscode] = useState('')
   const [confirm, setConfirm] = useState('')
   const [error, setError] = useState('')
@@ -65,16 +67,16 @@ export default function AdminLogin({ onSuccess }) {
               </svg>
             </div>
             <h2 className="text-xl font-bold text-white">
-              {isSetup ? 'Admin 로그인' : 'Admin 초기 설정'}
+              {(isSetup || envAdmin) ? 'Admin 로그인' : 'Admin 초기 설정'}
             </h2>
             <p className="text-gray-400 text-sm mt-2">
-              {isSetup
+              {(isSetup || envAdmin)
                 ? '관리자 패스코드를 입력하세요'
                 : '사용할 관리자 패스코드를 설정하세요'}
             </p>
           </div>
 
-          <form onSubmit={isSetup ? handleLogin : handleSetup} className="space-y-4">
+          <form onSubmit={(isSetup || envAdmin) ? handleLogin : handleSetup} className="space-y-4">
             <div>
               <label className="block text-xs text-gray-500 mb-1.5">패스코드</label>
               <input
@@ -88,7 +90,7 @@ export default function AdminLogin({ onSuccess }) {
               />
             </div>
 
-            {!isSetup && (
+            {!isSetup && !envAdmin && (
               <div>
                 <label className="block text-xs text-gray-500 mb-1.5">패스코드 확인</label>
                 <input
@@ -117,7 +119,7 @@ export default function AdminLogin({ onSuccess }) {
               disabled={loading || !passcode}
               className="w-full py-3 bg-red-500 hover:bg-red-400 disabled:bg-gray-700 disabled:text-gray-500 text-white font-medium rounded-lg transition-colors cursor-pointer"
             >
-              {loading ? '처리 중...' : isSetup ? '로그인' : '설정 완료'}
+              {loading ? '처리 중...' : (isSetup || envAdmin) ? '로그인' : '설정 완료'}
             </button>
           </form>
         </div>

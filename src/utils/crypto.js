@@ -41,8 +41,18 @@ function generateSessionId() {
 
 // --- Admin Passcode ---
 
+// Build-time embedded credentials (from .env)
+const ENV_SALT = import.meta.env.VITE_ADMIN_SALT || ''
+const ENV_HASH = import.meta.env.VITE_ADMIN_HASH || ''
+const hasEnvAdmin = !!(ENV_SALT && ENV_HASH)
+
 export function isAdminSetup() {
+  if (hasEnvAdmin) return true
   return !!localStorage.getItem(ADMIN_KEY)
+}
+
+export function isEnvAdmin() {
+  return hasEnvAdmin
 }
 
 export async function setupAdminPasscode(passcode) {
@@ -52,6 +62,12 @@ export async function setupAdminPasscode(passcode) {
 }
 
 export async function verifyAdminPasscode(passcode) {
+  // Check env-embedded credentials first
+  if (hasEnvAdmin) {
+    const attempt = await deriveKey(passcode, ENV_SALT)
+    if (attempt === ENV_HASH) return true
+  }
+  // Fallback to localStorage
   const stored = localStorage.getItem(ADMIN_KEY)
   if (!stored) return false
   const { salt, hash } = JSON.parse(stored)
@@ -77,6 +93,11 @@ export function isAdminSessionValid() {
 }
 
 export function clearAdminSession() {
+  sessionStorage.removeItem(ADMIN_SESSION_KEY)
+}
+
+export function resetAdminPasscode() {
+  localStorage.removeItem(ADMIN_KEY)
   sessionStorage.removeItem(ADMIN_SESSION_KEY)
 }
 

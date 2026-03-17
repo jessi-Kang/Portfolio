@@ -20,6 +20,10 @@ import {
   saveContactConfig,
   resetContactConfig,
   clearAdminSession,
+  setupAdminPasscode,
+  verifyAdminPasscode,
+  resetAdminPasscode,
+  isEnvAdmin,
 } from '../utils/crypto'
 
 /* ─── Navigation ─── */
@@ -36,6 +40,9 @@ const NAV_ITEMS = [
   ]},
   { group: '접속 관리', items: [
     { id: 'tokens', label: '토큰', icon: '🎫' },
+  ]},
+  { group: '설정', items: [
+    { id: 'account', label: '관리자 계정', icon: '⚙️' },
   ]},
 ]
 
@@ -687,6 +694,111 @@ function TokensSection() {
   )
 }
 
+/* ─── Account Section ─── */
+
+function AccountSection({ onLogout }) {
+  const envAdmin = isEnvAdmin()
+  const [currentPw, setCurrentPw] = useState('')
+  const [newPw, setNewPw] = useState('')
+  const [confirmPw, setConfirmPw] = useState('')
+  const [error, setError] = useState('')
+  const [toast, setToast] = useState('')
+  const [loading, setLoading] = useState(false)
+
+  const flash = (msg) => { setToast(msg); setTimeout(() => setToast(''), 2000) }
+
+  const handleChangePassword = async (e) => {
+    e.preventDefault()
+    setError('')
+
+    if (!currentPw) { setError('현재 패스코드를 입력하세요'); return }
+    if (newPw.length < 8) { setError('새 패스코드는 최소 8자 이상이어야 합니다'); return }
+    if (newPw !== confirmPw) { setError('새 패스코드가 일치하지 않습니다'); return }
+
+    setLoading(true)
+    const ok = await verifyAdminPasscode(currentPw)
+    if (!ok) { setError('현재 패스코드가 일치하지 않습니다'); setLoading(false); return }
+
+    await setupAdminPasscode(newPw)
+    setCurrentPw('')
+    setNewPw('')
+    setConfirmPw('')
+    flash('패스코드 변경 완료')
+    setLoading(false)
+  }
+
+  const handleResetAccount = async () => {
+    if (!confirm('관리자 계정을 초기화하시겠습니까?\n초기화 후 다시 패스코드를 설정해야 합니다.')) return
+    resetAdminPasscode()
+    onLogout()
+  }
+
+  return (
+    <div>
+      <SectionHeader title="관리자 계정" description="패스코드 변경 및 계정 초기화" />
+
+      <div className="max-w-md space-y-6">
+        {envAdmin && (
+          <div className="bg-green-500/10 border border-green-500/30 rounded-xl p-4">
+            <p className="text-green-400 text-sm font-medium">빌드타임 인증 활성</p>
+            <p className="text-gray-400 text-xs mt-1">환경변수(VITE_ADMIN_SALT, VITE_ADMIN_HASH)로 관리자 인증이 설정되어 있습니다. 패스코드 변경은 .env 파일을 수정한 후 다시 빌드하세요.</p>
+            <p className="text-gray-500 text-xs mt-2 font-mono">node scripts/gen-admin-hash.mjs</p>
+          </div>
+        )}
+
+        {!envAdmin && (
+          <>
+            <div className="bg-gray-900 rounded-xl p-5">
+              <h3 className="text-sm font-semibold text-accent mb-4">패스코드 변경</h3>
+              <form onSubmit={handleChangePassword} className="space-y-3">
+                <div>
+                  <label className="block text-xs text-gray-500 mb-1">현재 패스코드</label>
+                  <input type="password" value={currentPw} onChange={(e) => { setCurrentPw(e.target.value); setError('') }} autoComplete="current-password"
+                    className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-accent transition-colors" />
+                </div>
+                <div>
+                  <label className="block text-xs text-gray-500 mb-1">새 패스코드</label>
+                  <input type="password" value={newPw} onChange={(e) => { setNewPw(e.target.value); setError('') }} placeholder="8자 이상" autoComplete="new-password"
+                    className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-accent transition-colors" />
+                </div>
+                <div>
+                  <label className="block text-xs text-gray-500 mb-1">새 패스코드 확인</label>
+                  <input type="password" value={confirmPw} onChange={(e) => { setConfirmPw(e.target.value); setError('') }} autoComplete="new-password"
+                    className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-accent transition-colors" />
+                </div>
+                {error && <p className="text-red-400 text-sm">{error}</p>}
+                <button type="submit" disabled={loading}
+                  className="px-4 py-2 bg-accent hover:bg-accent-light disabled:bg-gray-700 text-white text-sm font-medium rounded-lg transition-colors cursor-pointer">
+                  {loading ? '처리 중...' : '패스코드 변경'}
+                </button>
+              </form>
+            </div>
+
+            <div className="bg-gray-900 rounded-xl p-5">
+              <h3 className="text-sm font-semibold text-red-400 mb-2">계정 초기화</h3>
+              <p className="text-xs text-gray-500 mb-4">관리자 계정을 완전히 삭제합니다. 초기화 후 새 패스코드를 다시 설정해야 합니다.</p>
+              <button onClick={handleResetAccount}
+                className="px-4 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 text-sm rounded-lg transition-colors cursor-pointer">
+                계정 초기화
+              </button>
+            </div>
+          </>
+        )}
+
+        {!envAdmin && (
+          <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-4">
+            <p className="text-yellow-400 text-sm font-medium">보안 권장사항</p>
+            <p className="text-gray-400 text-xs mt-1">현재 로컬 스토리지 기반 인증입니다. 보안 강화를 위해 빌드타임 인증으로 전환하세요:</p>
+            <p className="text-gray-500 text-xs mt-2 font-mono">node scripts/gen-admin-hash.mjs</p>
+            <p className="text-gray-500 text-xs">생성된 값을 .env에 추가 후 재빌드</p>
+          </div>
+        )}
+      </div>
+      <Toast message={toast} />
+    </div>
+  )
+}
+
 /* ─── Main Admin ─── */
 
 const SECTION_MAP = {
@@ -696,6 +808,7 @@ const SECTION_MAP = {
   authgate: AuthGateSection,
   contact: ContactSection,
   tokens: TokensSection,
+  account: AccountSection,
 }
 
 export default function Admin({ onLogout }) {
@@ -705,6 +818,7 @@ export default function Admin({ onLogout }) {
   const handleLogout = () => { clearAdminSession(); onLogout() }
 
   const ActiveComponent = SECTION_MAP[activeSection]
+  const sectionProps = activeSection === 'account' ? { onLogout: handleLogout } : {}
 
   return (
     <div className="min-h-screen bg-gray-950 text-white flex">
@@ -781,7 +895,7 @@ export default function Admin({ onLogout }) {
 
       {/* Main Content */}
       <main className="flex-1 min-w-0 p-6 md:p-8 pt-20 md:pt-8 max-w-5xl">
-        <ActiveComponent />
+        <ActiveComponent {...sectionProps} />
       </main>
     </div>
   )
