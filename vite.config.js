@@ -1,5 +1,25 @@
-import { defineConfig, loadEnv } from 'vite'
+import { readFileSync } from 'fs'
+import { resolve } from 'path'
+import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+
+// Load .env manually so non-VITE_ vars (like ANTHROPIC_API_KEY) are available
+function loadDotEnv() {
+  try {
+    const envPath = resolve(process.cwd(), '.env')
+    const content = readFileSync(envPath, 'utf-8')
+    for (const line of content.split('\n')) {
+      const trimmed = line.trim()
+      if (!trimmed || trimmed.startsWith('#')) continue
+      const eqIdx = trimmed.indexOf('=')
+      if (eqIdx === -1) continue
+      const key = trimmed.slice(0, eqIdx).trim()
+      const value = trimmed.slice(eqIdx + 1).trim()
+      if (!process.env[key]) process.env[key] = value
+    }
+  } catch {}
+}
+loadDotEnv()
 
 // Dev-only middleware to proxy /api/translate to Claude API
 function translatePlugin() {
@@ -62,13 +82,7 @@ function translatePlugin() {
   }
 }
 
-export default defineConfig(({ mode }) => {
-  // Load .env so ANTHROPIC_API_KEY is available in dev middleware
-  const env = loadEnv(mode, process.cwd(), '')
-  Object.assign(process.env, env)
-
-  return {
-    base: process.env.VITE_BASE_PATH || '/',
-    plugins: [react(), translatePlugin()],
-  }
+export default defineConfig({
+  base: process.env.VITE_BASE_PATH || '/',
+  plugins: [react(), translatePlugin()],
 })
