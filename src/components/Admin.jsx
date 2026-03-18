@@ -61,8 +61,12 @@ function AutoTextarea({ value, onChange, minRows = 2, className = '' }) {
   const resize = useCallback(() => {
     const el = ref.current
     if (!el) return
+    // Save scroll position to prevent jump
+    const scrollY = window.scrollY
     el.style.height = 'auto'
     el.style.height = el.scrollHeight + 'px'
+    // Restore scroll position
+    window.scrollTo(0, scrollY)
   }, [])
   useEffect(() => { resize() }, [value, resize])
   return (
@@ -359,7 +363,7 @@ function HeroSection() {
         <SaveButton onClick={handleSave} />
         <ResetButton onClick={handleReset} />
       </ActionBar>
-      <div className="space-y-4 max-w-2xl">
+      <div className="space-y-4 max-w-4xl">
         <Field label="태그라인" value={config.tagline} onChange={(v) => update('tagline', v)} />
         <Field label="헤드라인" value={config.headline} onChange={(v) => update('headline', v)} />
         <Field label="서브타이틀" value={config.subtitle} onChange={(v) => update('subtitle', v)} rows={2} />
@@ -389,7 +393,7 @@ function AuthGateSection() {
         <SaveButton onClick={handleSave} />
         <ResetButton onClick={handleReset} />
       </ActionBar>
-      <div className="space-y-4 max-w-2xl">
+      <div className="space-y-4 max-w-4xl">
         <Field label="태그라인" value={config.tagline} onChange={(v) => update('tagline', v)} />
         <Field label="헤드라인 (줄바꿈: \\n)" value={config.headline} onChange={(v) => update('headline', v)} />
         <Field label="서브타이틀" value={config.subtitle} onChange={(v) => update('subtitle', v)} />
@@ -422,7 +426,7 @@ function ContactSection() {
         <SaveButton onClick={handleSave} />
         <ResetButton onClick={handleReset} />
       </ActionBar>
-      <div className="space-y-4 max-w-2xl">
+      <div className="space-y-4 max-w-4xl">
         <Field label="제목" value={config.heading} onChange={(v) => update('heading', v)} />
         <Field label="메시지" value={config.message} onChange={(v) => update('message', v)} rows={2} />
         <Field label="이메일" value={config.email} onChange={(v) => update('email', v)} />
@@ -708,22 +712,22 @@ function ProjectsSection() {
             <Field label="그룹 부제" value={group.subtitle} onChange={(v) => { const g = [...data.groups]; g[gi] = { ...group, subtitle: v }; setData({ ...data, groups: g }) }} />
             <p className="text-xs text-gray-600">프로젝트 {group.projects?.length || 0}개</p>
             {group.projects?.map((p, pi) => (
-              <div key={pi} className="bg-gray-800/50 rounded-lg p-3 space-y-2">
+              <div key={pi} className="bg-gray-800/50 rounded-lg p-4 space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium text-white truncate">{p.title || '새 프로젝트'}</span>
                   <button onClick={() => { const g = [...data.groups]; g[gi] = { ...group, projects: group.projects.filter((_, i) => i !== pi) }; setData({ ...data, groups: g }) }} className="text-xs text-red-400 cursor-pointer">✕</button>
                 </div>
-                <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
                   <Field label="배지" value={p.badge || ''} onChange={(v) => { const g = [...data.groups]; g[gi].projects[pi] = { ...p, badge: v }; setData({ ...data, groups: g }) }} />
                   <Field label="배지타입(ai/data/ux/ops)" value={p.badgeType || ''} onChange={(v) => { const g = [...data.groups]; g[gi].projects[pi] = { ...p, badgeType: v }; setData({ ...data, groups: g }) }} />
                   <Field label="제목" value={p.title || ''} onChange={(v) => { const g = [...data.groups]; g[gi].projects[pi] = { ...p, title: v }; setData({ ...data, groups: g }) }} />
                   <Field label="부제" value={p.subtitle || ''} onChange={(v) => { const g = [...data.groups]; g[gi].projects[pi] = { ...p, subtitle: v }; setData({ ...data, groups: g }) }} />
                 </div>
-                <Field label="문제 정의" value={p.problem || ''} onChange={(v) => { const g = [...data.groups]; g[gi].projects[pi] = { ...p, problem: v }; setData({ ...data, groups: g }) }} rows={2} />
-                <Field label="해결 방안" value={p.solution || ''} onChange={(v) => { const g = [...data.groups]; g[gi].projects[pi] = { ...p, solution: v }; setData({ ...data, groups: g }) }} rows={2} />
-                <Field label="이해관계자 협업" value={p.collaboration || ''} onChange={(v) => { const g = [...data.groups]; g[gi].projects[pi] = { ...p, collaboration: v }; setData({ ...data, groups: g }) }} rows={2} />
-                <Field label="최종 결과" value={p.result || ''} onChange={(v) => { const g = [...data.groups]; g[gi].projects[pi] = { ...p, result: v }; setData({ ...data, groups: g }) }} rows={2} />
-                <Field label="인사이트" value={p.insight || ''} onChange={(v) => { const g = [...data.groups]; g[gi].projects[pi] = { ...p, insight: v }; setData({ ...data, groups: g }) }} rows={2} />
+                <Field label="문제 정의" value={p.problem || ''} onChange={(v) => { const g = [...data.groups]; g[gi].projects[pi] = { ...p, problem: v }; setData({ ...data, groups: g }) }} rows={3} />
+                <Field label="해결 방안" value={p.solution || ''} onChange={(v) => { const g = [...data.groups]; g[gi].projects[pi] = { ...p, solution: v }; setData({ ...data, groups: g }) }} rows={3} />
+                <Field label="이해관계자 협업" value={p.collaboration || ''} onChange={(v) => { const g = [...data.groups]; g[gi].projects[pi] = { ...p, collaboration: v }; setData({ ...data, groups: g }) }} rows={3} />
+                <Field label="최종 결과" value={p.result || ''} onChange={(v) => { const g = [...data.groups]; g[gi].projects[pi] = { ...p, result: v }; setData({ ...data, groups: g }) }} rows={3} />
+                <Field label="인사이트" value={p.insight || ''} onChange={(v) => { const g = [...data.groups]; g[gi].projects[pi] = { ...p, insight: v }; setData({ ...data, groups: g }) }} rows={3} />
               </div>
             ))}
             <button onClick={() => { const g = [...data.groups]; g[gi] = { ...group, projects: [...(group.projects || []), { id: `p-${Date.now()}`, badge: '', badgeType: 'ai', title: '', subtitle: '', problem: '', solution: '', collaboration: '', result: '', insight: '', metrics: [], highlights: [], fullWidth: false }] }; setData({ ...data, groups: g }) }} className="text-xs text-accent hover:text-accent-light cursor-pointer">+ 프로젝트 추가</button>
@@ -767,7 +771,7 @@ function AboutSection() {
         <SaveButton onClick={handleSave} />
         <ResetButton onClick={handleReset} />
       </ActionBar>
-      <div className="space-y-4 max-w-2xl">
+      <div className="space-y-4 max-w-4xl">
         <Field label="섹션 헤딩" value={config.heading || ''} onChange={(v) => update('heading', v)} rows={2} />
         <div>
           <label className="block text-xs text-gray-500 mb-1">바이오 (마크다운)</label>
@@ -959,7 +963,7 @@ export default function Admin({ onLogout, onViewPortfolio }) {
       </div>
 
       {/* Main Content */}
-      <main className="flex-1 min-w-0 p-6 md:p-8 pt-20 md:pt-8 max-w-5xl">
+      <main className="flex-1 min-w-0 p-6 md:p-8 pt-20 md:pt-8">
         <ActiveComponent {...sectionProps} />
       </main>
     </div>

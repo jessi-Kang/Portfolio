@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { motion } from 'framer-motion'
 
 const BADGE_STYLES = {
   ai: 'bg-emerald-500/10 text-emerald-400',
@@ -10,10 +9,10 @@ const BADGE_STYLES = {
 }
 
 const TABS = [
-  { key: 'problem', label: 'Problem', color: 'text-red-400', activeBg: 'bg-red-400/10', border: 'border-red-400/40' },
-  { key: 'solution', label: 'Solution', color: 'text-blue-400', activeBg: 'bg-blue-400/10', border: 'border-blue-400/40' },
-  { key: 'collaboration', label: 'Collab', color: 'text-purple-400', activeBg: 'bg-purple-400/10', border: 'border-purple-400/40' },
-  { key: 'result', label: 'Result', color: 'text-accent', activeBg: 'bg-accent/10', border: 'border-accent/40' },
+  { key: 'problem', label: 'Problem', color: 'text-gray-200', activeBg: 'bg-gray-800', border: 'border-gray-600' },
+  { key: 'solution', label: 'Solution', color: 'text-gray-200', activeBg: 'bg-gray-800', border: 'border-gray-600' },
+  { key: 'collaboration', label: 'Collab', color: 'text-gray-200', activeBg: 'bg-gray-800', border: 'border-gray-600' },
+  { key: 'result', label: 'Result', color: 'text-gray-200', activeBg: 'bg-gray-800', border: 'border-gray-600' },
 ]
 
 function StoryTabs({ project }) {
@@ -44,7 +43,7 @@ function StoryTabs({ project }) {
       </div>
 
       {/* Tab content */}
-      <p className={`text-sm md:text-[15px] leading-relaxed ${currentTab.color.replace('/80', '')} opacity-90`}>
+      <p className="text-sm md:text-[15px] leading-relaxed text-gray-300">
         {project[active]}
       </p>
     </div>
@@ -56,11 +55,7 @@ export default function ProjectCard({ project }) {
   const hasStory = project.problem || project.solution || project.collaboration || project.result
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.4 }}
+    <div
       className={`bg-gray-900 border border-gray-800 rounded-2xl p-5 md:p-6 hover:border-accent/40 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-accent/5 ${
         project.fullWidth ? 'col-span-full' : ''
       }`}
@@ -118,6 +113,6 @@ export default function ProjectCard({ project }) {
           ))}
         </div>
       )}
-    </motion.div>
+    </div>
   )
 }

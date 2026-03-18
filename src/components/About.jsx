@@ -38,16 +38,16 @@ export default function About() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className="flex flex-col sm:flex-row gap-6 sm:gap-8 items-start mb-8"
+          className="flex flex-col sm:flex-row gap-6 sm:gap-8 items-stretch mb-8"
         >
           <img
             src="/profile.jpg"
             alt="Profile"
-            className="w-36 h-36 md:w-44 md:h-44 rounded-2xl object-cover shrink-0 border border-gray-800"
+            className="w-36 sm:w-44 md:w-48 rounded-2xl object-cover shrink-0 border border-gray-800 self-start sm:self-stretch"
             onError={(e) => { e.target.style.display = 'none' }}
           />
           {config.bio && (
-            <div className="prose-dark flex-1">
+            <div className="prose-dark flex-1 flex items-center">
               <MarkdownRenderer content={config.bio} />
             </div>
           )}
