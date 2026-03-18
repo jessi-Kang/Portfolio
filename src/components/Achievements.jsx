@@ -16,10 +16,10 @@ export default function Achievements() {
         {config.items.map((item, i) => (
           <div
             key={i}
-            className="flex items-start gap-4 bg-gray-900 border border-gray-800 rounded-2xl p-5 md:p-6 hover:border-accent/40 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-accent/5"
+            className="flex items-start gap-3 md:gap-4 bg-gray-900 border border-gray-800 rounded-2xl p-5 md:p-6 hover:border-accent/40 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-accent/5"
           >
             <div
-              className="w-12 h-12 rounded-xl flex items-center justify-center text-xl shrink-0"
+              className="w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center text-lg md:text-xl shrink-0"
               style={{ background: item.iconBg || '#1f2937' }}
             >
               {item.icon}

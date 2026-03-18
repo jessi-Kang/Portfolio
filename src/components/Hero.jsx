@@ -58,7 +58,7 @@ export default function Hero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.55 }}
-          className="mt-10 flex gap-8 md:gap-12 flex-wrap justify-center"
+          className="mt-10 flex gap-6 md:gap-12 flex-wrap justify-center"
         >
           {stats.map((stat, i) => (
             <div key={i} className="text-center">

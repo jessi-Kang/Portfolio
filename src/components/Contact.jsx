@@ -15,7 +15,7 @@ export default function Contact() {
         {config.email && (
           <a
             href={`mailto:${config.email}`}
-            className="px-6 py-3 border border-gray-700 hover:border-accent rounded-full text-gray-300 hover:text-accent transition-colors"
+            className="px-4 py-2.5 md:px-6 md:py-3 border border-gray-700 hover:border-accent rounded-full text-sm md:text-base text-gray-300 hover:text-accent transition-colors max-w-full truncate"
           >
             {config.email}
           </a>
@@ -25,7 +25,7 @@ export default function Contact() {
             href={config.linkedinUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="px-6 py-3 border border-gray-700 hover:border-accent rounded-full text-gray-300 hover:text-accent transition-colors"
+            className="px-4 py-2.5 md:px-6 md:py-3 border border-gray-700 hover:border-accent rounded-full text-sm md:text-base text-gray-300 hover:text-accent transition-colors"
           >
             {config.linkedinLabel || 'LinkedIn'}
           </a>
