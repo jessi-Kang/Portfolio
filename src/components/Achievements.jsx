@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { motion } from 'framer-motion'
 import SectionWrapper from './ui/SectionWrapper'
 import { loadAchievementsConfig } from '../utils/crypto'
 
@@ -11,27 +10,25 @@ export default function Achievements() {
   return (
     <SectionWrapper id="achievements">
       <p className="text-accent text-xs font-mono tracking-widest uppercase mb-2">Key Achievements</p>
-      <h2 className="text-2xl md:text-3xl font-bold mb-12">핵심 성과</h2>
+      <h2 className="text-2xl md:text-3xl font-bold mb-10">핵심 성과</h2>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 max-w-4xl mx-auto">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto">
         {config.items.map((item, i) => (
-          <motion.div
+          <div
             key={i}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.4, delay: i * 0.06 }}
-            className="bg-gray-900 border border-gray-800 rounded-xl p-4 md:p-5 hover:border-gray-700 transition-colors"
+            className="flex items-start gap-4 bg-gray-900 border border-gray-800 rounded-2xl p-5 md:p-6 hover:border-accent/40 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-accent/5"
           >
             <div
-              className="w-10 h-10 rounded-lg flex items-center justify-center text-lg mb-3"
+              className="w-12 h-12 rounded-xl flex items-center justify-center text-xl shrink-0"
               style={{ background: item.iconBg || '#1f2937' }}
             >
               {item.icon}
             </div>
-            <h4 className="text-sm font-bold text-white mb-1.5 leading-snug">{item.title}</h4>
-            <p className="text-xs text-gray-500 leading-relaxed">{item.description}</p>
-          </motion.div>
+            <div className="flex-1 min-w-0">
+              <h4 className="text-base font-bold text-white mb-1 leading-snug">{item.title}</h4>
+              <p className="text-sm text-gray-400 leading-relaxed">{item.description}</p>
+            </div>
+          </div>
         ))}
       </div>
     </SectionWrapper>

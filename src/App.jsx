@@ -118,9 +118,9 @@ function App() {
       <Hero />
       <About />
       <Journey />
+      <Achievements />
       <Projects />
       <Experience />
-      <Achievements />
       <Resume />
       <Contact />
       <ScrollToTop />
