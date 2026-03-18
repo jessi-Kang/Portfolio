@@ -2,15 +2,14 @@ import { motion } from 'framer-motion'
 import SectionWrapper from './ui/SectionWrapper'
 
 const JOURNEY = [
-  { year: '2011', role: 'UX Designer', org: 'SK planet', field: 'UX Design', color: '#6366f1' },
-  { year: '2013', role: 'UX Researcher', org: 'Coupang', field: 'UX Research', color: '#8b5cf6' },
-  { year: '2014', role: 'Founder', org: 'Studio April Rain', field: 'Startup', color: '#a78bfa' },
-  { year: '2015', role: 'UX Planner', org: 'Yello Travel', field: 'UX Planning', color: '#818cf8' },
-  { year: '2016', role: 'PO / UX', org: 'NHN edu', field: 'Product Ownership', color: '#60a5fa' },
-  { year: '2018', role: 'PM / UX', org: '29CM', field: 'Product Management', color: '#38bdf8' },
-  { year: '2020', role: 'PM / PO', org: 'LINE+ (Demaecan)', field: 'Delivery · Ops', color: '#2dd4bf' },
-  { year: '2024', role: 'PM', org: 'LINE+ (Wallet)', field: 'ML · A/B Test', color: '#34d399' },
-  { year: '2025', role: 'PM', org: 'LINE+ (AI Friends)', field: 'AI · Product', color: '#4ade80' },
+  { year: '2011', org: 'SK Planet', field: '위치기반 광고', color: '#6366f1' },
+  { year: '2013', org: 'Coupang', field: '쇼핑 서비스', color: '#8b5cf6' },
+  { year: '2015', org: 'Yello Travel', field: '여행', color: '#818cf8' },
+  { year: '2016', org: 'NHN EDU', field: '교육', color: '#60a5fa' },
+  { year: '2018', org: '29CM', field: '패션 · 쇼핑', color: '#38bdf8' },
+  { year: '2020', org: 'LINE Demaecan', field: '물류 (ML)', color: '#2dd4bf' },
+  { year: '2024', org: 'LINE Wallet', field: '추천 모델 (ML)', color: '#34d399' },
+  { year: '2025', org: 'LINE AI Friend', field: 'AI', color: '#4ade80' },
 ]
 
 export default function Journey() {
@@ -39,15 +38,12 @@ export default function Journey() {
               <span className="text-xs font-mono text-gray-500 shrink-0">{item.year}</span>
               <span className="text-sm font-semibold text-white">{item.org}</span>
             </div>
-            <div className="flex items-center gap-2 mt-0.5">
-              <span
-                className="text-[10px] font-medium px-2 py-0.5 rounded-full"
-                style={{ backgroundColor: item.color + '18', color: item.color }}
-              >
-                {item.field}
-              </span>
-              <span className="text-xs text-gray-500">{item.role}</span>
-            </div>
+            <span
+              className="text-[10px] font-medium px-2 py-0.5 rounded-full inline-block mt-0.5"
+              style={{ backgroundColor: item.color + '18', color: item.color }}
+            >
+              {item.field}
+            </span>
           </motion.div>
         ))}
       </div>
