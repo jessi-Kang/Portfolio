@@ -156,7 +156,13 @@ export const defaultProjects = {
 export function loadProjects() {
   try {
     const saved = localStorage.getItem(STORAGE_KEY)
-    if (saved) return JSON.parse(saved)
+    if (saved) {
+      const parsed = JSON.parse(saved)
+      // Validate structure: must have groups array with at least one project
+      if (parsed?.groups?.length > 0 && parsed.groups.some((g) => g.projects?.some((p) => p.title))) {
+        return parsed
+      }
+    }
   } catch (e) {
     // ignore
   }
