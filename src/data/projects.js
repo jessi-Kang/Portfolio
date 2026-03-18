@@ -6,7 +6,7 @@ export const defaultProjects = {
   groups: [
     {
       title: 'LINE AI Friends',
-      subtitle: 'AI 캐릭터 대화 서비스 | Product Management | 2025.10 ~ 현재',
+      subtitle: 'AI 캐릭터 대화 서비스 | Product Management | 2024.10 ~ 현재',
       projects: [
         {
           id: 'conversation-quality',
@@ -30,16 +30,16 @@ export const defaultProjects = {
         },
         {
           id: 'service-ops',
-          badge: 'OPS · POLICY',
+          badge: 'OPS · STRATEGY',
           badgeType: 'ops',
-          title: '서비스 운영 체계 구축',
-          subtitle: '정책 수립 · CMS 설계 · 실험 체계 · IP 협업 프레임워크',
-          problem: '서비스 확장 과정에서 운영 기준이 부재하여 개발·운영·QA 간 의사결정이 지연되고 있었습니다.',
-          solution: 'Chat·Currency·Review 3대 정책, 100건 단위 일괄 심사 CMS, 주간 PoC 실험 체계, IP 캐릭터 협업 프레임워크를 체계적으로 구축했습니다.',
-          collaboration: '개발·운영·QA·법무팀과 함께 정책을 정의하고, 외부 IP 소속사와 골든셋 평가 기준(Fact Accuracy 95%↑, Hallucination Rate 5%↓)을 합의했습니다.',
-          result: '전체 조직이 참조하는 운영 표준을 확립하고, 주간 실험 사이클로 빠른 가설 검증이 가능해졌습니다.',
+          title: '서비스 전략 수립 및 운영 체계 구축',
+          subtitle: '로드맵 설계 · 정책 수립 · 리텐션 전략 · IP 협업 · AI 캐릭터 보호 시책',
+          problem: '서비스 확장 과정에서 운영 기준이 부재하여 의사결정이 지연되고, 리텐션 향상을 위한 체계적 전략이 필요했습니다.',
+          solution: '3개월 집중 실행 로드맵(10개+ 트랙 병행 관리)과 2026 상반기 로드맵을 설계. Chat·Currency·Review 3대 정책, 주간 PoC 실험 체계, IP 협업 프레임워크를 구축하고, 31개 이상의 리텐션 개선 아이디어를 설계·우선순위화했습니다.',
+          collaboration: '개발·운영·QA·법무팀과 정책을 정의하고, 외부 IP 소속사와 골든셋 평가 기준(Fact Accuracy 95%↑, Hallucination Rate 5%↓)을 합의. AI 캐릭터 보호 시책을 기획했습니다.',
+          result: '전체 조직이 참조하는 운영 표준을 확립하고, 주간 실험 사이클로 빠른 가설 검증이 가능해졌습니다. 한국/대만/태국 시장 확대 로컬라이제이션 전략을 수립했습니다.',
           insight: '초기 단계 서비스일수록 명확한 운영 기준이 속도를 높입니다. 정책 문서화는 비용이 아니라 투자입니다.',
-          metrics: ['3대 정책', 'CMS 설계', '주간 실험', 'IP 프레임워크'],
+          metrics: ['10개+ 트랙 병행', '31개 리텐션 아이디어', '3대 정책', 'IP 프레임워크'],
           highlights: [],
           fullWidth: true,
         },
