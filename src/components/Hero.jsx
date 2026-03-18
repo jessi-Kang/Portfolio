@@ -84,7 +84,7 @@ export default function Hero() {
               onClick={() => scrollTo('projects')}
               className="px-8 py-3 bg-accent hover:bg-accent-light text-white font-medium rounded-full transition-colors cursor-pointer"
             >
-              {hero.ctaText}
+              Projects
             </motion.button>
           )}
           {hasResume && (
@@ -94,7 +94,7 @@ export default function Hero() {
               onClick={() => scrollTo('experience')}
               className="px-8 py-3 border border-gray-700 hover:border-accent text-gray-300 hover:text-accent font-medium rounded-full transition-colors cursor-pointer"
             >
-              Resume
+              Experience
             </motion.button>
           )}
         </motion.div>

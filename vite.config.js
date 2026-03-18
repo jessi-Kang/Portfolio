@@ -1,4 +1,4 @@
-import { defineConfig } from 'vite'
+import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 
 // Dev-only middleware to proxy /api/translate to Claude API
@@ -62,7 +62,13 @@ function translatePlugin() {
   }
 }
 
-export default defineConfig({
-  base: process.env.VITE_BASE_PATH || '/',
-  plugins: [react(), translatePlugin()],
+export default defineConfig(({ mode }) => {
+  // Load .env so ANTHROPIC_API_KEY is available in dev middleware
+  const env = loadEnv(mode, process.cwd(), '')
+  Object.assign(process.env, env)
+
+  return {
+    base: process.env.VITE_BASE_PATH || '/',
+    plugins: [react(), translatePlugin()],
+  }
 })

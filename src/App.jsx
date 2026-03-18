@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Hero from './components/Hero'
 import About from './components/About'
+import Journey from './components/Journey'
 import Projects from './components/Projects'
 import Experience from './components/Experience'
 import Achievements from './components/Achievements'
@@ -120,6 +121,7 @@ function App() {
         <LanguageSwitcher />
         <Hero />
         <About />
+        <Journey />
         <Projects />
         <Experience />
         <Achievements />
