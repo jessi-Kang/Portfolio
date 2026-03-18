@@ -113,7 +113,7 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-950 text-gray-100 font-sans snap-y snap-proximity">
+    <div className="min-h-screen bg-gray-950 text-gray-100 font-sans">
       <TokenExpiryBanner expiresAt={tokenExpiresAt} />
       <Hero />
       <About />

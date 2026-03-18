@@ -28,10 +28,10 @@ export default function Journey() {
         {JOURNEY.map((item, i) => (
           <motion.div
             key={i}
-            initial={{ opacity: i <= 1 ? 0 : 0.25, x: -16 }}
+            initial={{ opacity: i <= 1 ? 0 : 0.15, x: -16 }}
             whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, amount: 0.5 }}
-            transition={{ duration: 0.4, delay: i <= 1 ? i * 0.04 : 0 }}
+            viewport={{ once: true, amount: 0.4 }}
+            transition={{ duration: i <= 1 ? 0.4 : 0.8 + i * 0.05, delay: i <= 1 ? i * 0.04 : 0, ease: 'easeOut' }}
             className="relative pl-9 py-3"
           >
             {/* Dot */}

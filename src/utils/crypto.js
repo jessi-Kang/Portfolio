@@ -235,13 +235,55 @@ const RESUME_KEY = 'portfolio_resume_config'
 
 export const defaultResumeConfig = {
   education: [
-    { school: '', degree: '', period: '' },
+    { school: '홍익대학교', degree: '디지털미디어디자인 학사 (GPA 3.49/4.5)', period: '2007.03 ~ 2012.02' },
   ],
   work: [
-    { company: '', title: '', period: '', description: '' },
+    {
+      company: 'LINE+ Corporation',
+      title: 'PO / PM / UX 기획 | ABC Studio, Wallet Platform Plan',
+      period: '2020.06 ~ 현재',
+      description: '**AI Friends** (2024.10~현재) — LLM 기반 AI 캐릭터 대화 서비스 PM. 대화 품질 PoC로 DAU +81.8%, 심사 적체 59,277건 전건 해소(974만엔 절감), 2026 상반기 로드맵 수립\n\n**Wallet Chirashi/GetPoint** (2024.02~2025.09) — ML 추천 모델(FROST30) A/B 테스트 설계·검증. CTR +34.6%, UU CTR +81.2%\n\n**Demaecan Delivery** (2021.03~2022.12) — 배달 프로덕트 전면 리뉴얼(35명). 배달시간 34.8→27.9분, 자동화 0→95%, 운영인력 200→10명\n\n**Demaecan Consumer** (2023.01~2023.04) — Consumer App·Web 리뉴얼 전략 수립, CXO 합의 도출\n\n**PollWIKI / VVID** (2020.06~2021.07) — 서비스 기획 및 Pivot 방향 수립, Clova AI Studio 활용 기능 설계',
+    },
+    {
+      company: '29CM (AplusB)',
+      title: 'PM / UX 기획 | Service Lab.',
+      period: '2018.12 ~ 2020.06',
+      description: '**첫 구매 쿠폰 개선** — App 주문건수 일평균 681% 증가(58→453건), 전체 쿠폰 사용률 280% 증가, 첫 구매 고객수 13% 증가\n\n**회원 인증 추가** — 본인인증 도입으로 20만명 인증 수집, 어뷰징 유저 탐지(동일 DI 58개 계정), 주문 37만건 정보 정제\n\n**멤버십·쿠폰함 개선** — 멤버십 혜택 구조 재설계, 쿠폰함 UX 개선, 상품 상세 가격 노출 개선 등',
+    },
+    {
+      company: 'NHN edu',
+      title: 'PO / UX 기획 | 서비스 기획팀',
+      period: '2016.09 ~ 2018.11',
+      description: '**아이엠스쿨 S-CAT** 신규 서비스 기획·설계, 앱 전체 개편(더보기 메뉴)\n\n**아이엠티처** Today·회원페이지·자료실 기획\n\nMobile App 평점 하락 대응 기획 → 앱 평점 상승, User Feedback 수집 체계 설계',
+    },
+    {
+      company: 'Yello Travel',
+      title: 'Manager / UX 기획 | UX팀',
+      period: '2015.04 ~ 2016.04',
+      description: '우리펜션 Web Front·Back Office·펜션주 Admin 설계\n\n우리펜션 Mobile App 및 제주닷컴 Web Renewal PM',
+    },
+    {
+      company: 'Studio April Rain',
+      title: '대표 (1인 창업)',
+      period: '2014.02 ~ 2015.03',
+      description: '아티스트-상품 제작자 중개 B2B/B2C 플랫폼 기획·운영\n\n서울시 창업지원 프로그램 \'챌린지 1000 프로젝트\' 6기 선발',
+    },
+    {
+      company: 'Coupang',
+      title: 'UX Design | UX Lab.',
+      period: '2013.06 ~ 2014.01',
+      description: 'PC/Mobile Usability Test 설계 및 Moderator, UX/UI 개선 방향 제안\n\n서비스 개선 후 **구매전환율 상승** 달성',
+    },
+    {
+      company: 'SK planet',
+      title: 'Manager / UX Design | 위치기반광고사업팀',
+      period: '2011.12 ~ 2013.02',
+      description: '위치기반 광고 서비스 **Arounders** PM 및 UX 디자인\n\nFront Page·Admin Page 제작 리딩, 서비스 성공적 런칭',
+    },
   ],
   activities: [
-    { year: '', category: '', summary: '' },
+    { year: '2026', category: '강연', summary: 'AI Campus Day 사내 강연 멘토' },
+    { year: '2014', category: '창업', summary: '서울시 창업지원 프로그램 \'챌린지 1000 프로젝트\' 6기 선발' },
   ],
   selfIntro: '',
 }
