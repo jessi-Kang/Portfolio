@@ -13,7 +13,7 @@ export default function Achievements() {
       <p className="text-accent text-xs font-mono tracking-widest uppercase mb-2">Key Achievements</p>
       <h2 className="text-2xl md:text-3xl font-bold mb-12">핵심 성과</h2>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-4xl mx-auto">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 max-w-4xl mx-auto">
         {config.items.map((item, i) => (
           <motion.div
             key={i}
@@ -21,7 +21,7 @@ export default function Achievements() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.4, delay: i * 0.06 }}
-            className="bg-gray-900 border border-gray-800 rounded-xl p-5 hover:border-gray-700 transition-colors"
+            className="bg-gray-900 border border-gray-800 rounded-xl p-4 md:p-5 hover:border-gray-700 transition-colors"
           >
             <div
               className="w-10 h-10 rounded-lg flex items-center justify-center text-lg mb-3"

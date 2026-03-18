@@ -30,7 +30,7 @@ export default function Experience() {
               className="relative pl-8"
             >
               {/* Dot */}
-              <div className={`absolute left-0 top-1.5 w-[15px] h-[15px] rounded-full border-2 ${
+              <div className={`absolute left-[0px] top-[7px] w-[13px] h-[13px] rounded-full border-2 ${
                 i === 0
                   ? 'bg-accent border-accent'
                   : 'bg-gray-950 border-accent/60'

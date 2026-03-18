@@ -1,5 +1,4 @@
-import { useState, useRef } from 'react'
-import { loadCaseStudies, saveCaseStudies, resetCaseStudies, defaultCaseStudies } from '../data/caseStudies'
+import { useState, useRef, useCallback, useEffect } from 'react'
 import { loadProjects, saveProjects, resetProjects, defaultProjects } from '../data/projects'
 import {
   getAccessTokens,
@@ -57,13 +56,34 @@ const NAV_ITEMS = [
 
 /* ─── Shared UI ─── */
 
+function AutoTextarea({ value, onChange, minRows = 2, className = '' }) {
+  const ref = useRef(null)
+  const resize = useCallback(() => {
+    const el = ref.current
+    if (!el) return
+    el.style.height = 'auto'
+    el.style.height = el.scrollHeight + 'px'
+  }, [])
+  useEffect(() => { resize() }, [value, resize])
+  return (
+    <textarea
+      ref={ref}
+      value={value}
+      onChange={(e) => { onChange(e.target.value); resize() }}
+      rows={minRows}
+      className={className}
+      style={{ overflow: 'hidden' }}
+    />
+  )
+}
+
 function Field({ label, value, onChange, type = 'text', className = '', rows }) {
   const cls = 'w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-accent transition-colors'
   if (rows) {
     return (
       <div className={className}>
         {label && <label className="block text-xs text-gray-500 mb-1">{label}</label>}
-        <textarea value={value} onChange={(e) => onChange(e.target.value)} rows={rows} className={`${cls} resize-y`} />
+        <AutoTextarea value={value} onChange={onChange} minRows={rows} className={`${cls} resize-y`} />
       </div>
     )
   }
@@ -85,12 +105,16 @@ function SectionHeader({ title, description }) {
 }
 
 function ActionBar({ children }) {
-  return <div className="flex flex-wrap items-center gap-2 mb-6">{children}</div>
+  return <div className="flex flex-wrap items-center gap-2 mb-6 sticky top-0 md:top-0 bg-gray-950/95 backdrop-blur z-10 py-3 -mx-1 px-1">{children}</div>
 }
 
 function SaveButton({ onClick, label = '저장' }) {
+  const handleClick = (e) => {
+    e.preventDefault()
+    onClick()
+  }
   return (
-    <button onClick={onClick} className="px-4 py-2 bg-accent hover:bg-accent-light text-white text-sm font-medium rounded-lg transition-colors cursor-pointer">
+    <button onClick={handleClick} className="px-4 py-2 bg-accent hover:bg-accent-light text-white text-sm font-medium rounded-lg transition-colors cursor-pointer">
       {label}
     </button>
   )
@@ -166,177 +190,6 @@ function ImportExportBar({ onImport, onExport, onSample, importLabel = 'JSON 가
 
 /* ─── Sub-editors ─── */
 
-function MetricEditor({ metric, onChange, onRemove }) {
-  return (
-    <div className="flex gap-2 items-end">
-      <Field label="라벨" value={metric.label} onChange={(v) => onChange({ ...metric, label: v })} />
-      <Field label="Before" value={metric.before} type="number" onChange={(v) => onChange({ ...metric, before: parseFloat(v) || 0 })} />
-      <Field label="After" value={metric.after} type="number" onChange={(v) => onChange({ ...metric, after: parseFloat(v) || 0 })} />
-      <Field label="단위" value={metric.unit} onChange={(v) => onChange({ ...metric, unit: v })} className="w-20" />
-      <button onClick={onRemove} className="shrink-0 px-2 py-2 text-red-400 hover:text-red-300 cursor-pointer">✕</button>
-    </div>
-  )
-}
-
-function ExperimentEditor({ exp, onChange, onRemove }) {
-  return (
-    <div className="bg-gray-800/50 rounded-lg p-3 space-y-2">
-      <div className="flex justify-between items-start">
-        <Field label="제목" value={exp.title} onChange={(v) => onChange({ ...exp, title: v })} className="flex-1" />
-        <button onClick={onRemove} className="shrink-0 ml-2 px-2 py-2 text-red-400 hover:text-red-300 cursor-pointer">✕</button>
-      </div>
-      <Field label="설명" value={exp.description} onChange={(v) => onChange({ ...exp, description: v })} rows={2} />
-    </div>
-  )
-}
-
-function CaseEditor({ study, onChange }) {
-  const update = (key, value) => onChange({ ...study, [key]: value })
-  const updateTab = (key, value) => onChange({ ...study, tabs: { ...study.tabs, [key]: value } })
-  const updateTabLabel = (key, value) => onChange({ ...study, tabLabels: { ...(study.tabLabels || { problem: '문제정의', approach: 'ML접근', results: '결과지표' }), [key]: value } })
-
-  const tabLabels = study.tabLabels || { problem: '문제정의', approach: 'ML접근', results: '결과지표' }
-  const failedLabel = study.failedLabel || '실패한 실험'
-
-  return (
-    <div className="bg-gray-900 rounded-xl p-5 space-y-4">
-      <div className="flex items-center gap-2 mb-2">
-        <span className="text-2xl">{study.icon}</span>
-        <h3 className="text-lg font-bold">{study.title || '새 케이스'}</h3>
-      </div>
-
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
-        <Field label="아이콘" value={study.icon} onChange={(v) => update('icon', v)} />
-        <Field label="회사" value={study.company || ''} onChange={(v) => update('company', v)} />
-        <Field label="제목" value={study.title} onChange={(v) => update('title', v)} />
-        <Field label="부제" value={study.subtitle} onChange={(v) => update('subtitle', v)} />
-        <Field label="기간" value={study.period} onChange={(v) => update('period', v)} />
-      </div>
-
-      <div className="space-y-3">
-        <h4 className="text-sm font-semibold text-accent">탭 콘텐츠</h4>
-        {[
-          ['problem', tabLabels.problem],
-          ['approach', tabLabels.approach],
-          ['results', tabLabels.results],
-        ].map(([key, label]) => (
-          <div key={key}>
-            <div className="flex items-center gap-2 mb-1">
-              <input
-                value={label}
-                onChange={(e) => updateTabLabel(key, e.target.value)}
-                className="bg-gray-800 border border-gray-700 rounded px-2 py-0.5 text-xs text-accent font-medium w-24 focus:outline-none focus:border-accent"
-              />
-              <span className="text-xs text-gray-600">탭 라벨</span>
-            </div>
-            <textarea
-              value={study.tabs[key]}
-              onChange={(e) => updateTab(key, e.target.value)}
-              rows={3}
-              className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm text-white resize-y focus:outline-none focus:border-accent"
-            />
-          </div>
-        ))}
-      </div>
-
-      <div className="space-y-2">
-        <div className="flex justify-between items-center">
-          <h4 className="text-sm font-semibold text-accent">Before → After 지표</h4>
-          <button onClick={() => update('beforeAfter', [...study.beforeAfter, { label: '', before: 0, after: 0, unit: '' }])} className="text-xs text-accent hover:text-accent-light cursor-pointer">+ 추가</button>
-        </div>
-        {study.beforeAfter.map((m, i) => (
-          <MetricEditor
-            key={i}
-            metric={m}
-            onChange={(updated) => { const arr = [...study.beforeAfter]; arr[i] = updated; update('beforeAfter', arr) }}
-            onRemove={() => update('beforeAfter', study.beforeAfter.filter((_, j) => j !== i))}
-          />
-        ))}
-      </div>
-
-      <div className="space-y-2">
-        <div className="flex justify-between items-center">
-          <div className="flex items-center gap-2">
-            <input
-              value={failedLabel}
-              onChange={(e) => update('failedLabel', e.target.value)}
-              className="bg-gray-800 border border-gray-700 rounded px-2 py-0.5 text-xs text-accent font-semibold w-28 focus:outline-none focus:border-accent"
-            />
-            <span className="text-xs text-gray-600">섹션 라벨</span>
-          </div>
-          <button onClick={() => update('failedExperiments', [...study.failedExperiments, { title: '', description: '' }])} className="text-xs text-accent hover:text-accent-light cursor-pointer">+ 추가</button>
-        </div>
-        {study.failedExperiments.map((exp, i) => (
-          <ExperimentEditor
-            key={i}
-            exp={exp}
-            onChange={(updated) => { const arr = [...study.failedExperiments]; arr[i] = updated; update('failedExperiments', arr) }}
-            onRemove={() => update('failedExperiments', study.failedExperiments.filter((_, j) => j !== i))}
-          />
-        ))}
-      </div>
-    </div>
-  )
-}
-
-/* ─── Cases Section ─── */
-
-function CasesSection() {
-  const [studies, setStudies] = useState(loadCaseStudies)
-  const [toast, setToast] = useState('')
-
-  const flash = (msg) => { setToast(msg); setTimeout(() => setToast(''), 2000) }
-
-  const handleSave = () => { saveCaseStudies(studies); flash('케이스 스터디 저장 완료') }
-  const handleReset = () => { if (confirm('초기화하시겠습니까?')) { resetCaseStudies(); setStudies(loadCaseStudies()); flash('초기화 완료') } }
-
-  const addCase = () => {
-    setStudies([...studies, {
-      id: `case-${Date.now()}`, company: '', title: '', subtitle: '', period: '', icon: '📌',
-      tabLabels: { problem: '문제정의', approach: 'ML접근', results: '결과지표' },
-      failedLabel: '실패한 실험',
-      tabs: { problem: '', approach: '', results: '' },
-      beforeAfter: [], failedExperiments: [],
-    }])
-  }
-
-  const removeCase = (index) => { if (confirm('이 케이스를 삭제하시겠습니까?')) setStudies(studies.filter((_, i) => i !== index)) }
-
-  const handleImport = async (file) => {
-    const data = await importJson(file)
-    if (!Array.isArray(data)) throw new Error('JSON 배열 형식이어야 합니다')
-    setStudies(data)
-    flash('가져오기 완료 — 저장 버튼을 눌러주세요')
-  }
-
-  return (
-    <div>
-      <SectionHeader title="케이스 스터디" description="포트폴리오에 표시될 케이스 스터디를 관리합니다" />
-      <ActionBar>
-        <SaveButton onClick={handleSave} />
-        <ResetButton onClick={handleReset} />
-        <button onClick={addCase} className="px-4 py-2 border border-accent text-accent hover:bg-accent/10 text-sm rounded-lg transition-colors cursor-pointer">+ 케이스 추가</button>
-        <div className="flex-1" />
-        <ImportExportBar
-          onImport={handleImport}
-          onExport={() => downloadJson(studies, 'case-studies.json')}
-          onSample={() => downloadJson(defaultCaseStudies, 'case-studies-sample.json')}
-        />
-      </ActionBar>
-      <div className="space-y-6">
-        {studies.map((study, i) => (
-          <div key={study.id}>
-            <CaseEditor study={study} onChange={(updated) => { const arr = [...studies]; arr[i] = updated; setStudies(arr) }} />
-            <div className="flex justify-end mt-2">
-              <button onClick={() => removeCase(i)} className="text-xs text-red-400 hover:text-red-300 cursor-pointer">케이스 삭제</button>
-            </div>
-          </div>
-        ))}
-      </div>
-      <Toast message={toast} />
-    </div>
-  )
-}
 
 /* ─── Resume Section ─── */
 
@@ -475,11 +328,10 @@ function ResumeSection() {
 
       <div className="mb-6">
         <h3 className="text-sm font-semibold text-accent mb-3">자기소개 (마크다운)</h3>
-        <textarea
+        <AutoTextarea
           value={config.selfIntro}
-          onChange={(e) => setConfig({ ...config, selfIntro: e.target.value })}
-          rows={8}
-          placeholder="마크다운 형식으로 작성하세요..."
+          onChange={(v) => setConfig({ ...config, selfIntro: v })}
+          minRows={4}
           className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-sm text-white font-mono resize-y focus:outline-none focus:border-accent transition-colors"
         />
       </div>
@@ -919,11 +771,10 @@ function AboutSection() {
         <Field label="섹션 헤딩" value={config.heading || ''} onChange={(v) => update('heading', v)} rows={2} />
         <div>
           <label className="block text-xs text-gray-500 mb-1">바이오 (마크다운)</label>
-          <textarea
+          <AutoTextarea
             value={config.bio || ''}
-            onChange={(e) => update('bio', e.target.value)}
-            rows={8}
-            placeholder="마크다운으로 자기소개를 작성하세요..."
+            onChange={(v) => update('bio', v)}
+            minRows={4}
             className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-sm text-white font-mono resize-y focus:outline-none focus:border-accent transition-colors"
           />
         </div>

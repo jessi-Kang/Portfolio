@@ -32,17 +32,26 @@ export default function About() {
           </h2>
         </motion.div>
 
-        {config.bio && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-            className="prose-dark mb-8"
-          >
-            <MarkdownRenderer content={config.bio} />
-          </motion.div>
-        )}
+        {/* Profile photo + bio */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+          className="flex flex-col sm:flex-row gap-6 sm:gap-8 items-start mb-8"
+        >
+          <img
+            src="/profile.jpg"
+            alt="Profile"
+            className="w-28 h-28 sm:w-32 sm:h-32 rounded-2xl object-cover shrink-0 border border-gray-800"
+            onError={(e) => { e.target.style.display = 'none' }}
+          />
+          {config.bio && (
+            <div className="prose-dark flex-1">
+              <MarkdownRenderer content={config.bio} />
+            </div>
+          )}
+        </motion.div>
 
         {config.skills && config.skills.length > 0 && (
           <motion.div
