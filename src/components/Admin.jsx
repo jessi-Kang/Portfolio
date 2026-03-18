@@ -735,6 +735,10 @@ function ProjectsSection() {
     setExpanded(prev => ({ ...prev, [key]: !prev[key] }))
   }
 
+  const swap = (arr, i, j) => { const a = [...arr]; [a[i], a[j]] = [a[j], a[i]]; return a }
+  const moveGroup = (gi, dir) => { const j = gi + dir; if (j < 0 || j >= data.groups.length) return; setData({ ...data, groups: swap(data.groups, gi, j) }) }
+  const moveProject = (gi, pi, dir) => { const group = data.groups[gi]; const j = pi + dir; if (j < 0 || j >= group.projects.length) return; const g = [...data.groups]; g[gi] = { ...group, projects: swap(group.projects, pi, j) }; setData({ ...data, groups: g }) }
+
   const handleSave = () => { saveProjects(data); flash('프로젝트 저장 완료') }
   const handleReset = () => { if (confirm('초기화하시겠습니까?')) { resetProjects(); setData(loadProjects()); flash('초기화 완료') } }
 
@@ -763,6 +767,10 @@ function ProjectsSection() {
             <div className="flex items-center gap-2">
               <span className="text-accent font-mono text-xs">Group {gi + 1}</span>
               <span className="text-white font-semibold text-sm flex-1 truncate">{group.title}</span>
+              <div className="flex items-center gap-1 shrink-0">
+                <button onClick={() => moveGroup(gi, -1)} disabled={gi === 0} className="text-xs text-gray-400 hover:text-white disabled:text-gray-700 cursor-pointer disabled:cursor-default px-1">↑</button>
+                <button onClick={() => moveGroup(gi, 1)} disabled={gi === data.groups.length - 1} className="text-xs text-gray-400 hover:text-white disabled:text-gray-700 cursor-pointer disabled:cursor-default px-1">↓</button>
+              </div>
               <button onClick={() => setData({ ...data, groups: data.groups.filter((_, i) => i !== gi) })} className="text-xs text-red-400 hover:text-red-300 cursor-pointer">삭제</button>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -786,6 +794,10 @@ function ProjectsSection() {
                       </svg>
                       {p.badge && <span className="text-[10px] font-mono text-accent bg-accent/10 px-1.5 py-0.5 rounded shrink-0">{p.badge}</span>}
                       <span className="text-sm font-medium text-white truncate flex-1">{p.title || '새 프로젝트'}</span>
+                      <div className="flex items-center gap-1 shrink-0" onClick={(e) => e.stopPropagation()}>
+                        <button onClick={() => moveProject(gi, pi, -1)} disabled={pi === 0} className="text-xs text-gray-400 hover:text-white disabled:text-gray-700 cursor-pointer disabled:cursor-default px-1">↑</button>
+                        <button onClick={() => moveProject(gi, pi, 1)} disabled={pi === group.projects.length - 1} className="text-xs text-gray-400 hover:text-white disabled:text-gray-700 cursor-pointer disabled:cursor-default px-1">↓</button>
+                      </div>
                       <button onClick={(e) => { e.stopPropagation(); const g = [...data.groups]; g[gi] = { ...group, projects: group.projects.filter((_, i) => i !== pi) }; setData({ ...data, groups: g }) }} className="text-xs text-red-400 hover:text-red-300 cursor-pointer shrink-0">✕</button>
                     </div>
 
