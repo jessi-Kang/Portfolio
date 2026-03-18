@@ -2,15 +2,15 @@ import { motion } from 'framer-motion'
 import SectionWrapper from './ui/SectionWrapper'
 
 const JOURNEY = [
-  { year: '2025', org: 'LINE AI Friend', field: 'AI', color: '#4ade80', current: true },
-  { year: '2024', org: 'LINE Wallet', field: '추천 모델 (ML)', color: '#34d399' },
-  { year: '2020', org: 'LINE Demaecan', field: '물류 (ML)', color: '#2dd4bf' },
-  { year: '2018', org: '29CM', field: '패션 · 쇼핑', color: '#38bdf8' },
-  { year: '2016', org: 'NHN EDU', field: '교육', color: '#60a5fa' },
-  { year: '2015', org: 'Yello Travel', field: '여행', color: '#818cf8' },
-  { year: '2014', org: 'April Rain', field: '비즈니스', color: '#a78bfa' },
-  { year: '2013', org: 'Coupang', field: '쇼핑 서비스', color: '#8b5cf6' },
-  { year: '2011', org: 'SK Planet', field: '위치기반 광고', color: '#6366f1' },
+  { year: '2025', org: 'LINE AI Friend', field: 'AI', color: '#4ade80', current: true, emoji: '🤖' },
+  { year: '2024', org: 'LINE Wallet', field: '추천 모델 (ML)', color: '#34d399', emoji: '💳' },
+  { year: '2020', org: 'LINE Demaecan', field: '물류 (ML)', color: '#2dd4bf', emoji: '🛵' },
+  { year: '2018', org: '29CM', field: '패션 · 쇼핑', color: '#38bdf8', emoji: '👗' },
+  { year: '2016', org: 'NHN EDU', field: '교육', color: '#60a5fa', emoji: '📚' },
+  { year: '2015', org: 'Yello Travel', field: '여행', color: '#818cf8', emoji: '✈️' },
+  { year: '2014', org: 'April Rain', field: '비즈니스', color: '#a78bfa', emoji: '💼' },
+  { year: '2013', org: 'Coupang', field: '쇼핑 서비스', color: '#8b5cf6', emoji: '📦' },
+  { year: '2011', org: 'SK Planet', field: '위치기반 광고', color: '#6366f1', emoji: '📍' },
 ]
 
 // Desktop uses chronological (old→new), mobile uses reverse (new→old)
@@ -22,16 +22,16 @@ export default function Journey() {
       <p className="text-accent text-xs font-mono tracking-widest uppercase mb-2">Career Journey</p>
       <h2 className="text-2xl md:text-3xl font-bold mb-8 md:mb-10">커리어 여정</h2>
 
-      {/* Mobile: vertical, newest first */}
+      {/* Mobile: vertical, newest first — older items fade in on scroll */}
       <div className="md:hidden relative max-w-md mx-auto">
         <div className="absolute left-[11px] top-3 bottom-3 w-px bg-gray-800" />
         {JOURNEY.map((item, i) => (
           <motion.div
             key={i}
-            initial={{ opacity: 0, x: -16 }}
+            initial={{ opacity: i <= 1 ? 0 : 0.25, x: -16 }}
             whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.3, delay: i * 0.04 }}
+            viewport={{ once: true, amount: 0.5 }}
+            transition={{ duration: 0.4, delay: i <= 1 ? i * 0.04 : 0 }}
             className="relative pl-9 py-3"
           >
             {/* Dot */}
@@ -53,9 +53,10 @@ export default function Journey() {
             <div className="flex items-center gap-3 mt-1">
               <span className="w-10 shrink-0" />
               <span
-                className="text-xs font-medium px-2 py-0.5 rounded-full"
+                className="text-xs font-medium px-2 py-0.5 rounded-full inline-flex items-center gap-1"
                 style={{ backgroundColor: item.color + '18', color: item.color }}
               >
+                <span>{item.emoji}</span>
                 {item.field}
               </span>
             </div>
@@ -93,7 +94,10 @@ export default function Journey() {
               <span className="text-xs font-mono text-gray-500 mb-1.5">{item.year}</span>
 
               {/* Org */}
-              <span className="text-xs font-semibold text-white leading-tight mb-1">{item.org}</span>
+              <span className="text-xs font-semibold text-white leading-tight mb-1">
+                <span className="mr-0.5">{item.emoji}</span>
+                {item.org}
+              </span>
 
               {/* Field badge */}
               <span

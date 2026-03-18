@@ -8,7 +8,7 @@ export default function SectionWrapper({ children, className = '', id }) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.05 }}
       transition={{ duration: 0.6, ease: 'easeOut' }}
-      className={`px-5 py-20 md:px-12 lg:px-24 ${className}`}
+      className={`px-5 py-20 md:px-12 lg:px-24 snap-start ${className}`}
     >
       {children}
     </motion.section>

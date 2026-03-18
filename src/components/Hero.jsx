@@ -21,7 +21,7 @@ export default function Hero() {
   const stats = hero.stats || []
 
   return (
-    <section className="relative min-h-screen flex flex-col items-center justify-center px-6 text-center overflow-hidden">
+    <section className="relative min-h-[100dvh] flex flex-col items-center justify-center px-6 text-center overflow-hidden scroll-mt-0 snap-start">
       {/* Background gradient */}
       <div className="absolute inset-0 bg-gradient-to-b from-accent/10 via-transparent to-transparent pointer-events-none" />
 
@@ -105,7 +105,7 @@ export default function Hero() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1.5 }}
-        className="absolute bottom-10"
+        className="absolute bottom-6 md:bottom-10"
       >
         <motion.div
           animate={{ y: [0, 8, 0] }}
