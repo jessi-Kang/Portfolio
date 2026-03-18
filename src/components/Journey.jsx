@@ -4,6 +4,7 @@ import SectionWrapper from './ui/SectionWrapper'
 const JOURNEY = [
   { year: '2011', org: 'SK Planet', field: '위치기반 광고', color: '#6366f1' },
   { year: '2013', org: 'Coupang', field: '쇼핑 서비스', color: '#8b5cf6' },
+  { year: '2014', org: 'April Rain', field: '비즈니스', color: '#a78bfa' },
   { year: '2015', org: 'Yello Travel', field: '여행', color: '#818cf8' },
   { year: '2016', org: 'NHN EDU', field: '교육', color: '#60a5fa' },
   { year: '2018', org: '29CM', field: '패션 · 쇼핑', color: '#38bdf8' },
@@ -19,31 +20,34 @@ export default function Journey() {
       <h2 className="text-2xl md:text-3xl font-bold mb-10">커리어 여정</h2>
 
       {/* Mobile: vertical */}
-      <div className="md:hidden space-y-0 relative max-w-sm mx-auto">
-        <div className="absolute left-3 top-0 bottom-0 w-px bg-gray-800" />
+      <div className="md:hidden relative max-w-sm mx-auto">
+        <div className="absolute left-[7px] top-2 bottom-2 w-px bg-gray-800" />
         {JOURNEY.map((item, i) => (
           <motion.div
             key={i}
-            initial={{ opacity: 0, x: -20 }}
+            initial={{ opacity: 0, x: -16 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.3, delay: i * 0.05 }}
-            className="relative pl-9 py-3"
+            className="relative pl-7 py-2.5 flex items-start gap-2"
           >
+            {/* Dot - vertically centered with first line */}
             <div
-              className="absolute left-1 top-4 w-[10px] h-[10px] rounded-full border-2"
+              className="absolute left-[3px] top-[15px] w-[9px] h-[9px] rounded-full border-2 shrink-0"
               style={{ borderColor: item.color, backgroundColor: i === JOURNEY.length - 1 ? item.color : 'transparent' }}
             />
-            <div className="flex items-baseline gap-2">
-              <span className="text-xs font-mono text-gray-500 shrink-0">{item.year}</span>
-              <span className="text-sm font-semibold text-white">{item.org}</span>
+            {/* Year */}
+            <span className="text-[11px] font-mono text-gray-500 shrink-0 leading-5 w-8">{item.year}</span>
+            {/* Content */}
+            <div className="min-w-0">
+              <span className="text-[13px] font-semibold text-white leading-5 block">{item.org}</span>
+              <span
+                className="text-[10px] font-medium px-1.5 py-px rounded-full inline-block mt-1"
+                style={{ backgroundColor: item.color + '18', color: item.color }}
+              >
+                {item.field}
+              </span>
             </div>
-            <span
-              className="text-[10px] font-medium px-2 py-0.5 rounded-full inline-block mt-0.5"
-              style={{ backgroundColor: item.color + '18', color: item.color }}
-            >
-              {item.field}
-            </span>
           </motion.div>
         ))}
       </div>

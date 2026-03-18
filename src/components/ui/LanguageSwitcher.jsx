@@ -8,7 +8,7 @@ export default function LanguageSwitcher() {
   const current = LANGUAGES.find((l) => l.code === lang) || LANGUAGES[0]
 
   return (
-    <div className="fixed top-4 right-4 z-50">
+    <div className="fixed top-3 right-3 md:top-4 md:right-4 z-50">
       <button
         onClick={() => setOpen(!open)}
         className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gray-800/80 backdrop-blur border border-gray-700 hover:border-accent text-sm text-gray-300 hover:text-accent transition-colors cursor-pointer shadow-lg"
