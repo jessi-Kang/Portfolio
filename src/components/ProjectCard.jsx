@@ -24,9 +24,9 @@ function StoryTabs({ project }) {
   const currentTab = TABS.find((t) => t.key === active) || TABS[0]
 
   return (
-    <div className="mb-4">
+    <div className="mb-6">
       {/* Tab buttons */}
-      <div className="flex gap-1 mb-3 overflow-x-auto">
+      <div className="flex gap-1.5 mb-4 overflow-x-auto">
         {availableTabs.map((tab) => (
           <button
             key={tab.key}
@@ -56,18 +56,18 @@ export default function ProjectCard({ project }) {
 
   return (
     <div
-      className={`bg-gray-900 border border-gray-800 rounded-2xl p-5 md:p-6 hover:border-accent/40 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-accent/5 ${
+      className={`bg-gray-900 border border-gray-800 rounded-2xl p-6 md:p-8 hover:border-accent/40 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-accent/5 ${
         project.fullWidth ? 'col-span-full' : ''
       }`}
     >
       {/* Badge */}
-      <span className={`inline-block text-[11px] font-mono font-medium tracking-wider uppercase px-2.5 py-1 rounded mb-3 ${badgeCls}`}>
+      <span className={`inline-block text-[11px] font-mono font-medium tracking-wider uppercase px-2.5 py-1 rounded mb-4 ${badgeCls}`}>
         {project.badge}
       </span>
 
       {/* Title */}
-      <h3 className="text-lg md:text-xl font-bold text-white mb-1 leading-snug">{project.title}</h3>
-      <p className="text-sm text-gray-500 mb-4">{project.subtitle}</p>
+      <h3 className="text-lg md:text-xl font-bold text-white mb-2 leading-snug">{project.title}</h3>
+      <p className="text-sm text-gray-500 mb-5">{project.subtitle}</p>
 
       {/* Tabbed Story Flow */}
       {hasStory && <StoryTabs project={project} />}
@@ -79,13 +79,13 @@ export default function ProjectCard({ project }) {
 
       {/* Highlights (big numbers) */}
       {project.highlights && project.highlights.length > 0 && (
-        <div className={`grid gap-2 mb-4 ${
+        <div className={`grid gap-3 mb-5 ${
           project.highlights.length >= 4 ? 'grid-cols-2 sm:grid-cols-4' :
           project.highlights.length === 3 ? 'grid-cols-3' :
           project.highlights.length === 2 ? 'grid-cols-2' : 'grid-cols-1'
         }`}>
           {project.highlights.map((h, i) => (
-            <div key={i} className="bg-gray-800/60 rounded-xl p-2.5 text-center">
+            <div key={i} className="bg-gray-800/60 rounded-xl p-3 text-center">
               <div className="text-lg sm:text-xl font-bold text-accent">{h.value}</div>
               <div className="text-[11px] text-gray-500 mt-0.5">{h.label}</div>
             </div>
@@ -105,7 +105,7 @@ export default function ProjectCard({ project }) {
 
       {/* Metrics tags */}
       {project.metrics && project.metrics.length > 0 && (
-        <div className="flex flex-wrap gap-1.5 mt-3">
+        <div className="flex flex-wrap gap-1.5 mt-4">
           {project.metrics.map((m, i) => (
             <span key={i} className="inline-flex items-center text-xs px-2.5 py-1 bg-gray-800 text-gray-400 rounded-full">
               {m}

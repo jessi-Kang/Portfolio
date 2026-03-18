@@ -675,8 +675,13 @@ function AccountSection({ onLogout }) {
 function ProjectsSection() {
   const [data, setData] = useState(loadProjects)
   const [toast, setToast] = useState('')
+  const [expanded, setExpanded] = useState({})
 
   const flash = (msg) => { setToast(msg); setTimeout(() => setToast(''), 2000) }
+  const toggleProject = (gi, pi) => {
+    const key = `${gi}-${pi}`
+    setExpanded(prev => ({ ...prev, [key]: !prev[key] }))
+  }
 
   const handleSave = () => { saveProjects(data); flash('프로젝트 저장 완료') }
   const handleReset = () => { if (confirm('초기화하시겠습니까?')) { resetProjects(); setData(loadProjects()); flash('초기화 완료') } }
@@ -689,7 +694,7 @@ function ProjectsSection() {
 
   return (
     <div>
-      <SectionHeader title="프로젝트" description="Featured Projects 섹션에 표시될 프로젝트를 관리합니다. JSON으로 편집하세요." />
+      <SectionHeader title="프로젝트" description="Featured Projects 섹션에 표시될 프로젝트를 관리합니다" />
       <ActionBar>
         <SaveButton onClick={handleSave} />
         <ResetButton onClick={handleReset} />
@@ -700,37 +705,75 @@ function ProjectsSection() {
           onSample={() => downloadJson(defaultProjects, 'projects-sample.json')}
         />
       </ActionBar>
-      <div className="space-y-4">
+      <div className="space-y-6">
         {data.groups?.map((group, gi) => (
-          <div key={gi} className="bg-gray-900 rounded-xl p-5 space-y-3">
+          <div key={gi} className="bg-gray-900 rounded-xl p-5 md:p-6 space-y-4">
             <div className="flex items-center gap-2">
               <span className="text-accent font-mono text-xs">Group {gi + 1}</span>
               <span className="text-white font-semibold text-sm flex-1 truncate">{group.title}</span>
               <button onClick={() => setData({ ...data, groups: data.groups.filter((_, i) => i !== gi) })} className="text-xs text-red-400 hover:text-red-300 cursor-pointer">삭제</button>
             </div>
-            <Field label="그룹 제목" value={group.title} onChange={(v) => { const g = [...data.groups]; g[gi] = { ...group, title: v }; setData({ ...data, groups: g }) }} />
-            <Field label="그룹 부제" value={group.subtitle} onChange={(v) => { const g = [...data.groups]; g[gi] = { ...group, subtitle: v }; setData({ ...data, groups: g }) }} />
-            <p className="text-xs text-gray-600">프로젝트 {group.projects?.length || 0}개</p>
-            {group.projects?.map((p, pi) => (
-              <div key={pi} className="bg-gray-800/50 rounded-lg p-4 space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-white truncate">{p.title || '새 프로젝트'}</span>
-                  <button onClick={() => { const g = [...data.groups]; g[gi] = { ...group, projects: group.projects.filter((_, i) => i !== pi) }; setData({ ...data, groups: g }) }} className="text-xs text-red-400 cursor-pointer">✕</button>
-                </div>
-                <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-                  <Field label="배지" value={p.badge || ''} onChange={(v) => { const g = [...data.groups]; g[gi].projects[pi] = { ...p, badge: v }; setData({ ...data, groups: g }) }} />
-                  <Field label="배지타입(ai/data/ux/ops)" value={p.badgeType || ''} onChange={(v) => { const g = [...data.groups]; g[gi].projects[pi] = { ...p, badgeType: v }; setData({ ...data, groups: g }) }} />
-                  <Field label="제목" value={p.title || ''} onChange={(v) => { const g = [...data.groups]; g[gi].projects[pi] = { ...p, title: v }; setData({ ...data, groups: g }) }} />
-                  <Field label="부제" value={p.subtitle || ''} onChange={(v) => { const g = [...data.groups]; g[gi].projects[pi] = { ...p, subtitle: v }; setData({ ...data, groups: g }) }} />
-                </div>
-                <Field label="문제 정의" value={p.problem || ''} onChange={(v) => { const g = [...data.groups]; g[gi].projects[pi] = { ...p, problem: v }; setData({ ...data, groups: g }) }} rows={3} />
-                <Field label="해결 방안" value={p.solution || ''} onChange={(v) => { const g = [...data.groups]; g[gi].projects[pi] = { ...p, solution: v }; setData({ ...data, groups: g }) }} rows={3} />
-                <Field label="이해관계자 협업" value={p.collaboration || ''} onChange={(v) => { const g = [...data.groups]; g[gi].projects[pi] = { ...p, collaboration: v }; setData({ ...data, groups: g }) }} rows={3} />
-                <Field label="최종 결과" value={p.result || ''} onChange={(v) => { const g = [...data.groups]; g[gi].projects[pi] = { ...p, result: v }; setData({ ...data, groups: g }) }} rows={3} />
-                <Field label="인사이트" value={p.insight || ''} onChange={(v) => { const g = [...data.groups]; g[gi].projects[pi] = { ...p, insight: v }; setData({ ...data, groups: g }) }} rows={3} />
-              </div>
-            ))}
-            <button onClick={() => { const g = [...data.groups]; g[gi] = { ...group, projects: [...(group.projects || []), { id: `p-${Date.now()}`, badge: '', badgeType: 'ai', title: '', subtitle: '', problem: '', solution: '', collaboration: '', result: '', insight: '', metrics: [], highlights: [], fullWidth: false }] }; setData({ ...data, groups: g }) }} className="text-xs text-accent hover:text-accent-light cursor-pointer">+ 프로젝트 추가</button>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <Field label="그룹 제목" value={group.title} onChange={(v) => { const g = [...data.groups]; g[gi] = { ...group, title: v }; setData({ ...data, groups: g }) }} />
+              <Field label="그룹 부제" value={group.subtitle} onChange={(v) => { const g = [...data.groups]; g[gi] = { ...group, subtitle: v }; setData({ ...data, groups: g }) }} />
+            </div>
+
+            <div className="space-y-3">
+              <p className="text-xs text-gray-500 font-medium">프로젝트 {group.projects?.length || 0}개</p>
+              {group.projects?.map((p, pi) => {
+                const isOpen = expanded[`${gi}-${pi}`]
+                return (
+                  <div key={pi} className="bg-gray-800/50 rounded-lg border border-gray-700/50 overflow-hidden">
+                    {/* Header — always visible */}
+                    <div
+                      className="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-gray-800/80 transition-colors"
+                      onClick={() => toggleProject(gi, pi)}
+                    >
+                      <svg className={`w-4 h-4 text-gray-500 shrink-0 transition-transform ${isOpen ? 'rotate-90' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                      </svg>
+                      {p.badge && <span className="text-[10px] font-mono text-accent bg-accent/10 px-1.5 py-0.5 rounded shrink-0">{p.badge}</span>}
+                      <span className="text-sm font-medium text-white truncate flex-1">{p.title || '새 프로젝트'}</span>
+                      <button onClick={(e) => { e.stopPropagation(); const g = [...data.groups]; g[gi] = { ...group, projects: group.projects.filter((_, i) => i !== pi) }; setData({ ...data, groups: g }) }} className="text-xs text-red-400 hover:text-red-300 cursor-pointer shrink-0">✕</button>
+                    </div>
+
+                    {/* Body — collapsible */}
+                    {isOpen && (
+                      <div className="px-4 pb-4 pt-1 space-y-4">
+                        {/* 기본 정보 */}
+                        <div>
+                          <p className="text-xs text-gray-500 font-medium mb-2">기본 정보</p>
+                          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                            <Field label="배지" value={p.badge || ''} onChange={(v) => { const g = [...data.groups]; g[gi].projects[pi] = { ...p, badge: v }; setData({ ...data, groups: g }) }} />
+                            <Field label="배지타입" value={p.badgeType || ''} onChange={(v) => { const g = [...data.groups]; g[gi].projects[pi] = { ...p, badgeType: v }; setData({ ...data, groups: g }) }} />
+                            <Field label="제목" value={p.title || ''} onChange={(v) => { const g = [...data.groups]; g[gi].projects[pi] = { ...p, title: v }; setData({ ...data, groups: g }) }} />
+                            <Field label="부제" value={p.subtitle || ''} onChange={(v) => { const g = [...data.groups]; g[gi].projects[pi] = { ...p, subtitle: v }; setData({ ...data, groups: g }) }} />
+                          </div>
+                        </div>
+
+                        {/* 스토리 */}
+                        <div>
+                          <p className="text-xs text-gray-500 font-medium mb-2">스토리</p>
+                          <div className="space-y-3">
+                            <Field label="Problem — 문제 정의" value={p.problem || ''} onChange={(v) => { const g = [...data.groups]; g[gi].projects[pi] = { ...p, problem: v }; setData({ ...data, groups: g }) }} rows={3} />
+                            <Field label="Solution — 해결 방안" value={p.solution || ''} onChange={(v) => { const g = [...data.groups]; g[gi].projects[pi] = { ...p, solution: v }; setData({ ...data, groups: g }) }} rows={3} />
+                            <Field label="Collab — 이해관계자 협업" value={p.collaboration || ''} onChange={(v) => { const g = [...data.groups]; g[gi].projects[pi] = { ...p, collaboration: v }; setData({ ...data, groups: g }) }} rows={3} />
+                            <Field label="Result — 최종 결과" value={p.result || ''} onChange={(v) => { const g = [...data.groups]; g[gi].projects[pi] = { ...p, result: v }; setData({ ...data, groups: g }) }} rows={3} />
+                          </div>
+                        </div>
+
+                        {/* 부가 정보 */}
+                        <div>
+                          <p className="text-xs text-gray-500 font-medium mb-2">부가 정보</p>
+                          <Field label="인사이트" value={p.insight || ''} onChange={(v) => { const g = [...data.groups]; g[gi].projects[pi] = { ...p, insight: v }; setData({ ...data, groups: g }) }} rows={3} />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )
+              })}
+            </div>
+            <button onClick={() => { const g = [...data.groups]; g[gi] = { ...group, projects: [...(group.projects || []), { id: `p-${Date.now()}`, badge: '', badgeType: 'ai', title: '', subtitle: '', problem: '', solution: '', collaboration: '', result: '', insight: '', metrics: [], highlights: [], fullWidth: false }] }; setData({ ...data, groups: g }); setExpanded(prev => ({ ...prev, [`${gi}-${(group.projects || []).length}`]: true })) }} className="text-xs text-accent hover:text-accent-light cursor-pointer">+ 프로젝트 추가</button>
           </div>
         ))}
         <button onClick={() => setData({ ...data, groups: [...(data.groups || []), { title: '', subtitle: '', projects: [] }] })} className="px-4 py-2 border border-accent text-accent hover:bg-accent/10 text-sm rounded-lg transition-colors cursor-pointer">+ 그룹 추가</button>
