@@ -478,7 +478,9 @@ function parseOS(ua) {
 function TokensSection() {
   const [tokens, setTokens] = useState(getAccessTokens)
   const [label, setLabel] = useState('')
+  const [expMode, setExpMode] = useState('days') // 'days' or 'datetime'
   const [expDays, setExpDays] = useState(7)
+  const [expDatetime, setExpDatetime] = useState('')
   const [expandedToken, setExpandedToken] = useState(null)
   const [toast, setToast] = useState('')
 
@@ -491,7 +493,17 @@ function TokensSection() {
 
   const handleCreate = () => {
     if (!label.trim()) return
-    const expiresAt = Date.now() + expDays * 24 * 60 * 60 * 1000
+    let expiresAt
+    if (expMode === 'datetime' && expDatetime) {
+      // datetime-local gives local time string, parse as KST
+      expiresAt = new Date(expDatetime).getTime()
+      if (isNaN(expiresAt) || expiresAt <= Date.now()) {
+        flash('만료 시점이 현재보다 미래여야 합니다')
+        return
+      }
+    } else {
+      expiresAt = Date.now() + expDays * 24 * 60 * 60 * 1000
+    }
     const token = createAccessToken(label.trim(), expiresAt)
     setLabel('')
     refresh()
@@ -513,9 +525,38 @@ function TokensSection() {
 
       <div className="bg-gray-900 rounded-xl p-5 mb-6">
         <h3 className="text-sm font-semibold text-accent mb-3">새 토큰 생성</h3>
-        <div className="flex gap-3 items-end flex-wrap">
-          <Field label="라벨 (예: 홍길동)" value={label} onChange={setLabel} className="flex-1 min-w-[160px]" />
-          <Field label="유효기간 (일)" value={expDays} type="number" onChange={(v) => setExpDays(parseInt(v) || 1)} className="w-28" />
+        <div className="space-y-3">
+          <Field label="라벨 (예: 홍길동)" value={label} onChange={setLabel} className="max-w-xs" />
+          <div>
+            <label className="block text-xs text-gray-500 mb-2">만료 설정</label>
+            <div className="flex gap-2 mb-2">
+              <button
+                onClick={() => setExpMode('days')}
+                className={`px-3 py-1.5 text-xs rounded-lg transition-colors cursor-pointer ${expMode === 'days' ? 'bg-accent text-white' : 'bg-gray-800 text-gray-400 hover:text-white'}`}
+              >
+                일 수
+              </button>
+              <button
+                onClick={() => setExpMode('datetime')}
+                className={`px-3 py-1.5 text-xs rounded-lg transition-colors cursor-pointer ${expMode === 'datetime' ? 'bg-accent text-white' : 'bg-gray-800 text-gray-400 hover:text-white'}`}
+              >
+                날짜·시간 지정
+              </button>
+            </div>
+            {expMode === 'days' ? (
+              <div className="flex items-end gap-2">
+                <Field label="" value={expDays} type="number" onChange={(v) => setExpDays(parseInt(v) || 1)} className="w-24" />
+                <span className="text-xs text-gray-500 pb-2.5">일 후 만료</span>
+              </div>
+            ) : (
+              <input
+                type="datetime-local"
+                value={expDatetime}
+                onChange={(e) => setExpDatetime(e.target.value)}
+                className="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-accent transition-colors"
+              />
+            )}
+          </div>
           <button onClick={handleCreate} className="px-4 py-2 bg-accent hover:bg-accent-light text-white text-sm font-medium rounded-lg transition-colors cursor-pointer whitespace-nowrap">생성</button>
         </div>
       </div>

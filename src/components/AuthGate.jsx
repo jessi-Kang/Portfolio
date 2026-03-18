@@ -58,7 +58,7 @@ export default function AuthGate({ onSuccess }) {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.15 }}
-        className="relative text-3xl md:text-5xl lg:text-6xl font-bold leading-tight max-w-4xl"
+        className="relative text-2xl md:text-4xl lg:text-5xl font-bold leading-tight max-w-4xl"
       >
         {headlineParts.length > 1 ? (
           <>
@@ -75,7 +75,7 @@ export default function AuthGate({ onSuccess }) {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.3 }}
-        className="relative mt-4 text-gray-400 text-base md:text-lg max-w-2xl"
+        className="relative mt-4 text-gray-400 text-sm md:text-base max-w-2xl"
       >
         {config.subtitle}
       </motion.p>
