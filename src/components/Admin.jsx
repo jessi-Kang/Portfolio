@@ -195,6 +195,57 @@ function ImportExportBar({ onImport, onExport, onSample, importLabel = 'JSON 가
 /* ─── Sub-editors ─── */
 
 
+/* ─── Resume Sub-editors (defined outside to avoid remount on state change) ─── */
+
+function EducationEditor({ item, onChange, onRemove }) {
+  return (
+    <div className="bg-gray-800/50 rounded-lg p-3">
+      <div className="flex justify-between items-start gap-2">
+        <div className="grid grid-cols-2 gap-2 flex-1 sm:grid-cols-3">
+          <Field label="학교" value={item.school} onChange={(v) => onChange({ ...item, school: v })} />
+          <Field label="학위" value={item.degree} onChange={(v) => onChange({ ...item, degree: v })} />
+          <Field label="기간" value={item.period} onChange={(v) => onChange({ ...item, period: v })} />
+        </div>
+        <button onClick={onRemove} className="shrink-0 mt-5 px-2 py-1 text-red-400 hover:text-red-300 cursor-pointer">✕</button>
+      </div>
+    </div>
+  )
+}
+
+function WorkEditor({ item, onChange, onRemove }) {
+  return (
+    <div className="bg-gray-800/50 rounded-lg p-3 space-y-2">
+      <div className="flex justify-between items-start gap-2">
+        <div className="grid grid-cols-2 gap-2 flex-1 sm:grid-cols-3">
+          <Field label="회사" value={item.company} onChange={(v) => onChange({ ...item, company: v })} />
+          <Field label="직함" value={item.title} onChange={(v) => onChange({ ...item, title: v })} />
+          <Field label="기간" value={item.period} onChange={(v) => onChange({ ...item, period: v })} />
+        </div>
+        <button onClick={onRemove} className="shrink-0 mt-5 px-2 py-1 text-red-400 hover:text-red-300 cursor-pointer">✕</button>
+      </div>
+      <Field label="설명 (마크다운)" value={item.description} onChange={(v) => onChange({ ...item, description: v })} rows={2} />
+      {item.leaveNote !== undefined && (
+        <Field label="퇴사 사유" value={item.leaveNote || ''} onChange={(v) => onChange({ ...item, leaveNote: v })} />
+      )}
+    </div>
+  )
+}
+
+function ActivityEditor({ item, onChange, onRemove }) {
+  return (
+    <div className="bg-gray-800/50 rounded-lg p-3">
+      <div className="flex justify-between items-start gap-2">
+        <div className="grid grid-cols-2 gap-2 flex-1 sm:grid-cols-3">
+          <Field label="연도" value={item.year} onChange={(v) => onChange({ ...item, year: v })} className="w-24" />
+          <Field label="카테고리" value={item.category} onChange={(v) => onChange({ ...item, category: v })} />
+          <Field label="내용" value={item.summary} onChange={(v) => onChange({ ...item, summary: v })} />
+        </div>
+        <button onClick={onRemove} className="shrink-0 mt-5 px-2 py-1 text-red-400 hover:text-red-300 cursor-pointer">✕</button>
+      </div>
+    </div>
+  )
+}
+
 /* ─── Resume Section ─── */
 
 function ResumeSection() {
@@ -233,46 +284,6 @@ function ResumeSection() {
     setConfig({ ...config, ...data })
     flash('가져오기 완료 — 저장 버튼을 눌러주세요')
   }
-
-  const EducationEditor = ({ item, onChange, onRemove }) => (
-    <div className="bg-gray-800/50 rounded-lg p-3">
-      <div className="flex justify-between items-start gap-2">
-        <div className="grid grid-cols-2 gap-2 flex-1 sm:grid-cols-3">
-          <Field label="학교" value={item.school} onChange={(v) => onChange({ ...item, school: v })} />
-          <Field label="학위" value={item.degree} onChange={(v) => onChange({ ...item, degree: v })} />
-          <Field label="기간" value={item.period} onChange={(v) => onChange({ ...item, period: v })} />
-        </div>
-        <button onClick={onRemove} className="shrink-0 mt-5 px-2 py-1 text-red-400 hover:text-red-300 cursor-pointer">✕</button>
-      </div>
-    </div>
-  )
-
-  const WorkEditor = ({ item, onChange, onRemove }) => (
-    <div className="bg-gray-800/50 rounded-lg p-3 space-y-2">
-      <div className="flex justify-between items-start gap-2">
-        <div className="grid grid-cols-2 gap-2 flex-1 sm:grid-cols-3">
-          <Field label="회사" value={item.company} onChange={(v) => onChange({ ...item, company: v })} />
-          <Field label="직함" value={item.title} onChange={(v) => onChange({ ...item, title: v })} />
-          <Field label="기간" value={item.period} onChange={(v) => onChange({ ...item, period: v })} />
-        </div>
-        <button onClick={onRemove} className="shrink-0 mt-5 px-2 py-1 text-red-400 hover:text-red-300 cursor-pointer">✕</button>
-      </div>
-      <Field label="설명" value={item.description} onChange={(v) => onChange({ ...item, description: v })} rows={2} />
-    </div>
-  )
-
-  const ActivityEditor = ({ item, onChange, onRemove }) => (
-    <div className="bg-gray-800/50 rounded-lg p-3">
-      <div className="flex justify-between items-start gap-2">
-        <div className="grid grid-cols-2 gap-2 flex-1 sm:grid-cols-3">
-          <Field label="연도" value={item.year} onChange={(v) => onChange({ ...item, year: v })} className="w-24" />
-          <Field label="카테고리" value={item.category} onChange={(v) => onChange({ ...item, category: v })} />
-          <Field label="내용" value={item.summary} onChange={(v) => onChange({ ...item, summary: v })} />
-        </div>
-        <button onClick={onRemove} className="shrink-0 mt-5 px-2 py-1 text-red-400 hover:text-red-300 cursor-pointer">✕</button>
-      </div>
-    </div>
-  )
 
   return (
     <div>
