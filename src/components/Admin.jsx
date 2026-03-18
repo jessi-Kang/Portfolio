@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react'
 import { loadCaseStudies, saveCaseStudies, resetCaseStudies, defaultCaseStudies } from '../data/caseStudies'
+import { loadProjects, saveProjects, resetProjects, defaultProjects } from '../data/projects'
 import {
   getAccessTokens,
   createAccessToken,
@@ -19,6 +20,12 @@ import {
   loadContactConfig,
   saveContactConfig,
   resetContactConfig,
+  loadAboutConfig,
+  saveAboutConfig,
+  resetAboutConfig,
+  loadAchievementsConfig,
+  saveAchievementsConfig,
+  resetAchievementsConfig,
   clearAdminSession,
   setupAdminPasscode,
   verifyAdminPasscode,
@@ -30,8 +37,10 @@ import {
 
 const NAV_ITEMS = [
   { group: '콘텐츠', items: [
-    { id: 'cases', label: '케이스 스터디', icon: '📊' },
-    { id: 'resume', label: '이력서', icon: '📄' },
+    { id: 'projects', label: '프로젝트', icon: '🚀' },
+    { id: 'resume', label: '경력·학력', icon: '📄' },
+    { id: 'about', label: '소개', icon: '👋' },
+    { id: 'achievements', label: '핵심 성과', icon: '🏆' },
   ]},
   { group: '페이지 설정', items: [
     { id: 'hero', label: '히어로', icon: '🏠' },
@@ -805,11 +814,198 @@ function AccountSection({ onLogout }) {
   )
 }
 
+/* ─── Projects Section ─── */
+
+function ProjectsSection() {
+  const [data, setData] = useState(loadProjects)
+  const [toast, setToast] = useState('')
+
+  const flash = (msg) => { setToast(msg); setTimeout(() => setToast(''), 2000) }
+
+  const handleSave = () => { saveProjects(data); flash('프로젝트 저장 완료') }
+  const handleReset = () => { if (confirm('초기화하시겠습니까?')) { resetProjects(); setData(loadProjects()); flash('초기화 완료') } }
+
+  const handleImport = async (file) => {
+    const imported = await importJson(file)
+    setData(imported)
+    flash('가져오기 완료 — 저장 버튼을 눌러주세요')
+  }
+
+  return (
+    <div>
+      <SectionHeader title="프로젝트" description="Featured Projects 섹션에 표시될 프로젝트를 관리합니다. JSON으로 편집하세요." />
+      <ActionBar>
+        <SaveButton onClick={handleSave} />
+        <ResetButton onClick={handleReset} />
+        <div className="flex-1" />
+        <ImportExportBar
+          onImport={handleImport}
+          onExport={() => downloadJson(data, 'projects.json')}
+          onSample={() => downloadJson(defaultProjects, 'projects-sample.json')}
+        />
+      </ActionBar>
+      <div className="space-y-4">
+        {data.groups?.map((group, gi) => (
+          <div key={gi} className="bg-gray-900 rounded-xl p-5 space-y-3">
+            <div className="flex items-center gap-2">
+              <span className="text-accent font-mono text-xs">Group {gi + 1}</span>
+              <span className="text-white font-semibold text-sm flex-1 truncate">{group.title}</span>
+              <button onClick={() => setData({ ...data, groups: data.groups.filter((_, i) => i !== gi) })} className="text-xs text-red-400 hover:text-red-300 cursor-pointer">삭제</button>
+            </div>
+            <Field label="그룹 제목" value={group.title} onChange={(v) => { const g = [...data.groups]; g[gi] = { ...group, title: v }; setData({ ...data, groups: g }) }} />
+            <Field label="그룹 부제" value={group.subtitle} onChange={(v) => { const g = [...data.groups]; g[gi] = { ...group, subtitle: v }; setData({ ...data, groups: g }) }} />
+            <p className="text-xs text-gray-600">프로젝트 {group.projects?.length || 0}개</p>
+            {group.projects?.map((p, pi) => (
+              <div key={pi} className="bg-gray-800/50 rounded-lg p-3 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium text-white truncate">{p.title || '새 프로젝트'}</span>
+                  <button onClick={() => { const g = [...data.groups]; g[gi] = { ...group, projects: group.projects.filter((_, i) => i !== pi) }; setData({ ...data, groups: g }) }} className="text-xs text-red-400 cursor-pointer">✕</button>
+                </div>
+                <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+                  <Field label="배지" value={p.badge || ''} onChange={(v) => { const g = [...data.groups]; g[gi].projects[pi] = { ...p, badge: v }; setData({ ...data, groups: g }) }} />
+                  <Field label="배지타입(ai/data/ux/ops)" value={p.badgeType || ''} onChange={(v) => { const g = [...data.groups]; g[gi].projects[pi] = { ...p, badgeType: v }; setData({ ...data, groups: g }) }} />
+                  <Field label="제목" value={p.title || ''} onChange={(v) => { const g = [...data.groups]; g[gi].projects[pi] = { ...p, title: v }; setData({ ...data, groups: g }) }} />
+                  <Field label="부제" value={p.subtitle || ''} onChange={(v) => { const g = [...data.groups]; g[gi].projects[pi] = { ...p, subtitle: v }; setData({ ...data, groups: g }) }} />
+                </div>
+                <Field label="설명 (마크다운)" value={p.description || ''} onChange={(v) => { const g = [...data.groups]; g[gi].projects[pi] = { ...p, description: v }; setData({ ...data, groups: g }) }} rows={3} />
+              </div>
+            ))}
+            <button onClick={() => { const g = [...data.groups]; g[gi] = { ...group, projects: [...(group.projects || []), { id: `p-${Date.now()}`, badge: '', badgeType: 'ai', title: '', subtitle: '', description: '', metrics: [], highlights: [], fullWidth: false }] }; setData({ ...data, groups: g }) }} className="text-xs text-accent hover:text-accent-light cursor-pointer">+ 프로젝트 추가</button>
+          </div>
+        ))}
+        <button onClick={() => setData({ ...data, groups: [...(data.groups || []), { title: '', subtitle: '', projects: [] }] })} className="px-4 py-2 border border-accent text-accent hover:bg-accent/10 text-sm rounded-lg transition-colors cursor-pointer">+ 그룹 추가</button>
+      </div>
+      <Toast message={toast} />
+    </div>
+  )
+}
+
+/* ─── About Section ─── */
+
+function AboutSection() {
+  const [config, setConfig] = useState(loadAboutConfig)
+  const [toast, setToast] = useState('')
+  const [skillInput, setSkillInput] = useState('')
+
+  const flash = (msg) => { setToast(msg); setTimeout(() => setToast(''), 2000) }
+  const update = (key, value) => setConfig({ ...config, [key]: value })
+
+  const handleSave = () => { saveAboutConfig(config); flash('소개 저장 완료') }
+  const handleReset = () => { if (confirm('초기화하시겠습니까?')) { resetAboutConfig(); setConfig(loadAboutConfig()); flash('초기화 완료') } }
+
+  const addSkill = () => {
+    if (!skillInput.trim()) return
+    const skills = [...(config.skills || []), { label: skillInput.trim(), category: 'default' }]
+    setConfig({ ...config, skills })
+    setSkillInput('')
+  }
+
+  const removeSkill = (i) => {
+    setConfig({ ...config, skills: config.skills.filter((_, idx) => idx !== i) })
+  }
+
+  return (
+    <div>
+      <SectionHeader title="소개" description="About 섹션의 내용을 설정합니다" />
+      <ActionBar>
+        <SaveButton onClick={handleSave} />
+        <ResetButton onClick={handleReset} />
+      </ActionBar>
+      <div className="space-y-4 max-w-2xl">
+        <Field label="섹션 헤딩" value={config.heading || ''} onChange={(v) => update('heading', v)} rows={2} />
+        <div>
+          <label className="block text-xs text-gray-500 mb-1">바이오 (마크다운)</label>
+          <textarea
+            value={config.bio || ''}
+            onChange={(e) => update('bio', e.target.value)}
+            rows={8}
+            placeholder="마크다운으로 자기소개를 작성하세요..."
+            className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-sm text-white font-mono resize-y focus:outline-none focus:border-accent transition-colors"
+          />
+        </div>
+        <div>
+          <label className="block text-xs text-gray-500 mb-2">스킬 태그</label>
+          <div className="flex flex-wrap gap-2 mb-3">
+            {(config.skills || []).map((s, i) => {
+              const label = typeof s === 'string' ? s : s.label
+              return (
+                <span key={i} className="inline-flex items-center gap-1 px-2.5 py-1 bg-gray-800 text-gray-300 text-xs rounded-full">
+                  {label}
+                  <button onClick={() => removeSkill(i)} className="text-gray-500 hover:text-red-400 cursor-pointer">✕</button>
+                </span>
+              )
+            })}
+          </div>
+          <div className="flex gap-2">
+            <input value={skillInput} onChange={(e) => setSkillInput(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addSkill())} placeholder="스킬 이름 입력 후 Enter" className="flex-1 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-accent" />
+            <button onClick={addSkill} className="px-3 py-2 bg-accent text-white text-sm rounded-lg cursor-pointer">추가</button>
+          </div>
+        </div>
+      </div>
+      <Toast message={toast} />
+    </div>
+  )
+}
+
+/* ─── Achievements Section ─── */
+
+function AchievementsSection() {
+  const [config, setConfig] = useState(loadAchievementsConfig)
+  const [toast, setToast] = useState('')
+
+  const flash = (msg) => { setToast(msg); setTimeout(() => setToast(''), 2000) }
+
+  const handleSave = () => { saveAchievementsConfig(config); flash('핵심 성과 저장 완료') }
+  const handleReset = () => { if (confirm('초기화하시겠습니까?')) { resetAchievementsConfig(); setConfig(loadAchievementsConfig()); flash('초기화 완료') } }
+
+  const items = config.items || []
+
+  const updateItem = (i, updated) => {
+    const arr = [...items]; arr[i] = updated
+    setConfig({ ...config, items: arr })
+  }
+
+  const removeItem = (i) => setConfig({ ...config, items: items.filter((_, idx) => idx !== i) })
+
+  const addItem = () => setConfig({ ...config, items: [...items, { icon: '🎯', iconBg: '#1f2937', title: '', description: '' }] })
+
+  return (
+    <div>
+      <SectionHeader title="핵심 성과" description="Achievements 섹션에 표시될 성과 카드를 관리합니다" />
+      <ActionBar>
+        <SaveButton onClick={handleSave} />
+        <ResetButton onClick={handleReset} />
+        <button onClick={addItem} className="px-4 py-2 border border-accent text-accent hover:bg-accent/10 text-sm rounded-lg transition-colors cursor-pointer">+ 성과 추가</button>
+      </ActionBar>
+      <div className="space-y-3">
+        {items.map((item, i) => (
+          <div key={i} className="bg-gray-900 rounded-xl p-4 space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-lg">{item.icon}</span>
+              <button onClick={() => removeItem(i)} className="text-xs text-red-400 hover:text-red-300 cursor-pointer">삭제</button>
+            </div>
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+              <Field label="아이콘 (이모지)" value={item.icon} onChange={(v) => updateItem(i, { ...item, icon: v })} />
+              <Field label="배경색" value={item.iconBg || '#1f2937'} onChange={(v) => updateItem(i, { ...item, iconBg: v })} />
+              <Field label="제목" value={item.title} onChange={(v) => updateItem(i, { ...item, title: v })} />
+            </div>
+            <Field label="설명" value={item.description} onChange={(v) => updateItem(i, { ...item, description: v })} rows={2} />
+          </div>
+        ))}
+        {items.length === 0 && <p className="text-xs text-gray-600 py-4 text-center">항목이 없습니다</p>}
+      </div>
+      <Toast message={toast} />
+    </div>
+  )
+}
+
 /* ─── Main Admin ─── */
 
 const SECTION_MAP = {
-  cases: CasesSection,
+  projects: ProjectsSection,
   resume: ResumeSection,
+  about: AboutSection,
+  achievements: AchievementsSection,
   hero: HeroSection,
   authgate: AuthGateSection,
   contact: ContactSection,
@@ -818,7 +1014,7 @@ const SECTION_MAP = {
 }
 
 export default function Admin({ onLogout, onViewPortfolio }) {
-  const [activeSection, setActiveSection] = useState('cases')
+  const [activeSection, setActiveSection] = useState('projects')
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   const handleLogout = () => { clearAdminSession(); onLogout() }

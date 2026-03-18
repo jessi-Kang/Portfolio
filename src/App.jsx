@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Hero from './components/Hero'
-import Timeline from './components/Timeline'
-import CaseStudies from './components/CaseStudies'
+import About from './components/About'
+import Projects from './components/Projects'
+import Experience from './components/Experience'
+import Achievements from './components/Achievements'
 import Resume from './components/Resume'
 import Contact from './components/Contact'
 import Admin from './components/Admin'
@@ -112,8 +114,10 @@ function App() {
     <div className="min-h-screen bg-gray-950 text-gray-100 font-sans">
       <TokenExpiryBanner expiresAt={tokenExpiresAt} />
       <Hero />
-      <Timeline />
-      <CaseStudies />
+      <About />
+      <Projects />
+      <Experience />
+      <Achievements />
       <Resume />
       <Contact />
     </div>

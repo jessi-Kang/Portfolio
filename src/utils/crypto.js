@@ -293,6 +293,62 @@ export function resetHeroConfig() {
   return defaultHeroConfig
 }
 
+// --- About Config ---
+
+const ABOUT_KEY = 'portfolio_about_config'
+
+const defaultAboutConfig = {
+  heading: '사용자와 비즈니스 사이의\n균형을 설계합니다',
+  bio: '',
+  skills: [],
+}
+
+export function loadAboutConfig() {
+  try {
+    const raw = localStorage.getItem(ABOUT_KEY)
+    if (raw) return { ...defaultAboutConfig, ...JSON.parse(raw) }
+  } catch {}
+  return defaultAboutConfig
+}
+
+export function saveAboutConfig(config) {
+  localStorage.setItem(ABOUT_KEY, JSON.stringify(config))
+  cloudSet('about', config)
+}
+
+export function resetAboutConfig() {
+  localStorage.removeItem(ABOUT_KEY)
+  cloudDelete('about')
+  return defaultAboutConfig
+}
+
+// --- Achievements Config ---
+
+const ACHIEVEMENTS_KEY = 'portfolio_achievements_config'
+
+const defaultAchievementsConfig = {
+  items: [],
+}
+
+export function loadAchievementsConfig() {
+  try {
+    const raw = localStorage.getItem(ACHIEVEMENTS_KEY)
+    if (raw) return { ...defaultAchievementsConfig, ...JSON.parse(raw) }
+  } catch {}
+  return defaultAchievementsConfig
+}
+
+export function saveAchievementsConfig(config) {
+  localStorage.setItem(ACHIEVEMENTS_KEY, JSON.stringify(config))
+  cloudSet('achievements', config)
+}
+
+export function resetAchievementsConfig() {
+  localStorage.removeItem(ACHIEVEMENTS_KEY)
+  cloudDelete('achievements')
+  return defaultAchievementsConfig
+}
+
 // --- Contact Config ---
 
 const CONTACT_KEY = 'portfolio_contact_config'

@@ -2,11 +2,11 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import TypingAnimation from './ui/TypingAnimation'
 import { loadHeroConfig, loadResumeConfig } from '../utils/crypto'
-import { loadCaseStudies } from '../data/caseStudies'
+import { loadProjects } from '../data/projects'
 
 export default function Hero() {
   const [hero] = useState(loadHeroConfig)
-  const hasCases = loadCaseStudies().some((s) => s.title)
+  const hasProjects = loadProjects().groups?.some((g) => g.projects?.some((p) => p.title))
   const resume = loadResumeConfig()
   const hasResume =
     resume.education?.some((e) => e.school) ||
@@ -17,6 +17,8 @@ export default function Hero() {
   const scrollTo = (id) => {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
   }
+
+  const stats = hero.stats || []
 
   return (
     <section className="relative min-h-screen flex flex-col items-center justify-center px-6 text-center overflow-hidden">
@@ -38,10 +40,7 @@ export default function Hero() {
         transition={{ duration: 0.6, delay: 0.2 }}
         className="text-3xl md:text-5xl lg:text-6xl font-bold leading-tight max-w-4xl"
       >
-        <TypingAnimation
-          text={hero.headline}
-          speed={60}
-        />
+        <TypingAnimation text={hero.headline} speed={60} />
       </motion.h1>
 
       <motion.p
@@ -53,18 +52,36 @@ export default function Hero() {
         {hero.subtitle}
       </motion.p>
 
-      {(hasCases || hasResume) && (
+      {/* Stats */}
+      {stats.length > 0 && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.6 }}
-          className="mt-10 flex items-center gap-3"
+          transition={{ duration: 0.6, delay: 0.55 }}
+          className="mt-10 flex gap-8 md:gap-12 flex-wrap justify-center"
         >
-          {hasCases && (
+          {stats.map((stat, i) => (
+            <div key={i} className="text-center">
+              <div className="text-3xl md:text-4xl font-bold text-white">{stat.num}</div>
+              <div className="text-xs text-gray-500 tracking-wide mt-1">{stat.label}</div>
+            </div>
+          ))}
+        </motion.div>
+      )}
+
+      {/* CTA Buttons */}
+      {(hasProjects || hasResume) && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.7 }}
+          className="mt-10 flex items-center gap-3 flex-wrap justify-center"
+        >
+          {hasProjects && (
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              onClick={() => scrollTo('case-studies')}
+              onClick={() => scrollTo('projects')}
               className="px-8 py-3 bg-accent hover:bg-accent-light text-white font-medium rounded-full transition-colors cursor-pointer"
             >
               {hero.ctaText}
@@ -74,11 +91,31 @@ export default function Hero() {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              onClick={() => scrollTo('resume')}
+              onClick={() => scrollTo('experience')}
               className="px-8 py-3 border border-gray-700 hover:border-accent text-gray-300 hover:text-accent font-medium rounded-full transition-colors cursor-pointer"
             >
               Resume
             </motion.button>
+          )}
+          {hero.email && (
+            <motion.a
+              href={`mailto:${hero.email}`}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="px-8 py-3 border border-gray-700 hover:border-accent text-gray-300 hover:text-accent font-medium rounded-full transition-colors"
+            >
+              {hero.email}
+            </motion.a>
+          )}
+          {hero.phone && (
+            <motion.a
+              href={`tel:${hero.phone}`}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="px-8 py-3 border border-gray-700 hover:border-accent text-gray-300 hover:text-accent font-medium rounded-full transition-colors"
+            >
+              {hero.phone}
+            </motion.a>
           )}
         </motion.div>
       )}

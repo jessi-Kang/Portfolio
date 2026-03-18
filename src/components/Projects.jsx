@@ -1,0 +1,37 @@
+import { useState } from 'react'
+import SectionWrapper from './ui/SectionWrapper'
+import ProjectCard from './ProjectCard'
+import { loadProjects } from '../data/projects'
+
+export default function Projects() {
+  const [data] = useState(loadProjects)
+  const hasContent = data.groups?.some((g) => g.projects?.some((p) => p.title))
+
+  if (!hasContent) return null
+
+  return (
+    <SectionWrapper id="projects">
+      <p className="text-accent text-xs font-mono tracking-widest uppercase mb-2">Featured Projects</p>
+      <h2 className="text-2xl md:text-3xl font-bold mb-12">최근 프로젝트</h2>
+
+      <div className="space-y-16">
+        {data.groups.map((group, gi) => (
+          <div key={gi}>
+            {/* Group Header */}
+            <div className="mb-6">
+              <h3 className="text-base font-bold text-white">{group.title}</h3>
+              <p className="text-sm text-gray-500 mt-0.5">{group.subtitle}</p>
+            </div>
+
+            {/* Project Cards Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {group.projects.map((project) => (
+                <ProjectCard key={project.id} project={project} />
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </SectionWrapper>
+  )
+}
