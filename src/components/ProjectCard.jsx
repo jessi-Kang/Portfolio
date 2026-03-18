@@ -63,9 +63,7 @@ export default function ProjectCard({ project }) {
 
   return (
     <div
-      className={`bg-gray-900 border border-gray-800 rounded-2xl p-6 md:p-8 hover:border-accent/40 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-accent/5 ${
-        project.fullWidth ? 'col-span-full' : ''
-      }`}
+      className="bg-gray-900 border border-gray-800 rounded-2xl p-6 md:p-8 hover:border-accent/40 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-accent/5"
     >
       {/* Header: Badge + Title + Subtitle + Inline Highlights */}
       <div className="mb-1">

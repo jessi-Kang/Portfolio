@@ -41,7 +41,7 @@ export const defaultProjects = {
           insight: '초기 단계 서비스일수록 명확한 운영 기준이 속도를 높입니다. 정책 문서화는 비용이 아니라 투자입니다.',
           metrics: ['10개+ 트랙 병행', '31개 리텐션 아이디어', '3대 정책', 'IP 프레임워크'],
           highlights: [],
-          fullWidth: true,
+          fullWidth: false,
         },
         {
           id: 'review-backlog',
@@ -86,7 +86,7 @@ export const defaultProjects = {
             { value: '+39.7%', label: '일 클릭수' },
             { value: '+126%', label: 'Warm 유저 CTR' },
           ],
-          fullWidth: true,
+          fullWidth: false,
         },
       ],
     },
