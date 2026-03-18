@@ -24,19 +24,21 @@ function StoryTabs({ project }) {
   return (
     <div>
       {/* Tab buttons */}
-      <div className="flex gap-1.5 mb-4 overflow-x-auto scrollbar-hide">
-        {availableTabs.map((tab) => (
-          <button
-            key={tab.key}
-            onClick={() => setActive(tab.key)}
-            className={`px-2.5 py-1.5 text-xs font-medium rounded transition-colors cursor-pointer whitespace-nowrap ${
-              active === tab.key
-                ? 'text-white bg-gray-800/60'
-                : 'text-gray-500 hover:text-gray-400'
-            }`}
-          >
-            {tab.label}
-          </button>
+      <div className="flex items-center gap-1 mb-4 overflow-x-auto scrollbar-hide">
+        {availableTabs.map((tab, i) => (
+          <div key={tab.key} className="flex items-center">
+            {i > 0 && <span className="text-gray-600 text-[10px] mx-1 select-none">&rarr;</span>}
+            <button
+              onClick={() => setActive(tab.key)}
+              className={`px-2.5 py-1.5 text-xs font-medium rounded transition-colors cursor-pointer whitespace-nowrap ${
+                active === tab.key
+                  ? 'text-white bg-gray-800/60'
+                  : 'text-gray-500 hover:text-gray-400'
+              }`}
+            >
+              {tab.label}
+            </button>
+          </div>
         ))}
       </div>
 
