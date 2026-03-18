@@ -19,8 +19,8 @@ export default function Projects() {
           <div key={gi}>
             {/* Group Header */}
             <div className="mb-6">
-              <h3 className="text-base font-bold text-white">{group.title}</h3>
-              <p className="text-sm text-gray-500 mt-0.5">{group.subtitle}</p>
+              <h3 className="text-lg md:text-xl font-bold text-white">{group.title}</h3>
+              <p className="text-sm md:text-base text-gray-500 mt-1">{group.subtitle}</p>
             </div>
 
             {/* Project Cards Grid */}

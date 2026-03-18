@@ -43,7 +43,7 @@ export default function About() {
           <img
             src="/profile.jpg"
             alt="Profile"
-            className="w-28 h-28 sm:w-32 sm:h-32 rounded-2xl object-cover shrink-0 border border-gray-800"
+            className="w-36 h-36 md:w-44 md:h-44 rounded-2xl object-cover shrink-0 border border-gray-800"
             onError={(e) => { e.target.style.display = 'none' }}
           />
           {config.bio && (
