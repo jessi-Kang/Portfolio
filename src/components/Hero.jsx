@@ -21,7 +21,7 @@ export default function Hero() {
   const stats = hero.stats || []
 
   return (
-    <section className="relative min-h-[100dvh] flex flex-col items-center justify-center px-6 text-center overflow-hidden scroll-mt-0 snap-start">
+    <section className="relative min-h-[100dvh] flex flex-col items-center justify-center px-6 text-center overflow-hidden">
       {/* Background gradient */}
       <div className="absolute inset-0 bg-gradient-to-b from-accent/10 via-transparent to-transparent pointer-events-none" />
 
