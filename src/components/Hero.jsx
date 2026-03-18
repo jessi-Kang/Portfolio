@@ -97,26 +97,6 @@ export default function Hero() {
               Resume
             </motion.button>
           )}
-          {hero.email && (
-            <motion.a
-              href={`mailto:${hero.email}`}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="px-8 py-3 border border-gray-700 hover:border-accent text-gray-300 hover:text-accent font-medium rounded-full transition-colors"
-            >
-              {hero.email}
-            </motion.a>
-          )}
-          {hero.phone && (
-            <motion.a
-              href={`tel:${hero.phone}`}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="px-8 py-3 border border-gray-700 hover:border-accent text-gray-300 hover:text-accent font-medium rounded-full transition-colors"
-            >
-              {hero.phone}
-            </motion.a>
-          )}
         </motion.div>
       )}
 

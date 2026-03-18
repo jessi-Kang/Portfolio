@@ -10,6 +10,9 @@ import Contact from './components/Contact'
 import Admin from './components/Admin'
 import AuthGate from './components/AuthGate'
 import AdminLogin from './components/AdminLogin'
+import ScrollToTop from './components/ui/ScrollToTop'
+import LanguageSwitcher from './components/ui/LanguageSwitcher'
+import { I18nProvider } from './utils/i18n'
 import { isAdminSessionValid, ADMIN_PATH } from './utils/crypto'
 import { syncFromCloud, isCloudEnabled } from './utils/db'
 
@@ -111,16 +114,20 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-950 text-gray-100 font-sans">
-      <TokenExpiryBanner expiresAt={tokenExpiresAt} />
-      <Hero />
-      <About />
-      <Projects />
-      <Experience />
-      <Achievements />
-      <Resume />
-      <Contact />
-    </div>
+    <I18nProvider>
+      <div className="min-h-screen bg-gray-950 text-gray-100 font-sans" data-portfolio-content>
+        <TokenExpiryBanner expiresAt={tokenExpiresAt} />
+        <LanguageSwitcher />
+        <Hero />
+        <About />
+        <Projects />
+        <Experience />
+        <Achievements />
+        <Resume />
+        <Contact />
+        <ScrollToTop />
+      </div>
+    </I18nProvider>
   )
 }
 
