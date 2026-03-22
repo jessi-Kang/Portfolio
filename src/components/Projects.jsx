@@ -25,9 +25,16 @@ export default function Projects() {
 
             {/* Project Cards Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {group.projects.map((project) => (
-                <ProjectCard key={project.id} project={project} />
-              ))}
+              {group.projects.map((project, pi) => {
+                const isLast = pi === group.projects.length - 1
+                const isOdd = group.projects.length % 2 === 1
+                const span = (project.fullWidth || (isLast && isOdd)) ? 'md:col-span-2' : ''
+                return (
+                  <div key={project.id} className={span}>
+                    <ProjectCard project={project} />
+                  </div>
+                )
+              })}
             </div>
           </div>
         ))}
