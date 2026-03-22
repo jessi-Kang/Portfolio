@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import SectionWrapper from './ui/SectionWrapper'
+import MarkdownRenderer from './ui/MarkdownRenderer'
 import { loadAchievementsConfig } from '../utils/crypto'
 
 export default function Achievements() {
@@ -26,7 +27,7 @@ export default function Achievements() {
             </div>
             <div className="flex-1 min-w-0">
               <h4 className="text-base font-bold text-white mb-1 leading-snug">{item.title}</h4>
-              <p className="text-sm text-gray-400 leading-relaxed">{item.description}</p>
+              <div className="text-sm text-gray-400 leading-relaxed"><MarkdownRenderer content={item.description} /></div>
             </div>
           </div>
         ))}

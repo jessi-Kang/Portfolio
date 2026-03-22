@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import MarkdownRenderer from './ui/MarkdownRenderer'
 
 const BADGE_STYLES = {
   ai: 'bg-emerald-500/10 text-emerald-400',
@@ -43,9 +44,9 @@ function StoryTabs({ project }) {
       </div>
 
       {/* Tab content */}
-      <p className="text-sm md:text-[15px] leading-relaxed text-gray-300">
-        {project[active]}
-      </p>
+      <div className="text-sm md:text-[15px] leading-relaxed text-gray-300">
+        <MarkdownRenderer content={project[active]} />
+      </div>
     </div>
   )
 }
@@ -63,7 +64,7 @@ export default function ProjectCard({ project }) {
 
   return (
     <div
-      className="bg-gray-900 border border-gray-800 rounded-2xl p-6 md:p-8 hover:border-accent/40 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-accent/5"
+      className="h-full flex flex-col bg-gray-900 border border-gray-800 rounded-2xl p-6 md:p-8 hover:border-accent/40 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-accent/5"
     >
       {/* Header: Badge + Title + Subtitle + Inline Highlights */}
       <div className="mb-1">
@@ -88,33 +89,33 @@ export default function ProjectCard({ project }) {
 
       {/* Story Tabs */}
       {hasStory && (
-        <>
+        <div className="flex-1">
           <Divider />
           <StoryTabs project={project} />
-        </>
+        </div>
       )}
 
       {/* Legacy description fallback */}
       {!hasStory && project.description && (
-        <>
+        <div className="flex-1">
           <Divider />
-          <p className="text-sm md:text-base text-gray-400 leading-relaxed">{project.description}</p>
-        </>
+          <div className="text-sm md:text-base text-gray-400 leading-relaxed"><MarkdownRenderer content={project.description} /></div>
+        </div>
       )}
 
       {/* Insight */}
       {hasInsight && (
-        <div className="mt-5 flex gap-2.5 items-start">
+        <div className="mt-auto pt-5 flex gap-2.5 items-start">
           <svg className="w-3.5 h-3.5 text-accent/60 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 0 0-2.455 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z" />
           </svg>
-          <p className="text-xs text-gray-500 leading-relaxed italic">{project.insight}</p>
+          <div className="text-xs text-gray-500 leading-relaxed italic"><MarkdownRenderer content={project.insight} /></div>
         </div>
       )}
 
       {/* Metrics tags */}
       {hasMetrics && (
-        <div className="flex flex-wrap gap-1.5 mt-4">
+        <div className="flex flex-wrap gap-1.5 mt-auto pt-4">
           {project.metrics.map((m, i) => (
             <span key={i} className="text-[11px] px-2 py-0.5 text-gray-500 bg-gray-800/50 rounded">
               {m}
