@@ -240,51 +240,180 @@ export const defaultResumeConfig = {
   work: [
     {
       company: 'LINE+ Corporation',
-      title: 'PO / PM / UX 기획 | ABC Studio, Wallet Platform Plan',
+      title: 'Product Manager | ABC Studio, Wallet Platform Plan',
       period: '2020.06 ~ 현재',
-      description: '**AI Friends — AI 캐릭터 대화 서비스** (2024.10~현재) — LLM 기반 서비스 PM. 대화 품질 PoC로 DAU +81.8%, 심사 적체 59,277건 전건 해소(974만엔 절감), 2026 상반기 로드맵 수립\n\n**LINE Wallet Tab — Chirashi Module 추천 로직 개선** (2024.02~2025.09) — ML 추천 모델(FROST30) A/B 테스트 설계·검증. CTR +34.6%, UU CTR +81.2%\n\n**GetPoint Phase 6.1 — Wallet 콘텐츠 추천 고도화** (2025.09) — MLP30→FROST30 모델 교체 효과 검증. 전체 KPI 30%↑, Point SUM +29%\n\n**Demaecan Delivery Product Renewal** (2021.03~2022.12) — 배달 프로덕트 전면 리뉴얼(35명). 배달시간 34.8→27.9분, 자동화 0→95%, 운영인력 200→10명\n\n**Demaecan Consumer Product Renewal Plan** (2023.01~2023.04) — Consumer App·Web 리뉴얼 전략 수립, CXO 합의 도출\n\n**Demaecan Front App UX Renovation** (2023.01~2023.04) — Front App UX Renovation 방향 설계 및 경과 보고\n\n**PollWIKI Service Plan** (2020.06~2021.07) — FanWIKI Pivot 방향 수립, 신규 PollWIKI 상세 기획, Clova AI Studio 활용 설계\n\n**VVID Service Plan** (2020.06~2021.02) — Card/Collection Share 기능 설계, App Review·User Voice 수집 기획',
+      leaveNote: '휴직 2023.10.13 ~ 2024.01.01',
+      description: `### AI Friends — AI 캐릭터 대화 서비스 PM (2024.10~현재)
+- 대화 품질 개선 PoC → DAU +81.8%, 신규 유입 +101.9%
+- 심사 적체 59,277건 전건 해소 (974만엔 절감)
+- 서비스 정책·CMS·실험 체계·IP 협업 프레임워크 구축
+- 2026 상반기 로드맵 수립 (10+ 트랙)
+- 리텐션 전략 31개 아이디어 도출, AI 캐릭터 보호 시책, 현지화
+
+### LINE Wallet Tab — Chirashi Module 추천 로직 개선 (2024.02~2025.09)
+- ML 추천 모델(FROST30) A/B 테스트 설계·검증
+- CTR +34.6%, UU CTR +81.2%
+
+### GetPoint Phase 6.1 — Wallet 콘텐츠 추천 고도화 (2025.09)
+- MLP30→FROST30 모델 교체 효과 검증
+- 전체 KPI 30%↑, Point SUM +29%
+
+### Demaecan Delivery Product Renewal (2021.03~2022.12)
+- 배달 프로덕트 전면 리뉴얼 총괄 (35명)
+- Driver App 전면 리뉴얼 + ML 자동 배차
+- 배달시간 34.8→27.9분, 자동화 0→95%, 운영인력 200→10명
+
+### Demaecan Consumer Product Renewal Plan (2023.01~2023.04)
+- Consumer App·Web 리뉴얼 전략 수립, CXO 합의 도출
+
+### Demaecan Front App UX Renovation (2023.01~2023.04)
+- Front App UX Renovation 방향 설계 및 경과 보고
+
+### PollWIKI Service Plan (2020.06~2021.07)
+- FanWIKI Pivot 방향 수립, 신규 PollWIKI 상세 기획
+- Clova AI Studio 활용 설계
+
+### VVID Service Plan (2020.06~2021.02)
+- Card/Collection Share 기능 설계
+- App Review·User Voice 수집 기획`,
     },
     {
       company: '29CM (AplusB)',
       title: 'PM / UX 기획 | Service Lab.',
       period: '2018.12 ~ 2020.06',
-      description: '**첫 구매 쿠폰 개선** — App 주문건수 일평균 681% 증가(58→453건), 전체 쿠폰 사용률 280% 증가, 첫 구매 고객수 13% 증가\n\n**회원 인증 추가** — 본인인증 도입으로 20.2만명 인증 수집, 어뷰징 유저 탐지(동일 DI 58개 계정), 주문 37만건 정보 정제\n\n**멤버십 구조 개선** — 멤버십 혜택 구조 재설계, 리텐션 개선\n\n**쿠폰함 개선** — 쿠폰함 UX 개선, 사용 편의성 향상\n\n**상품 상세 페이지 가격 노출 방식 개선** — 가격 정보 노출 재설계\n\n**로그인/회원가입 이슈 대응**\n\n**파트너 대시보드 개선** — 기능 및 화면 설계\n\n**샘플 리뷰 기능 추가** — 기능 및 화면 설계\n\n**전담 반품 기능 기획** — 3PL 연동\n\n**티켓/숙박 상품(무형 상품) 판매 대응** — 기능 및 화면 설계\n\n**이용약관 및 개인정보 처리방침 개정**\n\n**Admin 개선** — 띠배너 운영툴, LookBook 등',
+      description: `### 첫 구매 쿠폰 개선
+- App 주문건수 일평균 681% 증가 (58→453건)
+- 전체 쿠폰 사용률 280% 증가, 첫 구매 고객수 13% 증가
+
+### 회원 인증 추가
+- 본인인증 도입 → 20.2만명 인증 수집
+- 어뷰징 유저 탐지 (동일 DI 58개 계정), 주문 37만건 정보 정제
+
+### 멤버십 구조 개선
+- 멤버십 혜택 구조 재설계, 리텐션 개선
+
+### 쿠폰함 개선
+- 쿠폰함 UX 개선, 사용 편의성 향상
+
+### 상품 상세 페이지 가격 노출 방식 개선
+- 가격 정보 노출 재설계
+
+### 로그인/회원가입 이슈 대응
+
+### 파트너 대시보드 개선
+- 기능 및 화면 설계
+
+### 샘플 리뷰 기능 추가
+- 기능 및 화면 설계
+
+### 전담 반품 기능 기획
+- 3PL 연동
+
+### 티켓/숙박 상품(무형 상품) 판매 대응
+- 기능 및 화면 설계
+
+### 이용약관 및 개인정보 처리방침 개정
+
+### Admin 개선
+- 띠배너 운영툴, LookBook 등`,
     },
     {
       company: 'NHN edu',
       title: 'PO / UX 기획 | 서비스 기획팀',
       period: '2016.09 ~ 2018.11',
-      description: '**S-CAT 서비스 신설** — 아이엠스쿨 내 신규 서비스 기획·설계\n\n**아이엠스쿨 앱 전체 개편 — 더보기 메뉴** 기획\n\n**아이엠티처 서비스 기획** — Today 영역, 회원 페이지, 자료실\n\n**안심학원 Front Page** 개발\n\n**결제 관리 / SNS 발송 포인트 관리 Admin** 설계\n\n**세금계산서 요청 기능** 설계\n\n**이용약관·개인정보 처리방침 전체 개정**\n\nMobile App 평점 하락 대응 기획 → 앱 평점 상승\n\n서비스 개선 TF 진행 (Usability Test 포함)\n\n**User Feedback 수집 기능** 설계 및 과제화 Flow 마련',
+      description: `### S-CAT 서비스 신설
+- 아이엠스쿨 내 신규 서비스 기획·설계
+
+### 아이엠스쿨 앱 전체 개편
+- 더보기 메뉴 기획
+
+### 아이엠티처 서비스 기획
+- Today 영역, 회원 페이지, 자료실
+
+### 안심학원 Front Page 개발
+
+### 결제 관리 / SNS 발송 포인트 관리 Admin 설계
+
+### 세금계산서 요청 기능 설계
+
+### 이용약관·개인정보 처리방침 전체 개정
+
+### Mobile App 평점 하락 대응 기획
+- 앱 평점 상승 달성
+
+### 서비스 개선 TF 진행
+- Usability Test 포함
+
+### User Feedback 수집 기능
+- 설계 및 과제화 Flow 마련`,
     },
     {
       company: 'Yello Travel',
       title: 'Manager / UX 기획 | UX팀',
       period: '2015.04 ~ 2016.04',
-      description: '우리펜션 Web Front·Back Office·펜션주 Admin 설계\n\n우리펜션 Mobile App 및 제주닷컴 Web Renewal PM',
+      description: `### 우리펜션 Web Front·Back Office·펜션주 Admin 설계
+
+### 우리펜션 Mobile App 및 제주닷컴 Web Renewal PM`,
     },
     {
       company: 'Studio April Rain',
       title: '대표 (1인 창업)',
       period: '2014.02 ~ 2015.03',
-      description: '아티스트-상품 제작자 중개 B2B/B2C 플랫폼 기획·운영\n\n서울시 창업지원 프로그램 \'챌린지 1000 프로젝트\' 6기 선발',
+      description: `### 아티스트-상품 제작자 중개 B2B/B2C 플랫폼
+- 기획·운영
+
+### 서울시 창업지원 프로그램
+- '챌린지 1000 프로젝트' 6기 선발`,
     },
     {
       company: 'Coupang',
       title: 'UX Design | UX Lab.',
       period: '2013.06 ~ 2014.01',
-      description: '**PC Web / Mobile 상품 후기 페이지 개선** 제안\n\n**Mobile PLP 사용성 개선** 제안\n\n**Mobile App 기본 구매 Flow 사용성 연구**\n\n**PC/Mobile PG 통합결제창 사용성 연구**\n\n**PC 상품 상세 페이지(PDP) 쉬운 옵션 선택방법 연구**\n\n**Mobile App PDP 옵션 다중 선택영역 사용성 연구**\n\n**PC/Mobile 할인쿠폰 영역 사용성 연구**\n\n서비스 개선 후 **구매전환율 상승** 달성',
+      description: `### PC Web / Mobile 상품 후기 페이지 개선
+
+### Mobile PLP 사용성 개선
+
+### Mobile App 기본 구매 Flow 사용성 연구
+
+### PC/Mobile PG 통합결제창 사용성 연구
+
+### PC 상품 상세 페이지(PDP) 쉬운 옵션 선택방법 연구
+
+### Mobile App PDP 옵션 다중 선택영역 사용성 연구
+
+### PC/Mobile 할인쿠폰 영역 사용성 연구
+
+> 서비스 개선 후 **구매전환율 상승** 달성`,
     },
     {
       company: 'SK planet',
       title: 'Manager / UX Design | 위치기반광고사업팀',
       period: '2011.12 ~ 2013.02',
-      description: '**Arounders 위치기반 광고 서비스** PM 및 UX 디자인\n\n**Arounders Admin Page 제작** — PM 및 디자인\n\n**Arounders Front Page 제작** — PM 및 디자인\n\n**홍보 영상 및 프린트물 디자인**\n\n**Mobile Web 디자인 및 퍼블리싱**\n\n**퍼블리셔별 광고 Inventory 개선** 제안\n\n서비스 성공적 런칭, Admin Page 사용성 향상',
+      description: `### Arounders 위치기반 광고 서비스
+- PM 및 UX 디자인
+
+### Arounders Admin Page 제작
+- PM 및 디자인
+
+### Arounders Front Page 제작
+- PM 및 디자인
+
+### 홍보 영상 및 프린트물 디자인
+
+### Mobile Web 디자인 및 퍼블리싱
+
+### 퍼블리셔별 광고 Inventory 개선 제안
+
+> 서비스 성공적 런칭, Admin Page 사용성 향상`,
     },
     {
       company: 'team interface',
       title: '인턴 / UI Design | UI컨설팅사업부',
       period: '2010.07 ~ 2010.08',
-      description: '**KT ucloud UI Design** — PC Client UI 디자인, Mobile App Splash View 시안, PC Client 가이드 문서\n\nucloud 리뉴얼 프로젝트 완료',
+      description: `### KT ucloud UI Design
+- PC Client UI 디자인
+- Mobile App Splash View 시안
+- PC Client 가이드 문서`,
     },
   ],
   activities: [
