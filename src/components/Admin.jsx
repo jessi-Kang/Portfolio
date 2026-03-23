@@ -212,7 +212,46 @@ function EducationEditor({ item, onChange, onRemove }) {
   )
 }
 
+function WorkProjectEditor({ project, onChange, onRemove, onMoveUp, onMoveDown, isFirst, isLast }) {
+  const [open, setOpen] = useState(false)
+  return (
+    <div className="bg-gray-900/50 rounded border border-gray-700/30 overflow-hidden">
+      <div className="flex items-center gap-2 px-3 py-2 cursor-pointer hover:bg-gray-800/40" onClick={() => setOpen(!open)}>
+        <svg className={`w-3 h-3 text-gray-500 shrink-0 transition-transform ${open ? 'rotate-90' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+        </svg>
+        <span className="text-xs text-gray-300 flex-1 truncate">{project.title || '새 프로젝트'}</span>
+        <div className="flex items-center gap-1 shrink-0" onClick={(e) => e.stopPropagation()}>
+          <button onClick={onMoveUp} disabled={isFirst} className="text-[10px] text-gray-400 hover:text-white disabled:text-gray-700 cursor-pointer disabled:cursor-default px-0.5">↑</button>
+          <button onClick={onMoveDown} disabled={isLast} className="text-[10px] text-gray-400 hover:text-white disabled:text-gray-700 cursor-pointer disabled:cursor-default px-0.5">↓</button>
+          <button onClick={onRemove} className="text-[10px] text-red-400 hover:text-red-300 cursor-pointer px-0.5 ml-1">✕</button>
+        </div>
+      </div>
+      {open && (
+        <div className="px-3 pb-3 pt-1 space-y-2">
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+            <Field label="제목" value={project.title || ''} onChange={(v) => onChange({ ...project, title: v })} />
+            <Field label="기간" value={project.period || ''} onChange={(v) => onChange({ ...project, period: v })} />
+            <Field label="역할" value={project.role || ''} onChange={(v) => onChange({ ...project, role: v })} />
+            <Field label="인원" value={project.team || ''} onChange={(v) => onChange({ ...project, team: v })} />
+          </div>
+          <Field label="주요 내용 (마크다운)" value={project.summary || ''} onChange={(v) => onChange({ ...project, summary: v })} rows={3} />
+          <Field label="성과 (마크다운)" value={project.result || ''} onChange={(v) => onChange({ ...project, result: v })} rows={2} />
+        </div>
+      )}
+    </div>
+  )
+}
+
 function WorkEditor({ item, onChange, onRemove }) {
+  const [showProjects, setShowProjects] = useState(false)
+  const projects = item.projects || []
+  const swap = (arr, i, j) => { const a = [...arr]; [a[i], a[j]] = [a[j], a[i]]; return a }
+  const updateProject = (idx, p) => { const ps = [...projects]; ps[idx] = p; onChange({ ...item, projects: ps }) }
+  const removeProject = (idx) => onChange({ ...item, projects: projects.filter((_, i) => i !== idx) })
+  const moveProject = (idx, dir) => { const j = idx + dir; if (j < 0 || j >= projects.length) return; onChange({ ...item, projects: swap(projects, idx, j) }) }
+  const addProject = () => onChange({ ...item, projects: [...projects, { title: '', period: '', role: '', team: '', summary: '', result: '' }] })
+
   return (
     <div className="bg-gray-800/50 rounded-lg p-3 space-y-2">
       <div className="flex justify-between items-start gap-2">
@@ -225,8 +264,33 @@ function WorkEditor({ item, onChange, onRemove }) {
       </div>
       <Field label="설명 (마크다운)" value={item.description} onChange={(v) => onChange({ ...item, description: v })} rows={2} />
       {item.leaveNote !== undefined && (
-        <Field label="퇴사 사유" value={item.leaveNote || ''} onChange={(v) => onChange({ ...item, leaveNote: v })} />
+        <Field label="휴직 메모" value={item.leaveNote || ''} onChange={(v) => onChange({ ...item, leaveNote: v })} />
       )}
+
+      {/* Projects sub-editor */}
+      <div className="pt-1">
+        <button onClick={() => setShowProjects(!showProjects)} className="text-xs text-gray-500 hover:text-accent cursor-pointer flex items-center gap-1">
+          <span className="text-[10px]">{showProjects ? '▾' : '▸'}</span>
+          <span>프로젝트 상세 {projects.length}건</span>
+        </button>
+        {showProjects && (
+          <div className="mt-2 space-y-1.5">
+            {projects.map((p, pi) => (
+              <WorkProjectEditor
+                key={pi}
+                project={p}
+                onChange={(u) => updateProject(pi, u)}
+                onRemove={() => removeProject(pi)}
+                onMoveUp={() => moveProject(pi, -1)}
+                onMoveDown={() => moveProject(pi, 1)}
+                isFirst={pi === 0}
+                isLast={pi === projects.length - 1}
+              />
+            ))}
+            <button onClick={addProject} className="text-[10px] text-accent hover:text-accent-light cursor-pointer">+ 프로젝트 추가</button>
+          </div>
+        )}
+      </div>
     </div>
   )
 }
