@@ -136,6 +136,13 @@ export function createAccessToken(label, expiresAt) {
   return token
 }
 
+export function renameAccessToken(id, newLabel) {
+  const tokens = getAccessTokens().map((t) =>
+    t.id === id ? { ...t, label: newLabel } : t,
+  )
+  saveAccessTokens(tokens)
+}
+
 export function revokeAccessToken(id) {
   const tokens = getAccessTokens().filter((t) => t.id !== id)
   saveAccessTokens(tokens)

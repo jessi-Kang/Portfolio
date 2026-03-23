@@ -4,6 +4,7 @@ import { exportPortfolioPDF } from '../utils/pdfExport'
 import {
   getAccessTokens,
   createAccessToken,
+  renameAccessToken,
   revokeAccessToken,
   forceExpireToken,
   getAccessLogForToken,
@@ -245,7 +246,7 @@ function WorkProjectEditor({ project, onChange, onRemove, onMoveUp, onMoveDown, 
 }
 
 function WorkEditor({ item, onChange, onRemove }) {
-  const [showProjects, setShowProjects] = useState(false)
+  const [showProjects, setShowProjects] = useState(true)
   const projects = item.projects || []
   const swap = (arr, i, j) => { const a = [...arr]; [a[i], a[j]] = [a[j], a[i]]; return a }
   const updateProject = (idx, p) => { const ps = [...projects]; ps[idx] = p; onChange({ ...item, projects: ps }) }
@@ -552,10 +553,22 @@ function TokensSection() {
   const [expDays, setExpDays] = useState(7)
   const [expDatetime, setExpDatetime] = useState('')
   const [expandedToken, setExpandedToken] = useState(null)
+  const [editingLabel, setEditingLabel] = useState(null) // token id being renamed
+  const [editLabelValue, setEditLabelValue] = useState('')
   const [toast, setToast] = useState('')
 
   const flash = (msg) => { setToast(msg); setTimeout(() => setToast(''), 2000) }
   const refresh = () => setTokens(getAccessTokens())
+
+  const startRename = (t) => { setEditingLabel(t.id); setEditLabelValue(t.label) }
+  const saveRename = () => {
+    if (editingLabel && editLabelValue.trim()) {
+      renameAccessToken(editingLabel, editLabelValue.trim())
+      refresh()
+      flash('라벨 변경 완료')
+    }
+    setEditingLabel(null)
+  }
 
   const copyToken = (token) => {
     navigator.clipboard.writeText(token).then(() => flash('토큰이 클립보드에 복사되었습니다'))
@@ -644,7 +657,18 @@ function TokensSection() {
               <div className="flex items-center justify-between gap-3">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="font-medium text-sm">{t.label}</span>
+                    {editingLabel === t.id ? (
+                      <input
+                        value={editLabelValue}
+                        onChange={(e) => setEditLabelValue(e.target.value)}
+                        onBlur={saveRename}
+                        onKeyDown={(e) => { if (e.key === 'Enter') saveRename(); if (e.key === 'Escape') setEditingLabel(null) }}
+                        autoFocus
+                        className="font-medium text-sm bg-gray-800 border border-accent rounded px-1.5 py-0.5 text-white outline-none w-32"
+                      />
+                    ) : (
+                      <span className="font-medium text-sm cursor-pointer hover:text-accent transition-colors" onClick={() => startRename(t)} title="클릭하여 이름 변경">{t.label}</span>
+                    )}
                     <span className={`text-xs ${status.cls}`}>{status.text}</span>
                   </div>
                   <p className="text-xs text-gray-500 font-mono mt-1 truncate">{t.token}</p>

@@ -1,12 +1,31 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { verifyAccessToken, recordAccess, loadAuthGateConfig, ADMIN_PATH } from '../utils/crypto'
 
 export default function AuthGate({ onSuccess }) {
-  const [token, setToken] = useState('')
+  // Auto-fill token from URL hash (e.g., #token=abc123)
+  const hashToken = (() => {
+    const h = window.location.hash
+    const m = h.match(/[#&]token=([^&]+)/)
+    return m ? decodeURIComponent(m[1]) : ''
+  })()
+
+  const [token, setToken] = useState(hashToken)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const config = loadAuthGateConfig()
+
+  // Auto-submit if token came from URL
+  useEffect(() => {
+    if (hashToken) {
+      const result = verifyAccessToken(hashToken)
+      if (result) {
+        recordAccess(result.id, result.label)
+        window.location.hash = ''
+        onSuccess(result.expiresAt)
+      }
+    }
+  }, [])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
