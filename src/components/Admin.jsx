@@ -903,6 +903,21 @@ function ProjectsSection() {
                           </div>
                         </div>
 
+                        {/* 성과 강조 (하이라이트) */}
+                        <div>
+                          <p className="text-xs text-gray-500 font-medium mb-2">성과 강조 <span className="text-gray-600">(Result 탭 상단에 파란색으로 표시)</span></p>
+                          <div className="space-y-2">
+                            {(p.highlights || []).map((h, hi) => (
+                              <div key={hi} className="flex items-center gap-2">
+                                <input value={h.value || ''} onChange={(e) => { const g = [...data.groups]; const hl = [...(p.highlights || [])]; hl[hi] = { ...h, value: e.target.value }; g[gi].projects[pi] = { ...p, highlights: hl }; setData({ ...data, groups: g }) }} placeholder="값 (예: +681%)" className="w-28 bg-gray-800 border border-gray-700 rounded px-2 py-1.5 text-sm text-accent font-bold focus:outline-none focus:border-accent" />
+                                <input value={h.label || ''} onChange={(e) => { const g = [...data.groups]; const hl = [...(p.highlights || [])]; hl[hi] = { ...h, label: e.target.value }; g[gi].projects[pi] = { ...p, highlights: hl }; setData({ ...data, groups: g }) }} placeholder="라벨 (예: App 주문건수)" className="flex-1 bg-gray-800 border border-gray-700 rounded px-2 py-1.5 text-sm text-white focus:outline-none focus:border-accent" />
+                                <button onClick={() => { const g = [...data.groups]; const hl = (p.highlights || []).filter((_, i) => i !== hi); g[gi].projects[pi] = { ...p, highlights: hl }; setData({ ...data, groups: g }) }} className="text-xs text-red-400 hover:text-red-300 cursor-pointer px-1">✕</button>
+                              </div>
+                            ))}
+                            <button onClick={() => { const g = [...data.groups]; g[gi].projects[pi] = { ...p, highlights: [...(p.highlights || []), { value: '', label: '' }] }; setData({ ...data, groups: g }) }} className="text-[10px] text-accent hover:text-accent-light cursor-pointer">+ 성과 강조 추가</button>
+                          </div>
+                        </div>
+
                         {/* 부가 정보 */}
                         <div>
                           <p className="text-xs text-gray-500 font-medium mb-2">부가 정보</p>

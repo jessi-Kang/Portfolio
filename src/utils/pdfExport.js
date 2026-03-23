@@ -11,24 +11,31 @@ export async function exportPortfolioPDF({ resume, projects, achievements, hero,
   const { jsPDF } = await import('jspdf')
   const doc = new jsPDF({ unit: 'pt', format: 'a4' })
 
-  // Load Korean font
+  // Load Korean font (Pretendard — lightweight, good Korean/Latin coverage)
+  let koreanFontLoaded = false
   try {
-    const fontUrl = 'https://cdn.jsdelivr.net/gh/nickcaim/noto-sans-korean-jspdf/NotoSansKR-Regular.ttf'
+    const fontUrl = 'https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/packages/pretendard/dist/public/static/Pretendard-Regular.otf'
     const resp = await fetch(fontUrl)
-    const buf = await resp.arrayBuffer()
-    // Convert ArrayBuffer to base64 in chunks (avoid stack overflow)
-    const bytes = new Uint8Array(buf)
-    let binary = ''
-    const chunk = 8192
-    for (let i = 0; i < bytes.length; i += chunk) {
-      binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunk))
+    if (resp.ok) {
+      const buf = await resp.arrayBuffer()
+      const bytes = new Uint8Array(buf)
+      let binary = ''
+      const chunk = 8192
+      for (let i = 0; i < bytes.length; i += chunk) {
+        binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunk))
+      }
+      const base64 = btoa(binary)
+      doc.addFileToVFS('Pretendard.otf', base64)
+      doc.addFont('Pretendard.otf', 'Pretendard', 'normal')
+      doc.setFont('Pretendard')
+      koreanFontLoaded = true
     }
-    const base64 = btoa(binary)
-    doc.addFileToVFS('NotoSansKR.ttf', base64)
-    doc.addFont('NotoSansKR.ttf', 'NotoSansKR', 'normal')
-    doc.setFont('NotoSansKR')
   } catch (e) {
-    console.warn('Korean font load failed, using default:', e)
+    console.warn('Font load failed:', e)
+  }
+  if (!koreanFontLoaded) {
+    // Fallback: use Helvetica (Korean characters may not render)
+    doc.setFont('Helvetica')
   }
 
   let y = MARGIN
