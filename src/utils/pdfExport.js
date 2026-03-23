@@ -122,9 +122,12 @@ export async function exportPortfolioPDF({ resume, projects, achievements, hero,
 
   // Render HTML → Canvas → PDF (page-split)
   const container = document.createElement('div')
-  container.style.cssText = 'position:fixed;left:0;top:0;width:595px;padding:40px;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;color:#333;line-height:1.5;background:#fff;z-index:99999;opacity:0.01;'
+  container.style.cssText = 'position:fixed;left:0;top:0;width:595px;padding:40px;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;color:#333;line-height:1.5;background:#fff;z-index:99999;pointer-events:none;'
   container.innerHTML = s.join('')
   document.body.appendChild(container)
+
+  // Wait for layout + images (QR)
+  await new Promise(r => setTimeout(r, 200))
 
   const html2canvas = (await import('html2canvas-pro')).default
   const canvas = await html2canvas(container, { scale: 2, useCORS: true, logging: false, backgroundColor: '#ffffff' })
