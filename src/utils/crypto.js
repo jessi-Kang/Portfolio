@@ -200,8 +200,8 @@ const AUTH_GATE_KEY = 'portfolio_authgate_config'
 
 const defaultAuthGateConfig = {
   tagline: 'PM Portfolio',
-  headline: 'Predicting behavior with ML,\nDesigning conversations with LLM',
-  subtitle: 'A product manager who predicts user behavior with data and builds AI closer to human',
+  headline: 'Data-driven decisions,\nUser-centric design',
+  subtitle: 'A product manager who drives growth through data-driven decisions and user-centric design',
   cardTitle: 'Enter Access Code',
   cardDescription: 'Authentication is required to view the portfolio',
   buttonText: 'View Portfolio',
@@ -803,7 +803,7 @@ export function resetResumeConfig() {
 const defaultHeroConfig = {
   tagline: 'PM Portfolio',
   headline: 'Predicting behavior with ML,\nDesigning conversations with LLM',
-  subtitle: 'A product manager who drives growth through data-driven decisions and user-centric design',
+  subtitle: 'A product manager who predicts user behavior with data and builds AI closer to human',
   ctaText: 'View Cases',
 }
 

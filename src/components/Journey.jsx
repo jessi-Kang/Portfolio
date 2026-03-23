@@ -2,16 +2,25 @@ import { motion } from 'framer-motion'
 import SectionWrapper from './ui/SectionWrapper'
 
 const JOURNEY = [
-  { year: '2025', org: 'LINE AI Friend', field: 'AI', color: '#4ade80', current: true, emoji: '🤖' },
-  { year: '2024', org: 'LINE Wallet', field: 'ML Recommendation', color: '#34d399', emoji: '💳' },
-  { year: '2020', org: 'LINE Demaecan', field: 'Logistics (ML)', color: '#2dd4bf', emoji: '🛵' },
-  { year: '2018', org: '29CM', field: 'Fashion · Commerce', color: '#38bdf8', emoji: '👗' },
-  { year: '2016', org: 'NHN EDU', field: 'EdTech', color: '#60a5fa', emoji: '📚' },
-  { year: '2015', org: 'Yello Travel', field: 'Travel', color: '#818cf8', emoji: '✈️' },
-  { year: '2014', org: 'April Rain', field: 'Startup', color: '#a78bfa', emoji: '💼' },
-  { year: '2013', org: 'Coupang', field: 'E-commerce', color: '#8b5cf6', emoji: '📦' },
-  { year: '2011', org: 'SK Planet', field: 'Location-based Ads', color: '#6366f1', emoji: '📍' },
+  { year: '2025', org: 'LINE AI Friend', field: 'AI', color: '#4ade80', current: true, emoji: '🤖', companyId: 'exp-0' },
+  { year: '2024', org: 'LINE Wallet', field: 'ML Recommendation', color: '#34d399', emoji: '💳', companyId: 'exp-0' },
+  { year: '2020', org: 'LINE Demaecan', field: 'Logistics (ML)', color: '#2dd4bf', emoji: '🛵', companyId: 'exp-0' },
+  { year: '2018', org: '29CM', field: 'Fashion · Commerce', color: '#38bdf8', emoji: '👗', companyId: 'exp-1' },
+  { year: '2016', org: 'NHN EDU', field: 'EdTech', color: '#60a5fa', emoji: '📚', companyId: 'exp-2' },
+  { year: '2015', org: 'Yello Travel', field: 'Travel', color: '#818cf8', emoji: '✈️', companyId: 'exp-3' },
+  { year: '2014', org: 'April Rain', field: 'Startup', color: '#a78bfa', emoji: '💼', companyId: 'exp-4' },
+  { year: '2013', org: 'Coupang', field: 'E-commerce', color: '#8b5cf6', emoji: '📦', companyId: 'exp-5' },
+  { year: '2011', org: 'SK Planet', field: 'Location-based Ads', color: '#6366f1', emoji: '📍', companyId: 'exp-6' },
 ]
+
+function scrollToCompany(companyId) {
+  const el = document.getElementById(companyId)
+  if (el) {
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    el.classList.add('ring-1', 'ring-accent/40', 'rounded-xl')
+    setTimeout(() => el.classList.remove('ring-1', 'ring-accent/40', 'rounded-xl'), 2000)
+  }
+}
 
 // Desktop uses chronological (old→new), mobile uses reverse (new→old)
 const JOURNEY_DESKTOP = [...JOURNEY].reverse()
@@ -32,7 +41,8 @@ export default function Journey() {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, amount: 0.4 }}
             transition={{ duration: i <= 1 ? 0.4 : 0.8 + i * 0.05, delay: i <= 1 ? i * 0.04 : 0, ease: 'easeOut' }}
-            className="relative pl-9 py-3"
+            className="relative pl-9 py-3 cursor-pointer"
+            onClick={() => scrollToCompany(item.companyId)}
           >
             {/* Dot */}
             <div
@@ -77,8 +87,9 @@ export default function Journey() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.3, delay: i * 0.05 }}
-              className="flex flex-col items-center text-center relative"
+              className="flex flex-col items-center text-center relative cursor-pointer hover:scale-105 transition-transform"
               style={{ width: `${100 / JOURNEY_DESKTOP.length}%` }}
+              onClick={() => scrollToCompany(item.companyId)}
             >
               {/* Dot */}
               <div

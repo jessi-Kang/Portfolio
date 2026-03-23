@@ -80,11 +80,12 @@ export default function Experience() {
           {resume.work.filter((w) => w.company).map((job, i) => (
             <motion.div
               key={i}
+              id={`exp-${i}`}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.4, delay: i * 0.05 }}
-              className="relative pl-8"
+              className="relative pl-8 transition-all duration-500"
             >
               {/* Dot */}
               <div className={`absolute left-[0px] top-[7px] w-[13px] h-[13px] rounded-full border-2 ${

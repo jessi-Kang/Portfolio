@@ -30,7 +30,7 @@ export default function Projects() {
                 const isOdd = group.projects.length % 2 === 1
                 const span = (project.fullWidth || (isLast && isOdd)) ? 'md:col-span-2' : ''
                 return (
-                  <div key={project.id} className={span}>
+                  <div key={project.id} id={`project-${project.id}`} className={`${span} transition-all duration-500`}>
                     <ProjectCard project={project} />
                   </div>
                 )
