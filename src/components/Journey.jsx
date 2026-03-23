@@ -11,7 +11,12 @@ const JOURNEY = [
   { year: '2014', org: 'April Rain', field: 'Startup', color: '#a78bfa', emoji: '💼', companyId: 'exp-4' },
   { year: '2013', org: 'Coupang', field: 'E-commerce', color: '#8b5cf6', emoji: '📦', companyId: 'exp-5' },
   { year: '2011', org: 'SK Planet', field: 'Location-based Ads', color: '#6366f1', emoji: '📍', companyId: 'exp-6' },
+  { year: '2010', org: 'team interface', field: 'UX Consulting', color: '#4f46e5', emoji: '🎨', companyId: 'exp-7' },
 ]
+
+// Desktop: chronological (old→new)
+const JOURNEY_DESKTOP = [...JOURNEY].reverse()
+const COLS = 5 // items per row
 
 function scrollToCompany(companyId) {
   const el = document.getElementById(companyId)
@@ -22,16 +27,55 @@ function scrollToCompany(companyId) {
   }
 }
 
-// Desktop uses chronological (old→new), mobile uses reverse (new→old)
-const JOURNEY_DESKTOP = [...JOURNEY].reverse()
+function DesktopItem({ item, i }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.3, delay: i * 0.04 }}
+      className="flex flex-col items-center text-center cursor-pointer group"
+      onClick={() => scrollToCompany(item.companyId)}
+    >
+      <div
+        className="w-[11px] h-[11px] rounded-full border-2 mb-3 relative z-10 group-hover:scale-150 transition-transform"
+        style={{
+          borderColor: item.color,
+          backgroundColor: item.current ? item.color : '#030712',
+          boxShadow: item.current ? `0 0 8px ${item.color}60` : 'none',
+        }}
+      />
+      <span className="text-xs font-mono text-gray-500 mb-1">{item.year}</span>
+      <span className="text-xs font-semibold text-white leading-tight mb-1 group-hover:text-accent transition-colors">
+        <span className="mr-0.5">{item.emoji}</span>
+        {item.org}
+      </span>
+      <span
+        className="text-[10px] font-medium px-2 py-0.5 rounded-full whitespace-nowrap"
+        style={{ backgroundColor: item.color + '18', color: item.color }}
+      >
+        {item.field}
+      </span>
+      {item.current && (
+        <span className="text-[9px] font-bold text-accent mt-1.5 tracking-wider">NOW</span>
+      )}
+    </motion.div>
+  )
+}
 
 export default function Journey() {
+  // Split into rows for S-shape
+  const rows = []
+  for (let i = 0; i < JOURNEY_DESKTOP.length; i += COLS) {
+    rows.push(JOURNEY_DESKTOP.slice(i, i + COLS))
+  }
+
   return (
     <SectionWrapper id="journey">
       <p className="text-accent text-xs font-mono tracking-widest uppercase mb-2">Journey</p>
       <h2 className="text-2xl md:text-3xl font-bold mb-8 md:mb-10">Career Journey</h2>
 
-      {/* Mobile: vertical, newest first — older items fade in on scroll */}
+      {/* Mobile: vertical, newest first */}
       <div className="md:hidden relative max-w-md mx-auto">
         <div className="absolute left-[11px] top-3 bottom-3 w-px bg-gray-800" />
         {JOURNEY.map((item, i) => (
@@ -44,9 +88,8 @@ export default function Journey() {
             className="relative pl-9 py-3 cursor-pointer"
             onClick={() => scrollToCompany(item.companyId)}
           >
-            {/* Dot */}
             <div
-              className={`absolute left-[5px] top-[18px] w-[13px] h-[13px] rounded-full border-2`}
+              className="absolute left-[5px] top-[18px] w-[13px] h-[13px] rounded-full border-2"
               style={{
                 borderColor: item.color,
                 backgroundColor: item.current ? item.color : 'transparent',
@@ -74,57 +117,50 @@ export default function Journey() {
         ))}
       </div>
 
-      {/* Desktop: horizontal, oldest→newest */}
-      <div className="hidden md:block relative">
-        {/* Timeline line */}
-        <div className="absolute top-5 left-0 right-0 h-px bg-gray-800" />
+      {/* Desktop: S-shape grid, oldest→newest */}
+      <div className="hidden md:block max-w-4xl mx-auto space-y-6">
+        {rows.map((row, ri) => {
+          const isReversed = ri % 2 === 1
+          const items = isReversed ? [...row].reverse() : row
 
-        <div className="flex justify-between items-start">
-          {JOURNEY_DESKTOP.map((item, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.3, delay: i * 0.05 }}
-              className="flex flex-col items-center text-center relative cursor-pointer hover:scale-105 transition-transform"
-              style={{ width: `${100 / JOURNEY_DESKTOP.length}%` }}
-              onClick={() => scrollToCompany(item.companyId)}
-            >
-              {/* Dot */}
-              <div
-                className="w-[11px] h-[11px] rounded-full border-2 mb-3 relative z-10"
-                style={{
-                  borderColor: item.color,
-                  backgroundColor: item.current ? item.color : '#030712',
-                  boxShadow: item.current ? `0 0 8px ${item.color}60` : 'none',
-                }}
-              />
+          return (
+            <div key={ri} className="relative">
+              {/* Horizontal line */}
+              <div className="absolute top-5 left-[10%] right-[10%] h-px bg-gray-800" />
 
-              {/* Year */}
-              <span className="text-xs font-mono text-gray-500 mb-1.5">{item.year}</span>
-
-              {/* Org */}
-              <span className="text-xs font-semibold text-white leading-tight mb-1">
-                <span className="mr-0.5">{item.emoji}</span>
-                {item.org}
-              </span>
-
-              {/* Field badge */}
-              <span
-                className="text-[10px] font-medium px-2 py-0.5 rounded-full whitespace-nowrap"
-                style={{ backgroundColor: item.color + '18', color: item.color }}
-              >
-                {item.field}
-              </span>
-
-              {/* Current indicator */}
-              {item.current && (
-                <span className="text-[9px] font-bold text-accent mt-1.5 tracking-wider">NOW</span>
+              {/* Turn connector from previous row */}
+              {ri > 0 && (
+                <div
+                  className="absolute top-0 w-px h-6 bg-gray-800"
+                  style={{ [isReversed ? 'right' : 'left']: '10%' }}
+                />
               )}
-            </motion.div>
-          ))}
-        </div>
+
+              {/* Turn connector to next row */}
+              {ri < rows.length - 1 && (
+                <div
+                  className="absolute bottom-0 w-px h-6 bg-gray-800 -mb-6"
+                  style={{ [isReversed ? 'left' : 'right']: '10%' }}
+                />
+              )}
+
+              <div className="flex justify-between items-start px-[5%]">
+                {items.map((item, ci) => {
+                  const globalIdx = ri * COLS + (isReversed ? row.length - 1 - ci : ci)
+                  return (
+                    <div key={ci} style={{ width: `${100 / COLS}%` }}>
+                      <DesktopItem item={item} i={globalIdx} />
+                    </div>
+                  )
+                })}
+                {/* Fill empty slots */}
+                {Array.from({ length: COLS - row.length }).map((_, ci) => (
+                  <div key={`empty-${ci}`} style={{ width: `${100 / COLS}%` }} />
+                ))}
+              </div>
+            </div>
+          )
+        })}
       </div>
     </SectionWrapper>
   )
