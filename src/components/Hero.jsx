@@ -58,7 +58,7 @@ export default function Hero() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.2 }}
-        className="text-3xl md:text-5xl lg:text-6xl font-bold leading-tight max-w-4xl"
+        className="text-3xl md:text-5xl lg:text-6xl font-bold leading-tight max-w-4xl text-balance"
       >
         {hero.headline.includes('\n') ? (
           <>

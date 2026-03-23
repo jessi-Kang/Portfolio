@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
 import { loadProjects, saveProjects, resetProjects, defaultProjects } from '../data/projects'
+import { exportPortfolioPDF } from '../utils/pdfExport'
 import {
   getAccessTokens,
   createAccessToken,
@@ -1087,6 +1088,27 @@ export default function Admin({ onLogout, onViewPortfolio }) {
           ))}
         </nav>
         <div className="p-4 border-t border-gray-800 space-y-1">
+          <button
+            onClick={async () => {
+              try {
+                const tokenVal = await exportPortfolioPDF({
+                  resume: loadResumeConfig(),
+                  projects: loadProjects(),
+                  achievements: loadAchievementsConfig(),
+                  hero: loadHeroConfig(),
+                  about: loadAboutConfig(),
+                  contact: loadContactConfig(),
+                })
+                alert(`PDF 저장 완료!\nToken: ${tokenVal}`)
+              } catch (e) { alert('PDF 생성 실패: ' + e.message) }
+            }}
+            className="w-full px-3 py-2 text-sm text-white bg-accent/20 hover:bg-accent/30 rounded-lg transition-colors cursor-pointer flex items-center gap-2 justify-center"
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+            </svg>
+            PDF 출력
+          </button>
           {onViewPortfolio && (
             <button onClick={onViewPortfolio} className="w-full px-3 py-2 text-sm text-accent hover:bg-accent/10 rounded-lg transition-colors cursor-pointer">
               포트폴리오 보기
