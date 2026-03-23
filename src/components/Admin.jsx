@@ -7,6 +7,7 @@ import {
   renameAccessToken,
   revokeAccessToken,
   forceExpireToken,
+  getAccessLog,
   getAccessLogForToken,
   loadHeroConfig,
   saveHeroConfig,
@@ -605,6 +606,62 @@ function TokensSection() {
   return (
     <div>
       <SectionHeader title="접속 토큰" description="방문자에게 발급할 접속 토큰을 관리합니다" />
+
+      {/* Access Stats Chart */}
+      {(() => {
+        const allLogs = getAccessLog()
+        if (allLogs.length === 0) return null
+        // Group by date
+        const byDate = {}
+        const byToken = {}
+        allLogs.forEach(log => {
+          const d = new Date(log.accessedAt).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })
+          byDate[d] = (byDate[d] || 0) + 1
+          const lbl = log.tokenLabel || 'unknown'
+          byToken[lbl] = (byToken[lbl] || 0) + 1
+        })
+        const dates = Object.entries(byDate).slice(-14) // last 14 days
+        const maxCount = Math.max(...dates.map(([,v]) => v), 1)
+        const tokenEntries = Object.entries(byToken).sort((a, b) => b[1] - a[1])
+        const colors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4']
+
+        return (
+          <div className="bg-gray-900 rounded-xl p-5 mb-6">
+            <h3 className="text-sm font-semibold text-accent mb-4">접속 통계</h3>
+            <div className="flex items-end gap-1 h-24 mb-2">
+              {dates.map(([date, count], i) => (
+                <div key={i} className="flex-1 flex flex-col items-center gap-1">
+                  <span className="text-[9px] text-gray-500">{count}</span>
+                  <div
+                    className="w-full rounded-t transition-all"
+                    style={{
+                      height: `${(count / maxCount) * 100}%`,
+                      minHeight: '2px',
+                      backgroundColor: '#3b82f6',
+                    }}
+                  />
+                </div>
+              ))}
+            </div>
+            <div className="flex gap-1 mb-4">
+              {dates.map(([date], i) => (
+                <div key={i} className="flex-1 text-center text-[8px] text-gray-600 truncate">{date}</div>
+              ))}
+            </div>
+            {/* Token breakdown */}
+            <div className="flex flex-wrap gap-3 pt-3 border-t border-gray-800">
+              {tokenEntries.map(([label, count], i) => (
+                <div key={i} className="flex items-center gap-1.5">
+                  <div className="w-2 h-2 rounded-full" style={{ backgroundColor: colors[i % colors.length] }} />
+                  <span className="text-[11px] text-gray-400">{label}</span>
+                  <span className="text-[11px] font-mono text-white">{count}</span>
+                </div>
+              ))}
+              <div className="ml-auto text-[11px] text-gray-600">총 {allLogs.length}회</div>
+            </div>
+          </div>
+        )
+      })()}
 
       <div className="bg-gray-900 rounded-xl p-5 mb-6">
         <h3 className="text-sm font-semibold text-accent mb-3">새 토큰 생성</h3>
