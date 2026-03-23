@@ -864,6 +864,13 @@ function ProjectsSection() {
                       </svg>
                       {p.badge && <span className="text-[10px] font-mono text-accent bg-accent/10 px-1.5 py-0.5 rounded shrink-0">{p.badge}</span>}
                       <span className="text-sm font-medium text-white truncate flex-1">{p.title || '새 프로젝트'}</span>
+                      {p.id && (
+                        <button
+                          onClick={(e) => { e.stopPropagation(); navigator.clipboard.writeText(p.id); const btn = e.currentTarget; btn.textContent = '✓'; setTimeout(() => { btn.textContent = p.id }, 1000) }}
+                          title="ID 복사"
+                          className="text-[10px] font-mono text-gray-600 hover:text-accent bg-gray-800 px-1.5 py-0.5 rounded cursor-pointer shrink-0 transition-colors"
+                        >{p.id}</button>
+                      )}
                       <div className="flex items-center gap-1 shrink-0" onClick={(e) => e.stopPropagation()}>
                         <button onClick={() => moveProject(gi, pi, -1)} disabled={pi === 0} className="text-xs text-gray-400 hover:text-white disabled:text-gray-700 cursor-pointer disabled:cursor-default px-1">↑</button>
                         <button onClick={() => moveProject(gi, pi, 1)} disabled={pi === group.projects.length - 1} className="text-xs text-gray-400 hover:text-white disabled:text-gray-700 cursor-pointer disabled:cursor-default px-1">↓</button>
