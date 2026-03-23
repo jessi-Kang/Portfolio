@@ -19,7 +19,7 @@ const JOURNEY_DESKTOP = [...JOURNEY].reverse()
 export default function Journey() {
   return (
     <SectionWrapper id="journey">
-      <p className="text-accent text-xs font-mono tracking-widest uppercase mb-2">Career Journey</p>
+      <p className="text-accent text-xs font-mono tracking-widest uppercase mb-2">Journey</p>
       <h2 className="text-2xl md:text-3xl font-bold mb-8 md:mb-10">Career Journey</h2>
 
       {/* Mobile: vertical, newest first — older items fade in on scroll */}

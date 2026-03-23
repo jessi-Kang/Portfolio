@@ -11,7 +11,7 @@ export default function Projects() {
 
   return (
     <SectionWrapper id="projects">
-      <p className="text-accent text-xs font-mono tracking-widest uppercase mb-2">Featured Projects</p>
+      <p className="text-accent text-xs font-mono tracking-widest uppercase mb-2">Projects</p>
       <h2 className="text-2xl md:text-3xl font-bold mb-12">Featured Projects</h2>
 
       <div className="space-y-16">

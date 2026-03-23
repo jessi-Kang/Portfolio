@@ -20,7 +20,7 @@ export default function Resume() {
 
   return (
     <SectionWrapper id="resume">
-      <p className="text-accent text-xs font-mono tracking-widest uppercase mb-2">Education & Activity</p>
+      <p className="text-accent text-xs font-mono tracking-widest uppercase mb-2">Education</p>
       <h2 className="text-2xl md:text-3xl font-bold mb-12">Education & Activity</h2>
 
       <div className="max-w-3xl mx-auto space-y-12">

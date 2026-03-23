@@ -802,9 +802,9 @@ export function resetResumeConfig() {
 
 const defaultHeroConfig = {
   tagline: 'PM Portfolio',
-  headline: 'ML로 행동을 예측하고, LLM으로 대화를 설계합니다',
-  subtitle: '데이터로 행동을 예측하고, 점점 더 사람에 가까운 AI를 만들어온 PM',
-  ctaText: '케이스 보기',
+  headline: 'Predicting behavior with ML,\nDesigning conversations with LLM',
+  subtitle: 'A product manager who drives growth through data-driven decisions and user-centric design',
+  ctaText: 'View Cases',
 }
 
 export function loadHeroConfig() {
@@ -831,8 +831,8 @@ export function resetHeroConfig() {
 const ABOUT_KEY = 'portfolio_about_config'
 
 const defaultAboutConfig = {
-  heading: '사용자와 비즈니스 사이의\n균형을 설계합니다',
-  bio: '',
+  heading: 'Designing the balance between users and business',
+  bio: 'I define problems with data and design solutions with UX. With 13+ years of experience spanning AI, ML recommendation, logistics, e-commerce, and edtech, I bridge the gap between complex technology and intuitive user experiences.',
   skills: [],
 }
 
