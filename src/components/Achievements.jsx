@@ -26,7 +26,7 @@ export default function Achievements() {
   return (
     <SectionWrapper id="achievements">
       <p className="text-accent text-xs font-mono tracking-widest uppercase mb-2">Achievements</p>
-      <h2 className="text-2xl md:text-3xl font-bold mb-10">Key Achievements</h2>
+      <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-8 sm:mb-10">Key Achievements</h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto">
         {config.items.map((item, i) => (

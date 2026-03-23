@@ -173,7 +173,7 @@ export default function Journey() {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, amount: 0.4 }}
             transition={{ duration: i <= 1 ? 0.4 : 0.8 + i * 0.05, delay: i <= 1 ? i * 0.04 : 0, ease: 'easeOut' }}
-            className="relative pl-9 py-3 cursor-pointer"
+            className="relative pl-8 py-3 cursor-pointer"
             onClick={() => scrollToCompany(item.companyId)}
           >
             <div

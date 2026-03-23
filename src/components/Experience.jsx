@@ -34,7 +34,7 @@ function ProjectDetail({ project }) {
             transition={{ duration: 0.2, ease: 'easeInOut' }}
             className="overflow-hidden"
           >
-            <div className="pl-[22px] pb-4 space-y-3">
+            <div className="pl-4 sm:pl-[22px] pb-4 space-y-3">
               {/* Summary — structured with labels */}
               {project.summary && (
                 <div className="space-y-2">
@@ -70,7 +70,7 @@ export default function Experience() {
   return (
     <SectionWrapper id="experience">
       <p className="text-accent text-xs font-mono tracking-widest uppercase mb-2">Experience</p>
-      <h2 className="text-2xl md:text-3xl font-bold mb-12">Work Experience</h2>
+      <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-8 sm:mb-12">Work Experience</h2>
 
       <div className="max-w-3xl mx-auto relative">
         {/* Timeline line */}
@@ -85,7 +85,7 @@ export default function Experience() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.4, delay: i * 0.05 }}
-              className="relative pl-8 transition-all duration-500"
+              className="relative pl-6 sm:pl-8 transition-all duration-500"
             >
               {/* Dot */}
               <div className={`absolute left-[0px] top-[7px] w-[13px] h-[13px] rounded-full border-2 ${
@@ -98,7 +98,7 @@ export default function Experience() {
               <p className="text-xs font-mono text-gray-500 mb-1">{job.period}</p>
 
               {/* Company & Title */}
-              <h3 className="text-lg md:text-xl font-bold text-white">{job.company}</h3>
+              <h3 className="text-base sm:text-lg md:text-xl font-bold text-white">{job.company}</h3>
               <p className="text-sm text-accent font-medium mb-1">{job.title}</p>
 
               {/* Leave note */}

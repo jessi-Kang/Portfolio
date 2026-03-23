@@ -58,7 +58,7 @@ export default function Hero() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.2 }}
-        className="text-3xl md:text-5xl lg:text-6xl font-bold leading-tight max-w-4xl text-balance"
+        className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold leading-tight max-w-4xl text-balance"
       >
         {hero.headline.includes('\n') ? (
           <>
@@ -75,7 +75,7 @@ export default function Hero() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.4 }}
-        className="mt-6 text-gray-400 text-base md:text-lg max-w-2xl text-balance"
+        className="mt-4 sm:mt-6 text-gray-400 text-sm sm:text-base md:text-lg max-w-2xl text-balance"
       >
         {hero.subtitle}
       </motion.p>
@@ -86,7 +86,7 @@ export default function Hero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.55 }}
-          className="mt-10 flex gap-6 md:gap-12 flex-wrap justify-center"
+          className="mt-8 sm:mt-10 flex gap-5 sm:gap-6 md:gap-12 flex-wrap justify-center"
         >
           {statItems.map((stat, i) => (
             <motion.button
@@ -96,8 +96,8 @@ export default function Hero() {
               onClick={() => scrollTo(stat.link || 'projects')}
               className="text-center cursor-pointer group"
             >
-              <div className="text-3xl md:text-4xl font-bold text-white group-hover:text-accent transition-colors">{stat.num}</div>
-              <div className="text-xs text-gray-500 group-hover:text-gray-400 tracking-wide mt-1 transition-colors">{stat.label}</div>
+              <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-white group-hover:text-accent transition-colors">{stat.num}</div>
+              <div className="text-[10px] sm:text-xs text-gray-500 group-hover:text-gray-400 tracking-wide mt-1 transition-colors">{stat.label}</div>
             </motion.button>
           ))}
         </motion.div>

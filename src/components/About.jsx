@@ -27,7 +27,7 @@ export default function About() {
           transition={{ duration: 0.5 }}
         >
           <p className="text-accent text-xs font-mono tracking-widest uppercase mb-2">About</p>
-          <h2 className="text-2xl md:text-3xl font-bold mb-8 leading-snug">
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-6 sm:mb-8 leading-snug">
             {config.heading || 'Designing the balance\nbetween users and business'}
           </h2>
         </motion.div>
@@ -38,12 +38,12 @@ export default function About() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className="flex flex-col sm:flex-row gap-6 sm:gap-8 items-stretch mb-8"
+          className="flex flex-col sm:flex-row gap-5 sm:gap-8 items-stretch mb-8"
         >
           <img
             src="/profile.jpg"
             alt="Profile"
-            className="w-36 sm:w-44 md:w-48 rounded-2xl object-cover shrink-0 border border-gray-800 self-start sm:self-stretch"
+            className="w-32 sm:w-44 md:w-48 rounded-2xl object-cover shrink-0 border border-gray-800 self-start sm:self-stretch"
             onError={(e) => { e.target.style.display = 'none' }}
           />
           {config.bio && (

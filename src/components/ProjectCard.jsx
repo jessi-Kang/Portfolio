@@ -55,8 +55,8 @@ function StoryTabs({ project }) {
           {project.highlights && project.highlights.length > 0 && (
             <div className="flex flex-wrap justify-center gap-3">
               {project.highlights.map((h, i) => (
-                <div key={i} className="bg-accent/5 border border-accent/15 rounded-lg px-4 py-2.5 text-center min-w-[90px]">
-                  <div className="text-base md:text-lg font-bold text-accent leading-tight">{h.value}</div>
+                <div key={i} className="bg-accent/5 border border-accent/15 rounded-lg px-3 sm:px-4 py-2 sm:py-2.5 text-center min-w-[70px] sm:min-w-[90px]">
+                  <div className="text-sm sm:text-base md:text-lg font-bold text-accent leading-tight">{h.value}</div>
                   <div className="text-[10px] text-gray-500 mt-0.5">{h.label}</div>
                 </div>
               ))}
@@ -98,7 +98,7 @@ export default function ProjectCard({ project }) {
 
   return (
     <div
-      className="h-full flex flex-col bg-gray-900 border border-gray-800 rounded-2xl p-6 md:p-8 hover:border-accent/40 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-accent/5"
+      className="h-full flex flex-col bg-gray-900 border border-gray-800 rounded-2xl p-5 sm:p-6 md:p-8 hover:border-accent/40 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-accent/5"
     >
       {/* Header */}
       <div>
@@ -111,7 +111,7 @@ export default function ProjectCard({ project }) {
 
       {/* Story Box */}
       {hasStory && (
-        <div className="flex-1 mt-6 bg-gray-800/25 border border-gray-800/50 rounded-xl p-5 md:p-6">
+        <div className="flex-1 mt-4 sm:mt-6 bg-gray-800/25 border border-gray-800/50 rounded-xl p-4 sm:p-5 md:p-6">
           <StoryTabs project={project} />
         </div>
       )}
