@@ -85,29 +85,20 @@ function DesktopJourney() {
 
       if (points.length < 2) return
 
-      // Build smooth path through all dots using rounded corners
+      // Build smooth path through all dots
+      // Row transitions happen at index multiples of COLS (e.g., 4→5, 9→10)
       let d = `M ${points[0].x} ${points[0].y}`
       for (let i = 1; i < points.length; i++) {
         const prev = points[i - 1]
         const curr = points[i]
-        const dx = Math.abs(curr.x - prev.x)
-        const dy = Math.abs(curr.y - prev.y)
+        const isRowTransition = (i % COLS === 0)
 
-        if (dy > dx) {
-          // Vertical transition (row change) — smooth U-turn with rounded corners
-          const r = Math.min(30, dx / 2, dy / 3) // corner radius
-          const dirX = curr.x > prev.x ? 1 : -1
-          const dirY = curr.y > prev.y ? 1 : -1
-          // From prev, go to corner start, arc, vertical, arc, go to curr
-          const cornerX = prev.x + dirX * (dx - r)
-          d += ` L ${cornerX} ${prev.y}` // horizontal to corner start
-          d += ` Q ${prev.x + dirX * dx} ${prev.y}, ${prev.x + dirX * dx} ${prev.y + dirY * r}` // round corner
-          const cornerY = curr.y - dirY * r
-          d += ` L ${curr.x} ${cornerY}` // vertical
-          d += ` Q ${curr.x} ${curr.y}, ${curr.x - dirX * Math.min(r, 10)} ${curr.y}` // round into next row
-          d += ` L ${curr.x} ${curr.y}` // snap to exact point
+        if (isRowTransition) {
+          // Row change — gentle S-curve using cubic bezier
+          const midY = (prev.y + curr.y) / 2
+          d += ` C ${prev.x} ${midY}, ${curr.x} ${midY}, ${curr.x} ${curr.y}`
         } else {
-          // Horizontal segment — straight line
+          // Same row — straight line
           d += ` L ${curr.x} ${curr.y}`
         }
       }
