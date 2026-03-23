@@ -623,11 +623,16 @@ export const defaultResumeConfig = {
       company: 'Studio April Rain',
       title: '대표 (1인 창업)',
       period: '2014.02 ~ 2015.03',
-      description: `### 아티스트-상품 제작자 중개 B2B/B2C 플랫폼
-- 기획·운영
-
-### 서울시 창업지원 프로그램
-- '챌린지 1000 프로젝트' 6기 선발`,
+      projects: [
+        {
+          title: '아티스트-상품 제작자 중개 B2B/B2C 플랫폼',
+          period: '2014.02 ~ 2015.03',
+          role: '대표, 기획·운영',
+          team: '1명',
+          summary: `- 아티스트와 상품 제작자를 중개하는 B2B/B2C 플랫폼 기획 및 운영\n- 서울시 창업지원 프로그램 '챌린지 1000 프로젝트' 6기 선발`,
+          result: null,
+        },
+      ],
     },
     {
       company: 'Coupang',
@@ -766,10 +771,16 @@ export const defaultResumeConfig = {
       company: 'team interface',
       title: '인턴 / UI Design | UI컨설팅사업부',
       period: '2010.07 ~ 2010.08',
-      description: `### KT ucloud UI Design
-- PC Client UI 디자인
-- Mobile App Splash View 시안
-- PC Client 가이드 문서`,
+      projects: [
+        {
+          title: 'KT ucloud UI Design',
+          period: '2010.07 ~ 2010.08',
+          role: 'UI Design',
+          team: '-',
+          summary: `- PC Client UI 디자인\n- Mobile App Splash View 시안\n- PC Client 가이드 문서`,
+          result: null,
+        },
+      ],
     },
   ],
   activities: [
