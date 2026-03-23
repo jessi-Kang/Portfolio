@@ -1020,6 +1020,7 @@ function AchievementsSection() {
               <Field label="제목" value={item.title} onChange={(v) => updateItem(i, { ...item, title: v })} />
             </div>
             <Field label="설명" value={item.description} onChange={(v) => updateItem(i, { ...item, description: v })} rows={2} />
+            <Field label="연결 프로젝트 ID (클릭 시 포커스)" value={item.linkTo || ''} onChange={(v) => updateItem(i, { ...item, linkTo: v })} />
           </div>
         ))}
         {items.length === 0 && <p className="text-xs text-gray-600 py-4 text-center">항목이 없습니다</p>}

@@ -6,7 +6,8 @@ import { loadProjects } from '../data/projects'
 
 export default function Hero() {
   const [hero] = useState(loadHeroConfig)
-  const hasProjects = loadProjects().groups?.some((g) => g.projects?.some((p) => p.title))
+  const projectData = loadProjects()
+  const hasProjects = projectData.groups?.some((g) => g.projects?.some((p) => p.title))
   const resume = loadResumeConfig()
   const hasResume =
     resume.education?.some((e) => e.school) ||
@@ -18,7 +19,30 @@ export default function Hero() {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
   }
 
-  const stats = hero.stats || []
+  // Auto-compute stats from real data
+  const workYears = (() => {
+    const work = resume.work?.filter((w) => w.company && w.period) || []
+    let months = 0
+    work.forEach((w) => {
+      const parts = w.period.split('~').map((s) => s.trim())
+      const start = parts[0]?.match(/(\d{4})\.(\d{1,2})/)
+      const end = parts[1]?.match(/(\d{4})\.(\d{1,2})/)
+      if (start) {
+        const sy = +start[1], sm = +start[2]
+        const ey = end ? +end[1] : new Date().getFullYear()
+        const em = end ? +end[2] : new Date().getMonth() + 1
+        months += (ey - sy) * 12 + (em - sm)
+      }
+    })
+    return Math.floor(months / 12)
+  })()
+  const totalProjects = resume.work?.reduce((sum, w) => sum + (w.projects?.length || 0), 0) || 0
+  const totalCompanies = resume.work?.filter((w) => w.company).length || 0
+  const stats = hero.stats?.length > 0 ? hero.stats : [
+    { num: `${workYears}+`, label: 'Years Experience' },
+    { num: `${totalProjects}+`, label: 'Projects' },
+    { num: `${totalCompanies}`, label: 'Companies' },
+  ]
 
   return (
     <section className="relative min-h-[100dvh] flex flex-col items-center justify-center px-6 text-center overflow-hidden">
