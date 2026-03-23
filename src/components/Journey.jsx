@@ -14,9 +14,8 @@ const JOURNEY = [
   { year: '2010', org: 'team interface', field: 'UX Consulting', color: '#4f46e5', emoji: '🎨', companyId: 'exp-7' },
 ]
 
-// Desktop: chronological (old→new)
 const JOURNEY_DESKTOP = [...JOURNEY].reverse()
-const COLS = 5 // items per row
+const COLS = 5
 
 function scrollToCompany(companyId) {
   const el = document.getElementById(companyId)
@@ -30,7 +29,7 @@ function scrollToCompany(companyId) {
 function DesktopItem({ item, i }) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 16 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.3, delay: i * 0.04 }}
@@ -38,33 +37,57 @@ function DesktopItem({ item, i }) {
       onClick={() => scrollToCompany(item.companyId)}
     >
       <div
-        className="w-[11px] h-[11px] rounded-full border-2 mb-3 relative z-10 group-hover:scale-150 transition-transform"
+        className="w-3 h-3 rounded-full border-2 mb-3 relative z-10 group-hover:scale-150 transition-transform"
         style={{
           borderColor: item.color,
           backgroundColor: item.current ? item.color : '#030712',
-          boxShadow: item.current ? `0 0 8px ${item.color}60` : 'none',
+          boxShadow: item.current ? `0 0 10px ${item.color}60` : 'none',
         }}
       />
-      <span className="text-xs font-mono text-gray-500 mb-1">{item.year}</span>
-      <span className="text-xs font-semibold text-white leading-tight mb-1 group-hover:text-accent transition-colors">
+      <span className="text-[11px] font-mono text-gray-500 mb-1">{item.year}</span>
+      <span className="text-[11px] font-semibold text-white leading-tight mb-1 group-hover:text-accent transition-colors">
         <span className="mr-0.5">{item.emoji}</span>
         {item.org}
       </span>
       <span
-        className="text-[10px] font-medium px-2 py-0.5 rounded-full whitespace-nowrap"
-        style={{ backgroundColor: item.color + '18', color: item.color }}
+        className="text-[9px] font-medium px-2 py-0.5 rounded-full whitespace-nowrap"
+        style={{ backgroundColor: item.color + '15', color: item.color }}
       >
         {item.field}
       </span>
       {item.current && (
-        <span className="text-[9px] font-bold text-accent mt-1.5 tracking-wider">NOW</span>
+        <span className="text-[9px] font-bold text-accent mt-1 tracking-wider">NOW</span>
       )}
     </motion.div>
   )
 }
 
+// SVG path for S-curve connecting two rows
+function SPath({ rowWidth, rowGap, cols }) {
+  const itemW = rowWidth / cols
+  const startX = rowWidth - itemW / 2 // right end of row 1
+  const endX = rowWidth - itemW / 2   // right end of row 2 (visually left because reversed)
+  const midY = rowGap / 2
+
+  return (
+    <svg
+      className="absolute left-[5%] pointer-events-none"
+      style={{ top: '100%', width: '90%', height: rowGap }}
+      viewBox={`0 0 ${rowWidth} ${rowGap}`}
+      fill="none"
+      preserveAspectRatio="none"
+    >
+      <path
+        d={`M ${startX} 0 C ${startX} ${midY}, ${endX} ${midY}, ${endX} ${rowGap}`}
+        stroke="#1f2937"
+        strokeWidth="1"
+        fill="none"
+      />
+    </svg>
+  )
+}
+
 export default function Journey() {
-  // Split into rows for S-shape
   const rows = []
   for (let i = 0; i < JOURNEY_DESKTOP.length; i += COLS) {
     rows.push(JOURNEY_DESKTOP.slice(i, i + COLS))
@@ -75,7 +98,7 @@ export default function Journey() {
       <p className="text-accent text-xs font-mono tracking-widest uppercase mb-2">Journey</p>
       <h2 className="text-2xl md:text-3xl font-bold mb-8 md:mb-10">Career Journey</h2>
 
-      {/* Mobile: vertical, newest first */}
+      {/* Mobile */}
       <div className="md:hidden relative max-w-md mx-auto">
         <div className="absolute left-[11px] top-3 bottom-3 w-px bg-gray-800" />
         {JOURNEY.map((item, i) => (
@@ -117,31 +140,20 @@ export default function Journey() {
         ))}
       </div>
 
-      {/* Desktop: S-shape grid, oldest→newest */}
-      <div className="hidden md:block max-w-4xl mx-auto space-y-6">
+      {/* Desktop: S-shape with smooth curve */}
+      <div className="hidden md:block max-w-4xl mx-auto">
         {rows.map((row, ri) => {
           const isReversed = ri % 2 === 1
           const items = isReversed ? [...row].reverse() : row
 
           return (
-            <div key={ri} className="relative">
-              {/* Horizontal line */}
-              <div className="absolute top-5 left-[10%] right-[10%] h-px bg-gray-800" />
+            <div key={ri} className="relative" style={{ marginBottom: ri < rows.length - 1 ? '48px' : 0 }}>
+              {/* Horizontal line through dots */}
+              <div className="absolute top-[6px] left-[10%] right-[10%] h-px bg-gray-800" />
 
-              {/* Turn connector from previous row */}
-              {ri > 0 && (
-                <div
-                  className="absolute top-0 w-px h-6 bg-gray-800"
-                  style={{ [isReversed ? 'right' : 'left']: '10%' }}
-                />
-              )}
-
-              {/* Turn connector to next row */}
+              {/* S-curve connector to next row */}
               {ri < rows.length - 1 && (
-                <div
-                  className="absolute bottom-0 w-px h-6 bg-gray-800 -mb-6"
-                  style={{ [isReversed ? 'left' : 'right']: '10%' }}
-                />
+                <SPath rowWidth={800} rowGap={48} cols={COLS} />
               )}
 
               <div className="flex justify-between items-start px-[5%]">
@@ -153,9 +165,8 @@ export default function Journey() {
                     </div>
                   )
                 })}
-                {/* Fill empty slots */}
                 {Array.from({ length: COLS - row.length }).map((_, ci) => (
-                  <div key={`empty-${ci}`} style={{ width: `${100 / COLS}%` }} />
+                  <div key={`e-${ci}`} style={{ width: `${100 / COLS}%` }} />
                 ))}
               </div>
             </div>
