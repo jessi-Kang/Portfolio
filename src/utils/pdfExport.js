@@ -16,12 +16,19 @@ export async function exportPortfolioPDF({ resume, projects, achievements, hero,
     const fontUrl = 'https://cdn.jsdelivr.net/gh/nickcaim/noto-sans-korean-jspdf/NotoSansKR-Regular.ttf'
     const resp = await fetch(fontUrl)
     const buf = await resp.arrayBuffer()
-    const base64 = btoa(String.fromCharCode(...new Uint8Array(buf)))
+    // Convert ArrayBuffer to base64 in chunks (avoid stack overflow)
+    const bytes = new Uint8Array(buf)
+    let binary = ''
+    const chunk = 8192
+    for (let i = 0; i < bytes.length; i += chunk) {
+      binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunk))
+    }
+    const base64 = btoa(binary)
     doc.addFileToVFS('NotoSansKR.ttf', base64)
     doc.addFont('NotoSansKR.ttf', 'NotoSansKR', 'normal')
     doc.setFont('NotoSansKR')
-  } catch {
-    // fallback — will use default font
+  } catch (e) {
+    console.warn('Korean font load failed, using default:', e)
   }
 
   let y = MARGIN
