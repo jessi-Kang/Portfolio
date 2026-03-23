@@ -844,7 +844,18 @@ const ABOUT_KEY = 'portfolio_about_config'
 const defaultAboutConfig = {
   heading: 'Designing the balance between users and business',
   bio: 'I define problems with data and design solutions with UX. With 13+ years of experience spanning AI, ML recommendation, logistics, e-commerce, and edtech, I bridge the gap between complex technology and intuitive user experiences.',
-  skills: [],
+  skills: [
+    { label: 'Product Strategy', category: 'data' },
+    { label: 'A/B Testing', category: 'data' },
+    { label: 'ML Recommendation', category: 'ai' },
+    { label: 'LLM / Prompt Engineering', category: 'ai' },
+    { label: 'Data Analysis', category: 'data' },
+    { label: 'UX Design', category: 'ux' },
+    { label: 'Service Planning', category: 'ux' },
+    { label: 'Cross-functional Collaboration', category: 'ops' },
+    { label: 'Agile / Scrum', category: 'ops' },
+    { label: 'Stakeholder Management', category: 'ops' },
+  ],
 }
 
 export function loadAboutConfig() {
