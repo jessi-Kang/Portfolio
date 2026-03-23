@@ -44,11 +44,11 @@ function ProjectDetail({ project }) {
                 </div>
               )}
 
-              {/* Result — highlighted */}
+              {/* Result — box */}
               {project.result && (
-                <div className="bg-accent/5 border-l-2 border-accent/30 pl-3 py-2 rounded-r">
-                  <p className="text-[10px] font-mono text-accent/60 uppercase tracking-wider mb-1">Result</p>
-                  <div className="text-xs leading-relaxed text-gray-300">
+                <div className="bg-accent/8 border border-accent/20 rounded-lg px-3 py-2.5">
+                  <p className="text-[10px] font-mono text-accent/70 uppercase tracking-wider mb-1.5">Result</p>
+                  <div className="text-xs leading-relaxed text-gray-200">
                     <MarkdownRenderer content={project.result} />
                   </div>
                 </div>
