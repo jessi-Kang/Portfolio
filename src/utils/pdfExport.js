@@ -78,11 +78,12 @@ export async function exportPortfolioPDF({ resume, projects, achievements, hero,
   // ─── Featured Projects ───
   if (projects?.groups?.length > 0) {
     s.push(h2('Featured Projects'))
-    projects.groups.forEach(g => {
+    projects.groups.forEach((g, gi) => {
+      if (gi > 0) s.push('<div style="margin-top:16px;"></div>')
       s.push(h3(g.title))
       if (g.subtitle) s.push(meta(g.subtitle))
       ;(g.projects||[]).forEach(p => {
-        s.push(`<div style="margin:6px 0 10px;padding:8px 10px;background:#fafbfc;border:1px solid #eee;border-radius:4px;page-break-inside:avoid;">`)
+        s.push(`<div style="margin:6px 0 10px;padding:8px 10px;background:#fafbfc;border:1px solid #eee;border-radius:4px;">`)
         s.push(`<div style="font-size:9.5px;font-weight:600;color:#222;margin-bottom:2px;">${esc(p.title)}</div>`)
         if (p.subtitle) s.push(`<div style="font-size:7.5px;color:#999;margin-bottom:5px;">${esc(p.subtitle)}</div>`)
         // Highlights
@@ -104,8 +105,8 @@ export async function exportPortfolioPDF({ resume, projects, achievements, hero,
   if (resume?.work?.length > 0) {
     s.push(h2('Work Experience'))
     resume.work.filter(w => w.company).forEach((job, ji) => {
-      if (ji > 0) s.push('<div style="border-top:1px solid #eee;margin:12px 0;"></div>')
-      s.push(`<div style="margin-bottom:6px;">`)
+      if (ji > 0) s.push('<div style="border-top:1px solid #eee;margin:18px 0;"></div>')
+      s.push(`<div style="margin-bottom:8px;">`)
       s.push(`<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:2px;">
         <span style="font-size:11px;font-weight:700;color:#222;">${esc(job.company)}</span>
         <span style="font-size:8px;color:#999;">${esc(job.period)}</span>
@@ -116,7 +117,7 @@ export async function exportPortfolioPDF({ resume, projects, achievements, hero,
       // Projects list
       ;(job.projects||[]).forEach((p, pi) => {
         s.push(`<div style="margin:0 0 6px;padding:4px 0 4px 10px;border-left:2px solid #e5e7eb;">`)
-        s.push(`<div style="font-size:8.5px;font-weight:600;color:#333;">- ${esc(p.title)}</div>`)
+        s.push(`<div style="font-size:8.5px;font-weight:600;color:#333;">${esc(p.title)}</div>`)
         const detail = [p.period, p.role, p.team].filter(Boolean).join(' · ')
         if (detail) s.push(`<div style="font-size:7px;color:#aaa;margin-top:1px;">${esc(detail)}</div>`)
         if (p.result) s.push(`<div style="font-size:7.5px;color:#3b82f6;margin-top:2px;line-height:1.5;">${md(p.result)}</div>`)
@@ -176,19 +177,18 @@ export async function exportPortfolioPDF({ resume, projects, achievements, hero,
   const A4W = 595, A4H = 842
   const cW = canvas.width, cH = canvas.height
   const ratio = A4W / cW
-  const totalH = cH * ratio
+  const totalH = cH * ratio // total image height in pt
   const pages = Math.ceil(totalH / A4H)
   const doc = new jsPDF({ unit: 'pt', format: 'a4' })
 
+  // Single full image, placed with negative y-offset on each page
+  // This prevents any content from being cut mid-line
+  const imgData = canvas.toDataURL('image/jpeg', 0.92)
+
   for (let i = 0; i < pages; i++) {
     if (i > 0) doc.addPage()
-    const srcY = Math.floor(i * A4H / ratio)
-    const srcH = Math.min(Math.floor(A4H / ratio), cH - srcY)
-    if (srcH <= 0) break
-    const pc = document.createElement('canvas')
-    pc.width = cW; pc.height = srcH
-    pc.getContext('2d').drawImage(canvas, 0, srcY, cW, srcH, 0, 0, cW, srcH)
-    doc.addImage(pc.toDataURL('image/png'), 'PNG', 0, 0, A4W, srcH * ratio)
+    // Place the full image, shifted up by page offset
+    doc.addImage(imgData, 'JPEG', 0, -(i * A4H), A4W, totalH)
   }
 
   const blob = doc.output('blob')
