@@ -686,8 +686,8 @@ export function resetResumeConfig() {
 
 const defaultHeroConfig = {
   tagline: 'PM Portfolio',
-  headline: 'Predicting behavior with ML,\nDesigning conversations with LLM',
-  subtitle: 'A product manager who predicts user behavior with data and builds AI closer to human',
+  headline: 'Data-driven decisions,\nUser-centric design',
+  subtitle: 'A product manager who drives growth through data-driven decisions and user-centric design',
   ctaText: 'View Cases',
 }
 
