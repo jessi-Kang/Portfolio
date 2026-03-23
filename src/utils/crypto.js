@@ -888,7 +888,7 @@ const CONTACT_KEY = 'portfolio_contact_config'
 
 const defaultContactConfig = {
   heading: 'Contact',
-  message: '함께 일하고 싶으시다면 연락주세요.',
+  message: "Interested in working together? Let's connect.",
   email: 'hello@example.com',
   linkedinUrl: 'https://linkedin.com/in/',
   linkedinLabel: 'LinkedIn',
