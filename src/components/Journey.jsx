@@ -99,7 +99,7 @@ function DesktopJourney() {
           // Push control points outward: if both are on the right side, swing further right
           const boxW = box.width
           const isRightSide = prev.x > boxW / 2
-          const bulge = isRightSide ? 60 : -60 // swing outward from the grid
+          const bulge = isRightSide ? 120 : -120 // swing outward from the grid
           const cpX = prev.x + bulge
           d += ` C ${cpX} ${prev.y}, ${cpX} ${curr.y}, ${curr.x} ${curr.y}`
         } else {
