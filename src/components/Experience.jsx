@@ -116,6 +116,16 @@ export default function Experience() {
                   ))}
                 </div>
               )}
+
+              {/* Other projects — markdown */}
+              {job.otherProjects && (
+                <div className="mt-4">
+                  <p className="text-[11px] font-mono text-gray-600 uppercase tracking-wider mb-2">Other Tasks</p>
+                  <div className="text-xs text-gray-500 leading-relaxed pl-1">
+                    <MarkdownRenderer content={job.otherProjects} />
+                  </div>
+                </div>
+              )}
             </motion.div>
           ))}
         </div>

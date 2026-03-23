@@ -27,7 +27,11 @@ export default function Hero() {
     })
     return Math.floor(months / 12)
   })()
-  const totalProjects = resume.work?.reduce((sum, w) => sum + (w.projects?.length || 0), 0) || 0
+  const totalProjects = resume.work?.reduce((sum, w) => {
+    const main = w.projects?.length || 0
+    const other = w.otherProjects ? (w.otherProjects.match(/^- /gm) || []).length : 0
+    return sum + main + other
+  }, 0) || 0
   const totalCompanies = resume.work?.filter((w) => w.company).length || 0
 
   const statItems = hero.stats?.length > 0 ? hero.stats : [

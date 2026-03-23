@@ -291,6 +291,11 @@ function WorkEditor({ item, onChange, onRemove }) {
           </div>
         )}
       </div>
+
+      {/* Other projects markdown */}
+      <div className="pt-1">
+        <Field label="기타 업무 (마크다운, - 항목은 프로젝트 수에 포함)" value={item.otherProjects || ''} onChange={(v) => onChange({ ...item, otherProjects: v })} rows={3} />
+      </div>
     </div>
   )
 }

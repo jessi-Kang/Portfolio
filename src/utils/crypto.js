@@ -396,6 +396,14 @@ export const defaultResumeConfig = {
           result: `(개선 적용 20여일 후 기준)\n- APP 첫구매 쿠폰 사용 주문건수 : 일평균 681%(58→ 453건) 증가\n- Web 첫구매 쿠폰 사용 주문건수 : 일평균 36% 증가\n- 웹/앱 전체 일평균 쿠폰 사용률 : 280% 증가\n- 첫구매 쿠폰 사용 비중이 APP 75% : Web 25%로 앱을 통한 첫구매 유도 목적 달성\n- 첫구매 고객수 : 기존 대비 13% 증가`,
         },
       ],
+      otherProjects: `- 2020.2–3 배송비 쿠폰 설계
+- 2020.1 마일리지 적립 쿠폰 설계
+- 2019.11 마일리지 선지급 기능 설계
+- 2019.8 룩북 등록 및 정렬 방식 개선
+- 2019.7–9 3PL 연동
+- 2019.3–4 정액 쿠폰 설계
+- 2019.1–2 해외배송 상품 판매 대응 (개인통관고유부호 수집)
+- 2019.1 Admin 띠배너 운영툴 설계`,
     },
     {
       company: 'NHN edu',
@@ -483,6 +491,12 @@ export const defaultResumeConfig = {
           result: null,
         },
       ],
+      otherProjects: `- Admin 내 세금 계산서 요청 기능 추가 (SNS 발송을 위한 포인트 결제 금액)
+- Admin 내 포인트 관리 및 결제 관리 기능 추가
+- 급식 소식이 연동 안된 학교를 대상으로 사용자가 학교측으로 연동 요청하는 기능 추가
+- User Feedback 수집, 분석 및 과제화 flow 마련
+- 서비스 IA(Information Architecture) 작성 및 관리
+- 사내 Confluence(WIKI Tool) 교육`,
     },
     {
       company: 'Yello Travel',
