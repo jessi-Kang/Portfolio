@@ -8,7 +8,7 @@ function md(t) {
   if (!t) return ''
   return esc(t).replace(/^[-•◦‣]\s*/gm, '• ').replace(/#{1,4}\s*/g, '').replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>')
 }
-const h2 = (text) => `<div style="font-size:13px;font-weight:700;color:#3b82f6;margin:20px 0 8px;padding-bottom:4px;border-bottom:1px solid #e5e7eb;">${text}</div>`
+const h2 = (text) => `<div style="font-size:13px;font-weight:700;color:#3b82f6;margin:20px 0 8px;padding-bottom:4px;border-bottom:1px solid #e5e7eb;page-break-after:avoid;">${text}</div>`
 const h3 = (text) => `<div style="font-size:10.5px;font-weight:700;color:#222;margin:10px 0 4px;">${text}</div>`
 const meta = (text) => `<div style="font-size:8px;color:#999;margin-bottom:4px;">${esc(text)}</div>`
 const body = (text) => `<div style="font-size:8.5px;color:#444;line-height:1.7;margin-bottom:4px;">${md(text)}</div>`
@@ -27,14 +27,14 @@ export async function exportPortfolioPDF({ resume, projects, achievements, hero,
   const s = []
 
   // ─── Header ───
-  const headlineText = hero?.headline ? hero.headline.split('\n').join(' / ') : 'PM Portfolio'
   s.push(`<div style="display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:12px;border-bottom:2px solid #3b82f6;margin-bottom:16px;">
     <div style="flex:1;padding-right:16px;">
-      <div style="font-size:18px;font-weight:700;color:#111;margin-bottom:4px;">${esc(headlineText)}</div>
-      <div style="font-size:9.5px;color:#666;margin-bottom:8px;line-height:1.5;">${esc(hero?.subtitle || '')}</div>
-      <div style="font-size:9px;color:#3b82f6;">${SITE_URL}</div>
-      ${tokenValue ? `<div style="font-size:8px;color:#999;margin-top:3px;">Token: <b style="color:#333;">${esc(tokenValue)}</b> (10일 후 만료)</div>` : ''}
-      ${contact?.email ? `<div style="font-size:8px;color:#999;margin-top:2px;">${esc(contact.email)}</div>` : ''}
+      <div style="font-size:20px;font-weight:700;color:#111;margin-bottom:2px;">Jihyun Kang</div>
+      <div style="font-size:11px;color:#3b82f6;font-weight:600;margin-bottom:6px;">Product Manager</div>
+      <div style="font-size:9px;color:#666;margin-bottom:6px;line-height:1.5;">${esc(hero?.subtitle || '')}</div>
+      <div style="font-size:8.5px;color:#3b82f6;">${SITE_URL}</div>
+      ${tokenValue ? `<div style="font-size:7.5px;color:#999;margin-top:2px;">Token: <b style="color:#333;">${esc(tokenValue)}</b> (10일 후 만료)</div>` : ''}
+      ${contact?.email ? `<div style="font-size:7.5px;color:#999;margin-top:1px;">${esc(contact.email)}</div>` : ''}
     </div>
     <img src="${qrDataUrl}" style="width:72px;height:72px;flex-shrink:0;" />
   </div>`)
@@ -138,52 +138,36 @@ export async function exportPortfolioPDF({ resume, projects, achievements, hero,
 
   // ─── Render ───
   const container = document.createElement('div')
-  container.style.cssText = 'position:fixed;left:0;top:0;width:595px;padding:36px 40px;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;color:#333;line-height:1.5;background:#fff;z-index:99999;pointer-events:none;overflow:visible;'
+  container.style.cssText = 'position:absolute;left:0;top:0;width:515px;font-family:-apple-system,BlinkMacSystemFont,"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;color:#333;line-height:1.5;background:#fff;z-index:99999;pointer-events:none;'
   container.innerHTML = s.join('')
   document.body.appendChild(container)
 
   await new Promise(r => setTimeout(r, 300))
 
-  const html2canvas = (await import('html2canvas-pro')).default
-  const canvas = await html2canvas(container, {
-    scale: 2,
-    useCORS: true,
-    logging: false,
-    backgroundColor: '#ffffff',
-    height: container.scrollHeight,
-    windowHeight: container.scrollHeight,
-  })
-  document.body.removeChild(container)
-
   const { jsPDF } = await import('jspdf')
-  const imgW = 595
-  const imgH = 842
-  const footerH = 24
-  const pageContentH = imgH - footerH
-
-  const canvasW = canvas.width
-  const canvasH = canvas.height
-  const ratio = imgW / canvasW
-  const totalH = canvasH * ratio
-  const pages = Math.ceil(totalH / pageContentH)
-
   const doc = new jsPDF({ unit: 'pt', format: 'a4' })
 
-  for (let i = 0; i < pages; i++) {
-    if (i > 0) doc.addPage()
-    const srcY = Math.floor(i * pageContentH / ratio)
-    const srcH = Math.min(Math.floor(pageContentH / ratio), canvasH - srcY)
-    if (srcH <= 0) break
+  await new Promise((resolve) => {
+    doc.html(container, {
+      callback: () => resolve(),
+      x: 40,
+      y: 36,
+      width: 515,
+      windowWidth: 515,
+      margin: [36, 40, 40, 40],
+      autoPaging: 'text',
+      html2canvas: { scale: 2, useCORS: true, logging: false },
+    })
+  })
 
-    const pageCanvas = document.createElement('canvas')
-    pageCanvas.width = canvasW
-    pageCanvas.height = srcH
-    const ctx = pageCanvas.getContext('2d')
-    ctx.drawImage(canvas, 0, srcY, canvasW, srcH, 0, 0, canvasW, srcH)
+  document.body.removeChild(container)
 
-    doc.addImage(pageCanvas.toDataURL('image/png'), 'PNG', 0, 0, imgW, srcH * ratio)
+  // Footer
+  const pages = doc.getNumberOfPages()
+  for (let i = 1; i <= pages; i++) {
+    doc.setPage(i)
     doc.setFontSize(7).setTextColor(180, 180, 180)
-    doc.text(`${SITE_URL}  —  Page ${i + 1}/${pages}`, imgW / 2, imgH - 10, { align: 'center' })
+    doc.text(`${SITE_URL}  —  Page ${i}/${pages}`, 297, 830, { align: 'center' })
   }
 
   const blob = doc.output('blob')
