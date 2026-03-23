@@ -15,8 +15,8 @@ function md(t) {
 }
 
 // Wrap content in a pdf-section div — use PADDING not margin (html2canvas clips margin)
-const sec = (html) => `<div class="pdf-section" style="padding-bottom:32px;">${html}</div>`
-const h2 = (text) => `<div style="font-size:13px;font-weight:700;color:#3b82f6;padding-bottom:6px;border-bottom:1px solid #e5e7eb;margin-bottom:16px;padding-top:20px;">${text}</div>`
+const sec = (html) => `<div class="pdf-section" style="padding-bottom:18px;">${html}</div>`
+const h2 = (text) => `<div style="font-size:13px;font-weight:700;color:#3b82f6;padding-bottom:4px;border-bottom:1px solid #e5e7eb;margin-bottom:10px;padding-top:12px;">${text}</div>`
 
 export async function exportPortfolioPDF({ resume, projects, achievements, hero, about, contact }) {
   let tokenValue = ''
@@ -99,7 +99,7 @@ export async function exportPortfolioPDF({ resume, projects, achievements, hero,
     sections.push(sec(h2('Work Experience')))
     resume.work.filter(w => w.company).forEach((job, ji) => {
       let html = ''
-      if (ji > 0) html += '<div style="border-top:1px solid #ddd;padding-top:24px;margin-bottom:0;"></div>'
+      if (ji > 0) html += '<div style="border-top:1px solid #ddd;padding-top:14px;margin-bottom:0;"></div>'
       html += `<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:2px;">
         <span style="font-size:11px;font-weight:700;color:#222;">${esc(job.company)}</span>
         <span style="font-size:8px;color:#999;">${esc(job.period)}</span>
