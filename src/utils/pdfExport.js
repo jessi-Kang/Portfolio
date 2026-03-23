@@ -98,9 +98,10 @@ export async function exportPortfolioPDF({ resume, projects, achievements, hero,
   // Generate 10-day token
   let tokenValue = ''
   try {
-    const token = createAccessToken('PDF Export', 10)
-    tokenValue = token.value
-  } catch {
+    const expiry = new Date(Date.now() + 10 * 24 * 60 * 60 * 1000)
+    tokenValue = createAccessToken('PDF Export', expiry.toISOString())
+  } catch (e) {
+    console.warn('Token creation failed:', e)
     tokenValue = '(토큰 생성 실패)'
   }
 
@@ -253,6 +254,16 @@ export async function exportPortfolioPDF({ resume, projects, achievements, hero,
     doc.text(`${SITE_URL} — Page ${i}/${pageCount}`, PAGE_W / 2, PAGE_H - 20, { align: 'center' })
   }
 
-  doc.save('Jessi_Kang_PM_Portfolio.pdf')
+  // Force download via blob URL (more reliable than doc.save)
+  const blob = doc.output('blob')
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = 'Jessi_Kang_PM_Portfolio.pdf'
+  document.body.appendChild(a)
+  a.click()
+  document.body.removeChild(a)
+  URL.revokeObjectURL(url)
+
   return tokenValue
 }
