@@ -50,23 +50,21 @@ export default function Projects() {
           return (
           <div key={gi}>
             {/* Group Header */}
-            <div className="mb-6 flex items-start justify-between gap-3">
-              <div>
-                <h3 className="text-lg md:text-xl font-bold text-white">{group.title}</h3>
-                <p className="text-sm md:text-base text-gray-500 mt-1">{group.subtitle}</p>
-              </div>
-              {expId && (
-                <button
+            <div className="mb-6">
+              {expId ? (
+                <h3
+                  className="text-lg md:text-xl font-bold text-white inline-flex items-center gap-2 cursor-pointer hover:text-accent transition-colors group"
                   onClick={() => scrollToExperience(expId)}
-                  className="shrink-0 mt-1 flex items-center gap-1 text-[11px] text-gray-500 hover:text-accent transition-colors cursor-pointer"
-                  title="View in Experience"
                 >
-                  <span>Experience</span>
-                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  {group.title}
+                  <svg className="w-4 h-4 text-gray-600 group-hover:text-accent transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 19.5 15-15m0 0H8.25m11.25 0v11.25" />
                   </svg>
-                </button>
+                </h3>
+              ) : (
+                <h3 className="text-lg md:text-xl font-bold text-white">{group.title}</h3>
               )}
+              <p className="text-sm md:text-base text-gray-500 mt-1">{group.subtitle}</p>
             </div>
 
             {/* Project Cards Grid */}
