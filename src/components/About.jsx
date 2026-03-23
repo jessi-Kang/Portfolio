@@ -28,7 +28,7 @@ export default function About() {
         >
           <p className="text-accent text-xs font-mono tracking-widest uppercase mb-2">About</p>
           <h2 className="text-2xl md:text-3xl font-bold mb-8 leading-snug">
-            {config.heading || '사용자와 비즈니스 사이의\n균형을 설계합니다'}
+            {config.heading || 'Designing the balance\nbetween users and business'}
           </h2>
         </motion.div>
 

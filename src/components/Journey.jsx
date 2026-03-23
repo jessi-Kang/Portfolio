@@ -3,14 +3,14 @@ import SectionWrapper from './ui/SectionWrapper'
 
 const JOURNEY = [
   { year: '2025', org: 'LINE AI Friend', field: 'AI', color: '#4ade80', current: true, emoji: '🤖' },
-  { year: '2024', org: 'LINE Wallet', field: '추천 모델 (ML)', color: '#34d399', emoji: '💳' },
-  { year: '2020', org: 'LINE Demaecan', field: '물류 (ML)', color: '#2dd4bf', emoji: '🛵' },
-  { year: '2018', org: '29CM', field: '패션 · 쇼핑', color: '#38bdf8', emoji: '👗' },
-  { year: '2016', org: 'NHN EDU', field: '교육', color: '#60a5fa', emoji: '📚' },
-  { year: '2015', org: 'Yello Travel', field: '여행', color: '#818cf8', emoji: '✈️' },
-  { year: '2014', org: 'April Rain', field: '비즈니스', color: '#a78bfa', emoji: '💼' },
-  { year: '2013', org: 'Coupang', field: '쇼핑 서비스', color: '#8b5cf6', emoji: '📦' },
-  { year: '2011', org: 'SK Planet', field: '위치기반 광고', color: '#6366f1', emoji: '📍' },
+  { year: '2024', org: 'LINE Wallet', field: 'ML Recommendation', color: '#34d399', emoji: '💳' },
+  { year: '2020', org: 'LINE Demaecan', field: 'Logistics (ML)', color: '#2dd4bf', emoji: '🛵' },
+  { year: '2018', org: '29CM', field: 'Fashion · Commerce', color: '#38bdf8', emoji: '👗' },
+  { year: '2016', org: 'NHN EDU', field: 'EdTech', color: '#60a5fa', emoji: '📚' },
+  { year: '2015', org: 'Yello Travel', field: 'Travel', color: '#818cf8', emoji: '✈️' },
+  { year: '2014', org: 'April Rain', field: 'Startup', color: '#a78bfa', emoji: '💼' },
+  { year: '2013', org: 'Coupang', field: 'E-commerce', color: '#8b5cf6', emoji: '📦' },
+  { year: '2011', org: 'SK Planet', field: 'Location-based Ads', color: '#6366f1', emoji: '📍' },
 ]
 
 // Desktop uses chronological (old→new), mobile uses reverse (new→old)
@@ -20,7 +20,7 @@ export default function Journey() {
   return (
     <SectionWrapper id="journey">
       <p className="text-accent text-xs font-mono tracking-widest uppercase mb-2">Career Journey</p>
-      <h2 className="text-2xl md:text-3xl font-bold mb-8 md:mb-10">커리어 여정</h2>
+      <h2 className="text-2xl md:text-3xl font-bold mb-8 md:mb-10">Career Journey</h2>
 
       {/* Mobile: vertical, newest first — older items fade in on scroll */}
       <div className="md:hidden relative max-w-md mx-auto">

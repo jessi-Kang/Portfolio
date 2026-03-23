@@ -27,7 +27,7 @@ export default function AuthGate({ onSuccess }) {
       recordAccess(result.id, result.label)
       onSuccess(result.expiresAt)
     } else {
-      setError('유효하지 않거나 만료된 접속 토큰입니다.')
+      setError('Invalid or expired access token.')
     }
     setLoading(false)
   }
@@ -93,7 +93,7 @@ export default function AuthGate({ onSuccess }) {
               type="text"
               value={token}
               onChange={(e) => { setToken(e.target.value); setError('') }}
-              placeholder="접속 토큰을 입력하세요"
+              placeholder="Enter access token"
               autoFocus
               spellCheck={false}
               autoComplete="off"
@@ -117,7 +117,7 @@ export default function AuthGate({ onSuccess }) {
               whileTap={{ scale: 0.98 }}
               className="w-full py-3.5 bg-accent hover:bg-accent-light disabled:bg-gray-700 disabled:text-gray-500 text-white font-medium rounded-xl transition-colors cursor-pointer"
             >
-              {loading ? '확인 중...' : config.buttonText}
+              {loading ? 'Verifying...' : config.buttonText}
             </motion.button>
           </form>
         </div>
@@ -133,7 +133,7 @@ export default function AuthGate({ onSuccess }) {
             {config.contactMessage}
           </p>
           <a
-            href={`mailto:${config.contactEmail}?subject=포트폴리오 접속 토큰 요청`}
+            href={`mailto:${config.contactEmail}?subject=Portfolio Access Token Request`}
             className="inline-flex items-center gap-2 text-accent hover:text-accent-light text-sm font-medium transition-colors"
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>

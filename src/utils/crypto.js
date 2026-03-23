@@ -200,14 +200,14 @@ const AUTH_GATE_KEY = 'portfolio_authgate_config'
 
 const defaultAuthGateConfig = {
   tagline: 'PM Portfolio',
-  headline: 'ML로 행동을 예측하고,\nLLM으로 대화를 설계합니다',
-  subtitle: '데이터로 행동을 예측하고, 점점 더 사람에 가까운 AI를 만들어온 PM',
-  cardTitle: '접속 코드 입력',
-  cardDescription: '포트폴리오 열람을 위한 인증이 필요합니다',
-  buttonText: '포트폴리오 열람',
+  headline: 'Predicting behavior with ML,\nDesigning conversations with LLM',
+  subtitle: 'A product manager who predicts user behavior with data and builds AI closer to human',
+  cardTitle: 'Enter Access Code',
+  cardDescription: 'Authentication is required to view the portfolio',
+  buttonText: 'View Portfolio',
   contactEmail: 'jihyun.kang@me.com',
-  contactMessage: '접속 코드가 없으신가요?',
-  contactHint: '위 이메일로 접속 코드를 요청해 주세요',
+  contactMessage: "Don't have an access code?",
+  contactHint: 'Request one via the email above',
 }
 
 export function loadAuthGateConfig() {

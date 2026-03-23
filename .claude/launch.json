@@ -2,10 +2,10 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "dev",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev", "--", "--port", "5174"],
-      "port": 5174
+      "name": "portfolio",
+      "runtimeExecutable": "/Users/jessikang/.nvm/versions/node/v24.14.0/bin/npx",
+      "runtimeArgs": ["vite", "--port", "5176"],
+      "port": 5176
     }
   ]
 }

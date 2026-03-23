@@ -28,12 +28,12 @@ function TokenExpiryBanner({ expiresAt }) {
 
   let remaining
   if (diffDays > 0) {
-    remaining = `${diffDays}일 ${diffHours}시간`
+    remaining = `${diffDays}d ${diffHours}h`
   } else if (diffHours > 0) {
-    remaining = `${diffHours}시간`
+    remaining = `${diffHours}h`
   } else {
     const diffMin = Math.max(1, Math.floor(diffMs / (1000 * 60)))
-    remaining = `${diffMin}분`
+    remaining = `${diffMin}m`
   }
 
   return (
@@ -49,8 +49,8 @@ function TokenExpiryBanner({ expiresAt }) {
           <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
         </svg>
         <span className="text-gray-400">
-          접속 유효기간: <span className="text-white font-medium">{expiryDate.toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
-          <span className="text-accent ml-1.5">({remaining} 남음)</span>
+          Access expires: <span className="text-white font-medium">{expiryDate.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
+          <span className="text-accent ml-1.5">({remaining} left)</span>
         </span>
         <button
           onClick={() => setVisible(false)}
