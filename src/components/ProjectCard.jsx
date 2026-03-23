@@ -53,9 +53,9 @@ function StoryTabs({ project }) {
         <div className="space-y-6">
           {/* Highlights — card style */}
           {project.highlights && project.highlights.length > 0 && (
-            <div className="flex flex-wrap gap-3">
+            <div className="flex flex-wrap justify-center gap-3">
               {project.highlights.map((h, i) => (
-                <div key={i} className="bg-accent/5 border border-accent/15 rounded-lg px-3.5 py-2.5 text-center min-w-[80px]">
+                <div key={i} className="bg-accent/5 border border-accent/15 rounded-lg px-4 py-2.5 text-center min-w-[90px]">
                   <div className="text-base md:text-lg font-bold text-accent leading-tight">{h.value}</div>
                   <div className="text-[10px] text-gray-500 mt-0.5">{h.label}</div>
                 </div>
