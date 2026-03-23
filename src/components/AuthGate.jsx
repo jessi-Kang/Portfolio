@@ -93,6 +93,7 @@ export default function AuthGate({ onSuccess }) {
               type="text"
               value={token}
               onChange={(e) => { setToken(e.target.value); setError('') }}
+              onKeyDown={(e) => { if (e.key === 'Enter' && !e.nativeEvent.isComposing) { e.preventDefault(); handleSubmit(e) } }}
               placeholder="Enter access token"
               autoFocus
               spellCheck={false}
