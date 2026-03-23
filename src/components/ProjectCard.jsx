@@ -51,10 +51,10 @@ function StoryTabs({ project }) {
 
       {/* Tab content */}
       {isResult ? (
-        <div className="space-y-3">
-          {/* Highlights summary inside result */}
+        <div className="space-y-5">
+          {/* Highlights summary */}
           {project.highlights && project.highlights.length > 0 && (
-            <div className="flex flex-wrap gap-x-4 gap-y-1.5">
+            <div className="flex flex-wrap gap-x-5 gap-y-2 pb-1">
               {project.highlights.map((h, i) => (
                 <span key={i} className="text-sm">
                   <span className="font-bold text-accent">{h.value}</span>
@@ -65,18 +65,18 @@ function StoryTabs({ project }) {
           )}
 
           {/* Result detail */}
-          <div className="text-sm md:text-[15px] leading-relaxed text-gray-200">
+          <div className="text-sm md:text-[15px] leading-relaxed text-gray-300">
             <MarkdownRenderer content={project.result} />
           </div>
 
           {/* Insight */}
           {project.insight && (
-            <div className="mt-3 bg-gray-900/80 border border-gray-700/40 rounded-lg px-3.5 py-3">
+            <div className="bg-gray-900/80 border border-gray-700/40 rounded-lg px-4 py-3.5">
               <div className="flex gap-2.5 items-start">
-                <span className="text-accent/70 text-sm mt-px">💡</span>
+                <span className="text-base mt-px">💡</span>
                 <div>
-                  <p className="text-[10px] font-mono text-accent/50 uppercase tracking-wider mb-1">Insight</p>
-                  <div className="text-xs text-gray-400 leading-relaxed">
+                  <p className="text-[10px] font-mono text-accent/50 uppercase tracking-wider mb-1.5">Insight</p>
+                  <div className="text-[13px] text-gray-400 leading-relaxed">
                     <MarkdownRenderer content={project.insight} />
                   </div>
                 </div>
