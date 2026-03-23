@@ -15,8 +15,8 @@ function md(t) {
 }
 
 // Wrap content in a pdf-section div
-const sec = (html) => `<div class="pdf-section" style="margin-bottom:6px;">${html}</div>`
-const h2 = (text) => `<div style="font-size:13px;font-weight:700;color:#3b82f6;padding-bottom:4px;border-bottom:1px solid #e5e7eb;margin-bottom:8px;">${text}</div>`
+const sec = (html) => `<div class="pdf-section" style="margin-bottom:14px;">${html}</div>`
+const h2 = (text) => `<div style="font-size:13px;font-weight:700;color:#3b82f6;padding-bottom:4px;border-bottom:1px solid #e5e7eb;margin-bottom:10px;margin-top:6px;">${text}</div>`
 
 export async function exportPortfolioPDF({ resume, projects, achievements, hero, about, contact }) {
   let tokenValue = ''
