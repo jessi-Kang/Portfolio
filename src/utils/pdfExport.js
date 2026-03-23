@@ -2,103 +2,22 @@ import QRCode from 'qrcode'
 import { createAccessToken } from './crypto'
 
 const SITE_URL = 'https://jessi-kang.com'
-const PAGE_W = 595 // A4 width in pt
-const PAGE_H = 842 // A4 height in pt
-const MARGIN = 40
-const COL_W = PAGE_W - MARGIN * 2
+
+function esc(text) {
+  if (!text) return ''
+  return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+}
+
+function md2html(text) {
+  if (!text) return ''
+  return esc(text)
+    .replace(/^[-•◦‣]\s*/gm, '• ')
+    .replace(/#{1,4}\s*/g, '')
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\n/g, '<br>')
+}
 
 export async function exportPortfolioPDF({ resume, projects, achievements, hero, about, contact }) {
-  const { jsPDF } = await import('jspdf')
-  const doc = new jsPDF({ unit: 'pt', format: 'a4' })
-
-  // Load Korean font (Noto Sans KR — TTF format for jsPDF compatibility)
-  let koreanFontLoaded = false
-  const fontUrls = [
-    'https://cdn.jsdelivr.net/gh/psmever/noto-sans-kr-font@master/NotoSansKR-Regular.ttf',
-    'https://cdn.jsdelivr.net/gh/nickcaim/noto-sans-korean-jspdf@master/NotoSansKR-Regular.ttf',
-  ]
-  for (const fontUrl of fontUrls) {
-    if (koreanFontLoaded) break
-    try {
-      const resp = await fetch(fontUrl)
-      if (!resp.ok) continue
-      const buf = await resp.arrayBuffer()
-      const bytes = new Uint8Array(buf)
-      let binary = ''
-      const chunk = 8192
-      for (let i = 0; i < bytes.length; i += chunk) {
-        binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunk))
-      }
-      const base64 = btoa(binary)
-      doc.addFileToVFS('NotoSansKR.ttf', base64)
-      doc.addFont('NotoSansKR.ttf', 'NotoSansKR', 'normal')
-      doc.setFont('NotoSansKR')
-      koreanFontLoaded = true
-    } catch (e) {
-      console.warn('Font load attempt failed:', e)
-    }
-  }
-  if (!koreanFontLoaded) {
-    doc.setFont('Helvetica')
-  }
-
-  let y = MARGIN
-
-  const checkPage = (need = 40) => {
-    if (y + need > PAGE_H - MARGIN) {
-      doc.addPage()
-      y = MARGIN
-    }
-  }
-
-  const heading = (text, size = 14) => {
-    checkPage(30)
-    doc.setFontSize(size).setTextColor(59, 130, 246)
-    doc.text(text, MARGIN, y)
-    y += size + 6
-    doc.setTextColor(51, 51, 51)
-  }
-
-  const subheading = (text, size = 11) => {
-    checkPage(20)
-    doc.setFontSize(size).setTextColor(30, 30, 30)
-    doc.text(text, MARGIN, y)
-    y += size + 4
-  }
-
-  const bodyText = (text, indent = 0, size = 9) => {
-    if (!text) return
-    doc.setFontSize(size).setTextColor(80, 80, 80)
-    const clean = text.replace(/^[-•◦‣]\s*/gm, '· ').replace(/#{1,4}\s*/g, '')
-    const lines = doc.splitTextToSize(clean, COL_W - indent)
-    lines.forEach((line) => {
-      checkPage(12)
-      doc.text(line, MARGIN + indent, y)
-      y += 11
-    })
-  }
-
-  const accentText = (text, indent = 0, size = 9) => {
-    if (!text) return
-    doc.setFontSize(size).setTextColor(59, 130, 246)
-    const clean = text.replace(/^[-•◦‣]\s*/gm, '· ').replace(/#{1,4}\s*/g, '')
-    const lines = doc.splitTextToSize(clean, COL_W - indent)
-    lines.forEach((line) => {
-      checkPage(12)
-      doc.text(line, MARGIN + indent, y)
-      y += 11
-    })
-    doc.setTextColor(80, 80, 80)
-  }
-
-  const separator = () => {
-    checkPage(10)
-    doc.setDrawColor(220, 220, 220).setLineWidth(0.5)
-    doc.line(MARGIN, y, PAGE_W - MARGIN, y)
-    y += 8
-  }
-
-  // ─── Page 1: Header with QR + Token ───
   // Generate 10-day token
   let tokenValue = ''
   try {
@@ -106,159 +25,187 @@ export async function exportPortfolioPDF({ resume, projects, achievements, hero,
     tokenValue = createAccessToken('PDF Export', expiry.toISOString())
   } catch (e) {
     console.warn('Token creation failed:', e)
-    tokenValue = '(토큰 생성 실패)'
+    tokenValue = ''
   }
 
   // QR Code
-  const qrDataUrl = await QRCode.toDataURL(SITE_URL, { width: 100, margin: 1, color: { dark: '#3b82f6', light: '#ffffff' } })
-  doc.addImage(qrDataUrl, 'PNG', PAGE_W - MARGIN - 80, MARGIN, 80, 80)
+  const qrDataUrl = await QRCode.toDataURL(SITE_URL, { width: 120, margin: 1, color: { dark: '#3b82f6', light: '#ffffff' } })
 
-  // Title area
-  doc.setFontSize(22).setTextColor(30, 30, 30)
-  doc.text(hero?.headline?.replace(/\n/g, ', ') || 'PM Portfolio', MARGIN, y + 10)
-  y += 28
-  doc.setFontSize(10).setTextColor(100, 100, 100)
-  doc.text(hero?.subtitle || '', MARGIN, y)
-  y += 18
-  doc.setFontSize(9).setTextColor(59, 130, 246)
-  doc.text(`${SITE_URL}`, MARGIN, y)
-  y += 14
-  doc.setFontSize(8).setTextColor(100, 100, 100)
-  doc.text(`Access Token: ${tokenValue}  (expires in 10 days)`, MARGIN, y)
-  y += 14
+  // Build HTML content
+  const sections = []
 
-  if (contact?.email) {
-    doc.setFontSize(8).setTextColor(100, 100, 100)
-    doc.text(`Contact: ${contact.email}`, MARGIN, y)
-    y += 14
-  }
-
-  separator()
+  // ─── Header ───
+  sections.push(`
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;">
+      <div style="flex:1;">
+        <h1 style="font-size:20px;font-weight:700;color:#111;margin:0 0 6px;">${esc(hero?.headline?.replace(/\n/g, ', ') || 'PM Portfolio')}</h1>
+        <p style="font-size:10px;color:#888;margin:0 0 10px;">${esc(hero?.subtitle || '')}</p>
+        <p style="font-size:9px;margin:2px 0;"><a href="${SITE_URL}" style="color:#3b82f6;text-decoration:none;">${SITE_URL}</a></p>
+        ${tokenValue ? `<p style="font-size:8px;color:#999;margin:2px 0;">Access Token: <strong style="color:#333;">${esc(tokenValue)}</strong> (10일 후 만료)</p>` : ''}
+        ${contact?.email ? `<p style="font-size:8px;color:#999;margin:2px 0;">Contact: ${esc(contact.email)}</p>` : ''}
+      </div>
+      <img src="${qrDataUrl}" style="width:70px;height:70px;" />
+    </div>
+    <hr style="border:none;border-top:1px solid #ddd;margin:10px 0 16px;">
+  `)
 
   // ─── About ───
   if (about?.bio) {
-    heading('About')
-    bodyText(about.bio)
-    y += 4
+    sections.push(`
+      <h2 style="font-size:13px;color:#3b82f6;margin:0 0 6px;">About</h2>
+      <p style="font-size:9px;color:#555;line-height:1.6;margin:0 0 12px;">${md2html(about.bio)}</p>
+    `)
   }
 
   // ─── Key Achievements ───
   if (achievements?.items?.length > 0) {
-    heading('Key Achievements')
-    achievements.items.forEach((item) => {
-      checkPage(20)
-      subheading(`${item.icon || ''} ${item.title}`, 10)
-      bodyText(item.description, 8)
-      y += 2
-    })
+    let items = achievements.items.map(item =>
+      `<div style="margin-bottom:6px;">
+        <strong style="font-size:9px;color:#222;">${esc(item.icon || '')} ${esc(item.title)}</strong>
+        <div style="font-size:8px;color:#666;margin-top:2px;line-height:1.5;">${md2html(item.description)}</div>
+      </div>`
+    ).join('')
+    sections.push(`
+      <h2 style="font-size:13px;color:#3b82f6;margin:0 0 6px;">Key Achievements</h2>
+      ${items}
+      <hr style="border:none;border-top:1px solid #eee;margin:12px 0;">
+    `)
   }
-
-  separator()
 
   // ─── Featured Projects ───
   if (projects?.groups?.length > 0) {
-    heading('Featured Projects')
-    projects.groups.forEach((group) => {
-      subheading(`${group.title}`, 11)
-      if (group.subtitle) {
-        doc.setFontSize(8).setTextColor(120, 120, 120)
-        doc.text(group.subtitle, MARGIN + 4, y)
-        y += 12
-      }
-      group.projects?.forEach((p) => {
-        checkPage(30)
-        subheading(`  ${p.title}`, 10)
-        if (p.problem) bodyText(`[Problem] ${p.problem}`, 10, 8)
-        if (p.solution) bodyText(`[Solution] ${p.solution}`, 10, 8)
-        if (p.collaboration) bodyText(`[Collab] ${p.collaboration}`, 10, 8)
-        if (p.result) accentText(`[Result] ${p.result}`, 10, 8)
-        if (p.insight) {
-          doc.setFontSize(8).setTextColor(130, 130, 130)
-          const insightLines = doc.splitTextToSize(`💡 ${p.insight}`, COL_W - 14)
-          insightLines.forEach((line) => { checkPage(10); doc.text(line, MARGIN + 14, y); y += 10 })
-        }
-        y += 4
-      })
-      y += 4
-    })
+    let groupsHtml = projects.groups.map(group => {
+      let projectsHtml = (group.projects || []).map(p => {
+        let parts = []
+        if (p.problem) parts.push(`<div style="margin-bottom:4px;"><span style="color:#3b82f6;font-weight:600;">[Problem]</span> ${md2html(p.problem)}</div>`)
+        if (p.solution) parts.push(`<div style="margin-bottom:4px;"><span style="color:#3b82f6;font-weight:600;">[Solution]</span> ${md2html(p.solution)}</div>`)
+        if (p.collaboration) parts.push(`<div style="margin-bottom:4px;"><span style="color:#3b82f6;font-weight:600;">[Collab]</span> ${md2html(p.collaboration)}</div>`)
+        if (p.result) parts.push(`<div style="margin-bottom:4px;color:#3b82f6;"><strong>[Result]</strong> ${md2html(p.result)}</div>`)
+        if (p.insight) parts.push(`<div style="color:#999;font-style:italic;">💡 ${md2html(p.insight)}</div>`)
+        return `
+          <div style="margin-bottom:8px;padding-left:8px;border-left:2px solid #e5e7eb;">
+            <strong style="font-size:9px;color:#222;">${esc(p.title)}</strong>
+            <div style="font-size:7.5px;color:#666;line-height:1.5;margin-top:3px;">${parts.join('')}</div>
+          </div>`
+      }).join('')
+      return `
+        <div style="margin-bottom:10px;">
+          <strong style="font-size:10px;color:#222;">${esc(group.title)}</strong>
+          <div style="font-size:7.5px;color:#999;margin:2px 0 6px;">${esc(group.subtitle || '')}</div>
+          ${projectsHtml}
+        </div>`
+    }).join('')
+    sections.push(`
+      <h2 style="font-size:13px;color:#3b82f6;margin:0 0 8px;">Featured Projects</h2>
+      ${groupsHtml}
+      <hr style="border:none;border-top:1px solid #eee;margin:10px 0;">
+    `)
   }
-
-  separator()
 
   // ─── Work Experience ───
   if (resume?.work?.length > 0) {
-    heading('Work Experience')
-    resume.work.filter((w) => w.company).forEach((job) => {
-      checkPage(30)
-      subheading(`${job.company}`, 11)
-      doc.setFontSize(8).setTextColor(100, 100, 100)
-      doc.text(`${job.title} | ${job.period}`, MARGIN + 4, y)
-      y += 12
-      if (job.leaveNote) {
-        doc.setFontSize(7).setTextColor(150, 150, 150)
-        doc.text(job.leaveNote, MARGIN + 4, y)
-        y += 10
-      }
+    let workHtml = resume.work.filter(w => w.company).map(job => {
+      let projectsList = (job.projects || []).map(p => {
+        let detail = [p.period, p.role, p.team].filter(Boolean).join(' · ')
+        let resultLine = p.result ? `<div style="color:#3b82f6;font-size:7px;margin-top:1px;">${md2html(p.result)}</div>` : ''
+        return `<div style="margin-bottom:4px;">
+          <span style="font-size:8px;color:#333;">· ${esc(p.title)}</span>
+          ${detail ? `<div style="font-size:7px;color:#aaa;margin-left:8px;">${esc(detail)}</div>` : ''}
+          ${resultLine}
+        </div>`
+      }).join('')
 
-      job.projects?.forEach((p) => {
-        checkPage(16)
-        doc.setFontSize(9).setTextColor(60, 60, 60)
-        doc.text(`· ${p.title}`, MARGIN + 8, y)
-        y += 11
-        if (p.period || p.role) {
-          doc.setFontSize(7).setTextColor(140, 140, 140)
-          doc.text(`${p.period || ''}${p.role ? ' · ' + p.role : ''}${p.team ? ' · ' + p.team : ''}`, MARGIN + 14, y)
-          y += 9
-        }
-        if (p.result) accentText(p.result, 14, 7)
-      })
-
+      let otherHtml = ''
       if (job.otherProjects) {
-        checkPage(16)
-        doc.setFontSize(8).setTextColor(140, 140, 140)
-        doc.text('Other Tasks:', MARGIN + 8, y)
-        y += 10
-        bodyText(job.otherProjects, 12, 7)
+        otherHtml = `<div style="margin-top:4px;font-size:7px;color:#aaa;"><strong>Other Tasks:</strong><br>${md2html(job.otherProjects)}</div>`
       }
-      y += 6
-    })
-  }
 
-  separator()
+      return `
+        <div style="margin-bottom:12px;">
+          <strong style="font-size:10px;color:#222;">${esc(job.company)}</strong>
+          <div style="font-size:7.5px;color:#888;margin:2px 0;">${esc(job.title)} | ${esc(job.period)}</div>
+          ${job.leaveNote ? `<div style="font-size:7px;color:#bbb;">${esc(job.leaveNote)}</div>` : ''}
+          <div style="margin-top:4px;padding-left:6px;">${projectsList}</div>
+          ${otherHtml}
+        </div>`
+    }).join('')
+    sections.push(`
+      <h2 style="font-size:13px;color:#3b82f6;margin:0 0 8px;">Work Experience</h2>
+      ${workHtml}
+      <hr style="border:none;border-top:1px solid #eee;margin:10px 0;">
+    `)
+  }
 
   // ─── Education ───
   if (resume?.education?.length > 0) {
-    heading('Education')
-    resume.education.filter((e) => e.school).forEach((edu) => {
-      checkPage(16)
-      doc.setFontSize(10).setTextColor(40, 40, 40)
-      doc.text(`${edu.school}`, MARGIN, y)
-      y += 13
-      if (edu.degree) {
-        doc.setFontSize(8).setTextColor(100, 100, 100)
-        doc.text(`${edu.degree} | ${edu.period}`, MARGIN + 4, y)
-        y += 11
-      }
-    })
+    let eduHtml = resume.education.filter(e => e.school).map(edu =>
+      `<div style="margin-bottom:4px;">
+        <strong style="font-size:9px;color:#222;">${esc(edu.school)}</strong>
+        ${edu.degree ? `<div style="font-size:8px;color:#888;">${esc(edu.degree)} | ${esc(edu.period)}</div>` : ''}
+      </div>`
+    ).join('')
+    sections.push(`
+      <h2 style="font-size:13px;color:#3b82f6;margin:0 0 6px;">Education</h2>
+      ${eduHtml}
+    `)
+  }
+
+  // ─── Activities ───
+  if (resume?.activities?.length > 0) {
+    let actHtml = resume.activities.filter(a => a.summary).map(act =>
+      `<div style="font-size:8px;color:#555;margin-bottom:3px;">${esc(act.year || '')} ${esc(act.category || '')} — ${esc(act.summary)}</div>`
+    ).join('')
+    sections.push(`
+      <h2 style="font-size:13px;color:#3b82f6;margin:6px 0 6px;">Activities</h2>
+      ${actHtml}
+    `)
   }
 
   // ─── Skills ───
   if (about?.skills?.length > 0) {
-    heading('Skills')
-    const skillLabels = about.skills.map((s) => typeof s === 'string' ? s : s.label).join(' · ')
-    bodyText(skillLabels)
-    y += 4
+    const skillLabels = about.skills.map(s => typeof s === 'string' ? s : s.label).join(' · ')
+    sections.push(`
+      <h2 style="font-size:13px;color:#3b82f6;margin:10px 0 4px;">Skills</h2>
+      <p style="font-size:8px;color:#555;">${esc(skillLabels)}</p>
+    `)
   }
 
-  // ─── Footer ───
+  // Create hidden container
+  const container = document.createElement('div')
+  container.style.cssText = 'position:fixed;left:-9999px;top:0;width:515px;font-family:-apple-system,BlinkMacSystemFont,"Noto Sans KR","Apple SD Gothic Neo",sans-serif;color:#333;line-height:1.5;'
+  container.innerHTML = sections.join('')
+  document.body.appendChild(container)
+
+  // Generate PDF using html() method — uses browser font rendering
+  const { jsPDF } = await import('jspdf')
+  const doc = new jsPDF({ unit: 'pt', format: 'a4', putOnlyUsedFonts: true })
+
+  await new Promise((resolve, reject) => {
+    doc.html(container, {
+      callback: (d) => resolve(d),
+      x: 40,
+      y: 40,
+      width: 515,
+      windowWidth: 515,
+      html2canvas: {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+      },
+    })
+  })
+
+  document.body.removeChild(container)
+
+  // Footer on each page
   const pageCount = doc.getNumberOfPages()
   for (let i = 1; i <= pageCount; i++) {
     doc.setPage(i)
     doc.setFontSize(7).setTextColor(180, 180, 180)
-    doc.text(`${SITE_URL} — Page ${i}/${pageCount}`, PAGE_W / 2, PAGE_H - 20, { align: 'center' })
+    doc.text(`${SITE_URL} — Page ${i}/${pageCount}`, 297, 830, { align: 'center' })
   }
 
-  // Force download via blob URL (more reliable than doc.save)
+  // Download
   const blob = doc.output('blob')
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
