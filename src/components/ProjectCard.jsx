@@ -28,10 +28,10 @@ function StoryTabs({ project }) {
   return (
     <div>
       {/* Tab bar */}
-      <div className="flex flex-wrap items-center gap-1 pb-4 mb-5 border-b border-gray-700/40">
+      <div className="flex flex-wrap items-center justify-center gap-1 pb-4 mb-5 border-b border-gray-700/40">
         {availableTabs.map((tab, i) => (
           <div key={tab.key} className="flex items-center">
-            {i > 0 && <span className="text-gray-600 text-[10px] mx-0.5 sm:mx-1.5 select-none hidden sm:inline">&rarr;</span>}
+            {i > 0 && <span className="text-gray-600 text-[10px] mx-0.5 sm:mx-1.5 select-none">&rarr;</span>}
             <button
               onClick={() => setActive(tab.key)}
               className={`px-2 sm:px-3 py-1.5 text-[11px] sm:text-xs font-medium rounded-md transition-colors cursor-pointer whitespace-nowrap ${
