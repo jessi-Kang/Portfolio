@@ -18,7 +18,6 @@ const TABS = [
 
 function StoryTabs({ project }) {
   const availableTabs = TABS.filter((t) => project[t.key])
-  // Default to 'result' if available
   const defaultTab = availableTabs.find((t) => t.key === 'result')?.key || availableTabs[0]?.key || 'problem'
   const [active, setActive] = useState(defaultTab)
 
@@ -28,19 +27,19 @@ function StoryTabs({ project }) {
 
   return (
     <div>
-      {/* Tab buttons */}
-      <div className="flex items-center gap-1 mb-4 overflow-x-auto scrollbar-hide">
+      {/* Tab bar */}
+      <div className="flex items-center gap-1 pb-4 mb-5 border-b border-gray-700/40 overflow-x-auto scrollbar-hide">
         {availableTabs.map((tab, i) => (
           <div key={tab.key} className="flex items-center">
-            {i > 0 && <span className="text-gray-600 text-[10px] mx-1 select-none">&rarr;</span>}
+            {i > 0 && <span className="text-gray-600 text-[10px] mx-1.5 select-none">&rarr;</span>}
             <button
               onClick={() => setActive(tab.key)}
-              className={`px-2.5 py-1.5 text-xs font-medium rounded transition-colors cursor-pointer whitespace-nowrap ${
+              className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors cursor-pointer whitespace-nowrap ${
                 active === tab.key
                   ? tab.key === 'result'
-                    ? 'text-accent bg-accent/10'
-                    : 'text-white bg-gray-800/60'
-                  : 'text-gray-500 hover:text-gray-400'
+                    ? 'text-accent bg-accent/10 ring-1 ring-accent/20'
+                    : 'text-white bg-gray-700/50'
+                  : 'text-gray-500 hover:text-gray-300'
               }`}
             >
               {tab.label}
@@ -51,32 +50,32 @@ function StoryTabs({ project }) {
 
       {/* Tab content */}
       {isResult ? (
-        <div className="space-y-5">
-          {/* Highlights summary */}
+        <div className="space-y-6">
+          {/* Highlights — card style */}
           {project.highlights && project.highlights.length > 0 && (
-            <div className="flex flex-wrap gap-x-5 gap-y-2 pb-1">
+            <div className="flex flex-wrap gap-3">
               {project.highlights.map((h, i) => (
-                <span key={i} className="text-sm">
-                  <span className="font-bold text-accent">{h.value}</span>
-                  <span className="text-gray-500 ml-1.5 text-xs">{h.label}</span>
-                </span>
+                <div key={i} className="bg-accent/5 border border-accent/15 rounded-lg px-3.5 py-2.5 text-center min-w-[80px]">
+                  <div className="text-base md:text-lg font-bold text-accent leading-tight">{h.value}</div>
+                  <div className="text-[10px] text-gray-500 mt-0.5">{h.label}</div>
+                </div>
               ))}
             </div>
           )}
 
           {/* Result detail */}
-          <div className="text-sm md:text-[15px] leading-relaxed text-gray-300">
+          <div className="text-sm md:text-[15px] leading-[1.8] text-gray-300">
             <MarkdownRenderer content={project.result} />
           </div>
 
           {/* Insight */}
           {project.insight && (
-            <div className="bg-gray-900/80 border border-gray-700/40 rounded-lg px-4 py-3.5">
-              <div className="flex gap-2.5 items-start">
-                <span className="text-base mt-px">💡</span>
+            <div className="bg-gray-900/80 border border-gray-700/40 rounded-lg px-4 py-4">
+              <div className="flex gap-3 items-start">
+                <span className="text-base shrink-0">💡</span>
                 <div>
-                  <p className="text-[10px] font-mono text-accent/50 uppercase tracking-wider mb-1.5">Insight</p>
-                  <div className="text-[13px] text-gray-400 leading-relaxed">
+                  <p className="text-[10px] font-mono text-accent/50 uppercase tracking-wider mb-2">Insight</p>
+                  <div className="text-[13px] text-gray-400 leading-[1.7]">
                     <MarkdownRenderer content={project.insight} />
                   </div>
                 </div>
@@ -85,7 +84,7 @@ function StoryTabs({ project }) {
           )}
         </div>
       ) : (
-        <div className="text-sm md:text-[15px] leading-relaxed text-gray-300">
+        <div className="text-sm md:text-[15px] leading-[1.8] text-gray-300">
           <MarkdownRenderer content={project[active]} />
         </div>
       )}
@@ -101,25 +100,25 @@ export default function ProjectCard({ project }) {
     <div
       className="h-full flex flex-col bg-gray-900 border border-gray-800 rounded-2xl p-6 md:p-8 hover:border-accent/40 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-accent/5"
     >
-      {/* Header: Badge + Title + Subtitle */}
-      <div className="mb-1">
-        <span className={`inline-block text-[11px] font-mono font-medium tracking-wider uppercase px-2.5 py-1 rounded mb-4 ${badgeCls}`}>
+      {/* Header */}
+      <div>
+        <span className={`inline-block text-[11px] font-mono font-medium tracking-wider uppercase px-2.5 py-1 rounded mb-3 ${badgeCls}`}>
           {project.badge}
         </span>
         <h3 className="text-lg md:text-xl font-bold text-white mb-2 leading-snug">{project.title}</h3>
-        <p className="text-sm text-gray-500">{project.subtitle}</p>
+        <p className="text-sm text-gray-500 leading-relaxed">{project.subtitle}</p>
       </div>
 
-      {/* Story Box — the entire flow in a contained box */}
+      {/* Story Box */}
       {hasStory && (
-        <div className="flex-1 mt-5 bg-gray-800/30 border border-gray-800/60 rounded-xl p-4 md:p-5">
+        <div className="flex-1 mt-6 bg-gray-800/25 border border-gray-800/50 rounded-xl p-5 md:p-6">
           <StoryTabs project={project} />
         </div>
       )}
 
       {/* Legacy description fallback */}
       {!hasStory && project.description && (
-        <div className="flex-1 mt-5">
+        <div className="flex-1 mt-6">
           <div className="text-sm md:text-base text-gray-400 leading-relaxed"><MarkdownRenderer content={project.description} /></div>
         </div>
       )}
