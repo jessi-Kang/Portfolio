@@ -122,7 +122,7 @@ export async function exportPortfolioPDF({ resume, projects, achievements, hero,
 
   // Render HTML → Canvas → PDF (page-split)
   const container = document.createElement('div')
-  container.style.cssText = 'position:fixed;left:-9999px;top:0;width:595px;padding:40px;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;color:#333;line-height:1.5;background:#fff;'
+  container.style.cssText = 'position:fixed;left:0;top:0;width:595px;padding:40px;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;color:#333;line-height:1.5;background:#fff;z-index:99999;opacity:0.01;'
   container.innerHTML = s.join('')
   document.body.appendChild(container)
 
