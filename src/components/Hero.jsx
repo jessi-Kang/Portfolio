@@ -1,19 +1,10 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import TypingAnimation from './ui/TypingAnimation'
 import { loadHeroConfig, loadResumeConfig } from '../utils/crypto'
-import { loadProjects } from '../data/projects'
 
 export default function Hero() {
   const [hero] = useState(loadHeroConfig)
-  const projectData = loadProjects()
-  const hasProjects = projectData.groups?.some((g) => g.projects?.some((p) => p.title))
   const resume = loadResumeConfig()
-  const hasResume =
-    resume.education?.some((e) => e.school) ||
-    resume.work?.some((w) => w.company) ||
-    resume.activities?.some((a) => a.summary) ||
-    !!resume.selfIntro
 
   const scrollTo = (id) => {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
@@ -38,10 +29,11 @@ export default function Hero() {
   })()
   const totalProjects = resume.work?.reduce((sum, w) => sum + (w.projects?.length || 0), 0) || 0
   const totalCompanies = resume.work?.filter((w) => w.company).length || 0
-  const stats = hero.stats?.length > 0 ? hero.stats : [
-    { num: `${workYears}+`, label: 'Years Experience' },
-    { num: `${totalProjects}+`, label: 'Projects' },
-    { num: `${totalCompanies}`, label: 'Companies' },
+
+  const statItems = hero.stats?.length > 0 ? hero.stats : [
+    { num: `${workYears}+`, label: 'Years Experience', link: 'journey' },
+    { num: `${totalProjects}+`, label: 'Projects', link: 'projects' },
+    { num: `${totalCompanies}`, label: 'Companies', link: 'journey' },
   ]
 
   return (
@@ -79,56 +71,31 @@ export default function Hero() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.4 }}
-        className="mt-6 text-gray-400 text-base md:text-lg max-w-2xl"
+        className="mt-6 text-gray-400 text-base md:text-lg max-w-2xl text-balance"
       >
         {hero.subtitle}
       </motion.p>
 
-      {/* Stats */}
-      {stats.length > 0 && (
+      {/* Stats — clickable */}
+      {statItems.length > 0 && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.55 }}
           className="mt-10 flex gap-6 md:gap-12 flex-wrap justify-center"
         >
-          {stats.map((stat, i) => (
-            <div key={i} className="text-center">
-              <div className="text-3xl md:text-4xl font-bold text-white">{stat.num}</div>
-              <div className="text-xs text-gray-500 tracking-wide mt-1">{stat.label}</div>
-            </div>
+          {statItems.map((stat, i) => (
+            <motion.button
+              key={i}
+              whileHover={{ scale: 1.08 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => scrollTo(stat.link || 'projects')}
+              className="text-center cursor-pointer group"
+            >
+              <div className="text-3xl md:text-4xl font-bold text-white group-hover:text-accent transition-colors">{stat.num}</div>
+              <div className="text-xs text-gray-500 group-hover:text-gray-400 tracking-wide mt-1 transition-colors">{stat.label}</div>
+            </motion.button>
           ))}
-        </motion.div>
-      )}
-
-      {/* CTA Buttons */}
-      {(hasProjects || hasResume) && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.7 }}
-          className="mt-10 flex items-center gap-3 flex-wrap justify-center"
-        >
-          {hasProjects && (
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => scrollTo('projects')}
-              className="px-8 py-3 bg-accent hover:bg-accent-light text-white font-medium rounded-full transition-colors cursor-pointer"
-            >
-              Projects
-            </motion.button>
-          )}
-          {hasResume && (
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => scrollTo('experience')}
-              className="px-8 py-3 border border-gray-700 hover:border-accent text-gray-300 hover:text-accent font-medium rounded-full transition-colors cursor-pointer"
-            >
-              Experience
-            </motion.button>
-          )}
         </motion.div>
       )}
 
