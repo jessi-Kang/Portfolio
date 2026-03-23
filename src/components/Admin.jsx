@@ -305,7 +305,7 @@ function WorkEditor({ item, onChange, onRemove }) {
 
 function ActivityEditor({ item, onChange, onRemove }) {
   return (
-    <div className="bg-gray-800/50 rounded-lg p-3">
+    <div className="bg-gray-800/50 rounded-lg p-3 space-y-2">
       <div className="flex justify-between items-start gap-2">
         <div className="grid grid-cols-2 gap-2 flex-1 sm:grid-cols-3">
           <Field label="연도" value={item.year} onChange={(v) => onChange({ ...item, year: v })} className="w-24" />
@@ -314,6 +314,7 @@ function ActivityEditor({ item, onChange, onRemove }) {
         </div>
         <button onClick={onRemove} className="shrink-0 mt-5 px-2 py-1 text-red-400 hover:text-red-300 cursor-pointer">✕</button>
       </div>
+      <Field label="링크 URL (선택)" value={item.link || ''} onChange={(v) => onChange({ ...item, link: v })} />
     </div>
   )
 }

@@ -678,7 +678,7 @@ export const defaultResumeConfig = {
     },
   ],
   activities: [
-    { year: '2026', category: '강연', summary: 'AI Campus Day 사내 강연 멘토' },
+    { year: '2026', category: '강연', summary: 'AI Campus Day 사내 강연 멘토', link: 'https://zdnet.co.kr/view/?no=20260214100498' },
     { year: '2014', category: '창업', summary: '서울시 창업지원 프로그램 \'챌린지 1000 프로젝트\' 6기 선발' },
   ],
   selfIntro: '',
