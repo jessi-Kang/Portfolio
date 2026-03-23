@@ -72,8 +72,7 @@ export default function Projects() {
             {/* Project Cards Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {group.projects.map((project) => {
-                const isSolo = group.projects.length === 1
-                const span = (project.fullWidth || isSolo) ? 'md:col-span-2' : ''
+                const span = project.fullWidth ? 'md:col-span-2' : ''
                 return (
                   <div key={project.id} id={`project-${project.id}`} className={`${span} transition-all duration-500`}>
                     <ProjectCard project={project} />
