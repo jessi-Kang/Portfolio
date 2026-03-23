@@ -14,9 +14,9 @@ function md(t) {
   return esc(t).replace(/^[-•◦‣]\s*/gm, '• ').replace(/#{1,4}\s*/g, '').replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>')
 }
 
-// Wrap content in a pdf-section div
-const sec = (html) => `<div class="pdf-section" style="margin-bottom:32px;">${html}</div>`
-const h2 = (text) => `<div style="font-size:13px;font-weight:700;color:#3b82f6;padding-bottom:6px;border-bottom:1px solid #e5e7eb;margin-bottom:16px;margin-top:20px;">${text}</div>`
+// Wrap content in a pdf-section div — use PADDING not margin (html2canvas clips margin)
+const sec = (html) => `<div class="pdf-section" style="padding-bottom:32px;">${html}</div>`
+const h2 = (text) => `<div style="font-size:13px;font-weight:700;color:#3b82f6;padding-bottom:6px;border-bottom:1px solid #e5e7eb;margin-bottom:16px;padding-top:20px;">${text}</div>`
 
 export async function exportPortfolioPDF({ resume, projects, achievements, hero, about, contact }) {
   let tokenValue = ''
@@ -99,7 +99,7 @@ export async function exportPortfolioPDF({ resume, projects, achievements, hero,
     sections.push(sec(h2('Work Experience')))
     resume.work.filter(w => w.company).forEach((job, ji) => {
       let html = ''
-      if (ji > 0) html += '<div style="border-top:1px solid #ddd;margin:24px 0;"></div>'
+      if (ji > 0) html += '<div style="border-top:1px solid #ddd;padding-top:24px;margin-bottom:0;"></div>'
       html += `<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:2px;">
         <span style="font-size:11px;font-weight:700;color:#222;">${esc(job.company)}</span>
         <span style="font-size:8px;color:#999;">${esc(job.period)}</span>
