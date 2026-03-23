@@ -94,9 +94,14 @@ function DesktopJourney() {
         const isRowTransition = (i % COLS === 0)
 
         if (isRowTransition) {
-          // Row change — gentle S-curve using cubic bezier
+          // Row change — U-turn curve that swings outside the grid edge
           const midY = (prev.y + curr.y) / 2
-          d += ` C ${prev.x} ${midY}, ${curr.x} ${midY}, ${curr.x} ${curr.y}`
+          // Push control points outward: if both are on the right side, swing further right
+          const boxW = box.width
+          const isRightSide = prev.x > boxW / 2
+          const bulge = isRightSide ? 60 : -60 // swing outward from the grid
+          const cpX = prev.x + bulge
+          d += ` C ${cpX} ${prev.y}, ${cpX} ${curr.y}, ${curr.x} ${curr.y}`
         } else {
           // Same row — straight line
           d += ` L ${curr.x} ${curr.y}`
