@@ -22,21 +22,37 @@ export async function exportPortfolioPDF({ resume, projects, achievements, hero,
     tokenValue = createAccessToken('PDF Export', expiry.toISOString())
   } catch { tokenValue = '' }
 
-  const qrDataUrl = await QRCode.toDataURL(SITE_URL, { width: 140, margin: 1, color: { dark: '#3b82f6', light: '#ffffff' } })
+  const qrSiteUrl = await QRCode.toDataURL(SITE_URL, { width: 140, margin: 1, color: { dark: '#3b82f6', light: '#ffffff' } })
+  const tokenUrl = tokenValue ? `${SITE_URL}#token=${tokenValue}` : SITE_URL
+  const qrTokenUrl = await QRCode.toDataURL(tokenUrl, { width: 140, margin: 1, color: { dark: '#222222', light: '#ffffff' } })
 
   const s = []
 
   // ─── Header ───
-  s.push(`<div style="display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:12px;border-bottom:2px solid #3b82f6;margin-bottom:16px;">
-    <div style="flex:1;padding-right:16px;">
+  s.push(`<div style="display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:12px;border-bottom:2px solid #3b82f6;margin-bottom:12px;">
+    <div style="flex:1;padding-right:12px;">
       <div style="font-size:20px;font-weight:700;color:#111;margin-bottom:2px;">Jihyun Kang</div>
       <div style="font-size:11px;color:#3b82f6;font-weight:600;margin-bottom:6px;">Product Manager</div>
       <div style="font-size:9px;color:#666;margin-bottom:6px;line-height:1.5;">${esc(hero?.subtitle || '')}</div>
-      <div style="font-size:8.5px;color:#3b82f6;">${SITE_URL}</div>
-      ${tokenValue ? `<div style="font-size:7.5px;color:#999;margin-top:2px;">Token: <b style="color:#333;">${esc(tokenValue)}</b> (10일 후 만료)</div>` : ''}
-      ${contact?.email ? `<div style="font-size:7.5px;color:#999;margin-top:1px;">${esc(contact.email)}</div>` : ''}
+      ${contact?.email ? `<div style="font-size:8px;color:#999;">${esc(contact.email)}</div>` : ''}
     </div>
-    <img src="${qrDataUrl}" style="width:72px;height:72px;flex-shrink:0;" />
+    <div style="display:flex;gap:8px;flex-shrink:0;">
+      <div style="text-align:center;">
+        <img src="${qrSiteUrl}" style="width:60px;height:60px;" />
+        <div style="font-size:6px;color:#3b82f6;margin-top:2px;">Portfolio</div>
+      </div>
+      ${tokenValue ? `<div style="text-align:center;">
+        <img src="${qrTokenUrl}" style="width:60px;height:60px;" />
+        <div style="font-size:6px;color:#999;margin-top:2px;">Quick Access</div>
+      </div>` : ''}
+    </div>
+  </div>`)
+
+  // Access info
+  s.push(`<div style="background:#f8f9fa;border:1px solid #e5e7eb;border-radius:4px;padding:8px 10px;margin-bottom:14px;font-size:7.5px;color:#666;line-height:1.6;">
+    <b style="color:#333;">Interactive Portfolio:</b> <span style="color:#3b82f6;">${SITE_URL}</span><br>
+    ${tokenValue ? `<b style="color:#333;">Access Token:</b> <span style="font-family:monospace;color:#111;">${esc(tokenValue)}</span> <span style="color:#aaa;">(10일 후 만료)</span><br>` : ''}
+    <span style="color:#999;">* QR 코드를 스캔하거나 토큰을 입력하면 프로젝트 상세 내용, 다이어그램, 인터랙티브 경력 타임라인 등을 확인할 수 있습니다.</span>
   </div>`)
 
   // ─── About + Skills ───
@@ -157,25 +173,22 @@ export async function exportPortfolioPDF({ resume, projects, achievements, hero,
   document.body.removeChild(container)
 
   const { jsPDF } = await import('jspdf')
-  const A4W = 595, A4H = 842, FOOTER = 24
-  const pageH = A4H - FOOTER
+  const A4W = 595, A4H = 842
   const cW = canvas.width, cH = canvas.height
   const ratio = A4W / cW
   const totalH = cH * ratio
-  const pages = Math.ceil(totalH / pageH)
+  const pages = Math.ceil(totalH / A4H)
   const doc = new jsPDF({ unit: 'pt', format: 'a4' })
 
   for (let i = 0; i < pages; i++) {
     if (i > 0) doc.addPage()
-    const srcY = Math.floor(i * pageH / ratio)
-    const srcH = Math.min(Math.floor(pageH / ratio), cH - srcY)
+    const srcY = Math.floor(i * A4H / ratio)
+    const srcH = Math.min(Math.floor(A4H / ratio), cH - srcY)
     if (srcH <= 0) break
     const pc = document.createElement('canvas')
     pc.width = cW; pc.height = srcH
     pc.getContext('2d').drawImage(canvas, 0, srcY, cW, srcH, 0, 0, cW, srcH)
     doc.addImage(pc.toDataURL('image/png'), 'PNG', 0, 0, A4W, srcH * ratio)
-    doc.setFontSize(7).setTextColor(180, 180, 180)
-    doc.text(`${SITE_URL}  —  Page ${i + 1}/${pages}`, A4W / 2, A4H - 10, { align: 'center' })
   }
 
   const blob = doc.output('blob')
