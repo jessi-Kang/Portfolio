@@ -87,30 +87,31 @@ export async function exportPortfolioPDF({ resume, projects, achievements, hero,
   // ─── Work Experience ───
   if (resume?.work?.length > 0) {
     s.push(h2('Work Experience'))
-    resume.work.filter(w => w.company).forEach(job => {
-      s.push(`<div style="margin-bottom:14px;page-break-inside:avoid;">`)
+    resume.work.filter(w => w.company).forEach((job, ji) => {
+      if (ji > 0) s.push('<div style="border-top:1px solid #eee;margin:12px 0;"></div>')
+      s.push(`<div style="margin-bottom:6px;">`)
       s.push(`<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:2px;">
         <span style="font-size:11px;font-weight:700;color:#222;">${esc(job.company)}</span>
         <span style="font-size:8px;color:#999;">${esc(job.period)}</span>
       </div>`)
-      s.push(`<div style="font-size:8px;color:#3b82f6;margin-bottom:4px;">${esc(job.title)}</div>`)
+      s.push(`<div style="font-size:8.5px;color:#3b82f6;margin-bottom:6px;">${esc(job.title)}</div>`)
       if (job.leaveNote) s.push(`<div style="font-size:7px;color:#bbb;margin-bottom:4px;">${esc(job.leaveNote)}</div>`)
 
       // Projects list
-      ;(job.projects||[]).forEach(p => {
-        s.push(`<div style="margin:4px 0;padding-left:10px;border-left:2px solid #e5e7eb;">`)
-        s.push(`<div style="font-size:8.5px;font-weight:600;color:#333;">${esc(p.title)}</div>`)
+      ;(job.projects||[]).forEach((p, pi) => {
+        s.push(`<div style="margin:0 0 6px;padding:4px 0 4px 10px;border-left:2px solid #e5e7eb;">`)
+        s.push(`<div style="font-size:8.5px;font-weight:600;color:#333;">- ${esc(p.title)}</div>`)
         const detail = [p.period, p.role, p.team].filter(Boolean).join(' · ')
-        if (detail) s.push(`<div style="font-size:7px;color:#aaa;">${esc(detail)}</div>`)
-        if (p.result) s.push(`<div style="font-size:7.5px;color:#3b82f6;margin-top:1px;">${md(p.result)}</div>`)
+        if (detail) s.push(`<div style="font-size:7px;color:#aaa;margin-top:1px;">${esc(detail)}</div>`)
+        if (p.result) s.push(`<div style="font-size:7.5px;color:#3b82f6;margin-top:2px;line-height:1.5;">${md(p.result)}</div>`)
         s.push('</div>')
       })
 
       // Other tasks
       if (job.otherProjects) {
-        s.push(`<div style="margin-top:6px;padding-left:10px;border-left:2px solid #f0f0f0;">
+        s.push(`<div style="margin-top:6px;padding:4px 0 4px 10px;border-left:2px solid #f0f0f0;">
           <div style="font-size:7.5px;font-weight:600;color:#aaa;margin-bottom:2px;">Other Tasks</div>
-          <div style="font-size:7px;color:#999;line-height:1.5;">${md(job.otherProjects)}</div>
+          <div style="font-size:7px;color:#999;line-height:1.6;">${md(job.otherProjects)}</div>
         </div>`)
       }
       s.push('</div>')
@@ -136,38 +137,45 @@ export async function exportPortfolioPDF({ resume, projects, achievements, hero,
     })
   }
 
-  // ─── Render ───
+  // ─── Render via html2canvas (Korean text reliable) ───
   const container = document.createElement('div')
-  container.style.cssText = 'position:absolute;left:0;top:0;width:515px;font-family:-apple-system,BlinkMacSystemFont,"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;color:#333;line-height:1.5;background:#fff;z-index:99999;pointer-events:none;'
+  container.style.cssText = 'position:fixed;left:0;top:0;width:595px;padding:36px 40px;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;color:#333;line-height:1.5;background:#fff;z-index:99999;pointer-events:none;'
   container.innerHTML = s.join('')
   document.body.appendChild(container)
 
   await new Promise(r => setTimeout(r, 300))
 
-  const { jsPDF } = await import('jspdf')
-  const doc = new jsPDF({ unit: 'pt', format: 'a4' })
-
-  await new Promise((resolve) => {
-    doc.html(container, {
-      callback: () => resolve(),
-      x: 40,
-      y: 36,
-      width: 515,
-      windowWidth: 515,
-      margin: [36, 40, 40, 40],
-      autoPaging: 'text',
-      html2canvas: { scale: 2, useCORS: true, logging: false },
-    })
+  const html2canvas = (await import('html2canvas-pro')).default
+  const canvas = await html2canvas(container, {
+    scale: 2,
+    useCORS: true,
+    logging: false,
+    backgroundColor: '#ffffff',
+    height: container.scrollHeight,
+    windowHeight: container.scrollHeight,
   })
-
   document.body.removeChild(container)
 
-  // Footer
-  const pages = doc.getNumberOfPages()
-  for (let i = 1; i <= pages; i++) {
-    doc.setPage(i)
+  const { jsPDF } = await import('jspdf')
+  const A4W = 595, A4H = 842, FOOTER = 24
+  const pageH = A4H - FOOTER
+  const cW = canvas.width, cH = canvas.height
+  const ratio = A4W / cW
+  const totalH = cH * ratio
+  const pages = Math.ceil(totalH / pageH)
+  const doc = new jsPDF({ unit: 'pt', format: 'a4' })
+
+  for (let i = 0; i < pages; i++) {
+    if (i > 0) doc.addPage()
+    const srcY = Math.floor(i * pageH / ratio)
+    const srcH = Math.min(Math.floor(pageH / ratio), cH - srcY)
+    if (srcH <= 0) break
+    const pc = document.createElement('canvas')
+    pc.width = cW; pc.height = srcH
+    pc.getContext('2d').drawImage(canvas, 0, srcY, cW, srcH, 0, 0, cW, srcH)
+    doc.addImage(pc.toDataURL('image/png'), 'PNG', 0, 0, A4W, srcH * ratio)
     doc.setFontSize(7).setTextColor(180, 180, 180)
-    doc.text(`${SITE_URL}  —  Page ${i}/${pages}`, 297, 830, { align: 'center' })
+    doc.text(`${SITE_URL}  —  Page ${i + 1}/${pages}`, A4W / 2, A4H - 10, { align: 'center' })
   }
 
   const blob = doc.output('blob')

@@ -1,3 +1,4 @@
+import { useRef, useEffect, useState as useS } from 'react'
 import { motion } from 'framer-motion'
 import SectionWrapper from './ui/SectionWrapper'
 
@@ -14,11 +15,11 @@ const JOURNEY = [
   { year: '2010', org: 'team interface', field: 'UX Consulting', color: '#4f46e5', emoji: '🎨', companyId: 'exp-7' },
 ]
 
-const JOURNEY_DESKTOP = [...JOURNEY].reverse()
+const DESKTOP = [...JOURNEY].reverse() // chronological
 const COLS = 5
 
-function scrollToCompany(companyId) {
-  const el = document.getElementById(companyId)
+function scrollToCompany(id) {
+  const el = document.getElementById(id)
   if (el) {
     el.scrollIntoView({ behavior: 'smooth', block: 'center' })
     el.classList.add('ring-1', 'ring-accent/40', 'rounded-xl')
@@ -26,7 +27,7 @@ function scrollToCompany(companyId) {
   }
 }
 
-function DesktopItem({ item, i }) {
+function Item({ item, i }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 16 }}
@@ -62,37 +63,101 @@ function DesktopItem({ item, i }) {
   )
 }
 
-// SVG path for S-curve connecting two rows
-function SPath({ rowWidth, rowGap, cols }) {
-  const itemW = rowWidth / cols
-  const startX = rowWidth - itemW / 2 // right end of row 1
-  const endX = rowWidth - itemW / 2   // right end of row 2 (visually left because reversed)
-  const midY = rowGap / 2
+function DesktopJourney() {
+  const containerRef = useRef(null)
+  const dotRefs = useRef([])
+  const [path, setPath] = useS('')
+
+  const rows = []
+  for (let i = 0; i < DESKTOP.length; i += COLS) rows.push(DESKTOP.slice(i, i + COLS))
+
+  useEffect(() => {
+    const update = () => {
+      const box = containerRef.current?.getBoundingClientRect()
+      if (!box || dotRefs.current.length === 0) return
+
+      const points = dotRefs.current
+        .filter(Boolean)
+        .map(el => {
+          const r = el.getBoundingClientRect()
+          return { x: r.left + r.width / 2 - box.left, y: r.top + r.height / 2 - box.top }
+        })
+
+      if (points.length < 2) return
+
+      // Build smooth path through all dots
+      let d = `M ${points[0].x} ${points[0].y}`
+      for (let i = 1; i < points.length; i++) {
+        const prev = points[i - 1]
+        const curr = points[i]
+        const dx = Math.abs(curr.x - prev.x)
+        const dy = Math.abs(curr.y - prev.y)
+
+        if (dy > dx) {
+          // Vertical segment (row transition) — smooth S-curve
+          const midY = (prev.y + curr.y) / 2
+          d += ` C ${prev.x} ${midY}, ${curr.x} ${midY}, ${curr.x} ${curr.y}`
+        } else {
+          // Horizontal segment — straight line
+          d += ` L ${curr.x} ${curr.y}`
+        }
+      }
+      setPath(d)
+    }
+
+    update()
+    window.addEventListener('resize', update)
+    const timer = setTimeout(update, 500) // after animations
+    return () => { window.removeEventListener('resize', update); clearTimeout(timer) }
+  }, [])
+
+  // Flatten items in display order
+  let globalIdx = 0
 
   return (
-    <svg
-      className="absolute left-[5%] pointer-events-none"
-      style={{ top: '100%', width: '90%', height: rowGap }}
-      viewBox={`0 0 ${rowWidth} ${rowGap}`}
-      fill="none"
-      preserveAspectRatio="none"
-    >
-      <path
-        d={`M ${startX} 0 C ${startX} ${midY}, ${endX} ${midY}, ${endX} ${rowGap}`}
-        stroke="#1f2937"
-        strokeWidth="1"
-        fill="none"
-      />
-    </svg>
+    <div ref={containerRef} className="hidden md:block max-w-4xl mx-auto relative">
+      {/* SVG path overlay */}
+      {path && (
+        <svg className="absolute inset-0 w-full h-full pointer-events-none z-0" fill="none">
+          <path d={path} stroke="#1f2937" strokeWidth="1.5" strokeLinecap="round" />
+        </svg>
+      )}
+
+      <div className="relative z-10" style={{ display: 'flex', flexDirection: 'column', gap: '48px' }}>
+        {rows.map((row, ri) => {
+          const isReversed = ri % 2 === 1
+          const items = isReversed ? [...row].reverse() : row
+
+          return (
+            <div key={ri} className="flex justify-between px-[5%]">
+              {items.map((item, ci) => {
+                const idx = globalIdx++
+                const origIdx = ri * COLS + (isReversed ? row.length - 1 - ci : ci)
+                return (
+                  <div key={ci} style={{ width: `${100 / COLS}%` }} className="flex justify-center">
+                    <div className="relative">
+                      {/* Invisible dot ref for path calculation */}
+                      <div
+                        ref={el => { dotRefs.current[origIdx] = el }}
+                        className="absolute left-1/2 top-[6px] w-0 h-0 -translate-x-1/2"
+                      />
+                      <Item item={item} i={idx} />
+                    </div>
+                  </div>
+                )
+              })}
+              {Array.from({ length: COLS - row.length }).map((_, ci) => (
+                <div key={`e-${ci}`} style={{ width: `${100 / COLS}%` }} />
+              ))}
+            </div>
+          )
+        })}
+      </div>
+    </div>
   )
 }
 
 export default function Journey() {
-  const rows = []
-  for (let i = 0; i < JOURNEY_DESKTOP.length; i += COLS) {
-    rows.push(JOURNEY_DESKTOP.slice(i, i + COLS))
-  }
-
   return (
     <SectionWrapper id="journey">
       <p className="text-accent text-xs font-mono tracking-widest uppercase mb-2">Journey</p>
@@ -140,39 +205,8 @@ export default function Journey() {
         ))}
       </div>
 
-      {/* Desktop: S-shape with smooth curve */}
-      <div className="hidden md:block max-w-4xl mx-auto">
-        {rows.map((row, ri) => {
-          const isReversed = ri % 2 === 1
-          const items = isReversed ? [...row].reverse() : row
-
-          return (
-            <div key={ri} className="relative" style={{ marginBottom: ri < rows.length - 1 ? '48px' : 0 }}>
-              {/* Horizontal line through dots */}
-              <div className="absolute top-[6px] left-[10%] right-[10%] h-px bg-gray-800" />
-
-              {/* S-curve connector to next row */}
-              {ri < rows.length - 1 && (
-                <SPath rowWidth={800} rowGap={48} cols={COLS} />
-              )}
-
-              <div className="flex justify-between items-start px-[5%]">
-                {items.map((item, ci) => {
-                  const globalIdx = ri * COLS + (isReversed ? row.length - 1 - ci : ci)
-                  return (
-                    <div key={ci} style={{ width: `${100 / COLS}%` }}>
-                      <DesktopItem item={item} i={globalIdx} />
-                    </div>
-                  )
-                })}
-                {Array.from({ length: COLS - row.length }).map((_, ci) => (
-                  <div key={`e-${ci}`} style={{ width: `${100 / COLS}%` }} />
-                ))}
-              </div>
-            </div>
-          )
-        })}
-      </div>
+      {/* Desktop */}
+      <DesktopJourney />
     </SectionWrapper>
   )
 }
