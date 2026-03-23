@@ -11,12 +11,17 @@ export async function exportPortfolioPDF({ resume, projects, achievements, hero,
   const { jsPDF } = await import('jspdf')
   const doc = new jsPDF({ unit: 'pt', format: 'a4' })
 
-  // Load Korean font (Pretendard — lightweight, good Korean/Latin coverage)
+  // Load Korean font (Noto Sans KR — TTF format for jsPDF compatibility)
   let koreanFontLoaded = false
-  try {
-    const fontUrl = 'https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/packages/pretendard/dist/public/static/Pretendard-Regular.otf'
-    const resp = await fetch(fontUrl)
-    if (resp.ok) {
+  const fontUrls = [
+    'https://cdn.jsdelivr.net/gh/psmever/noto-sans-kr-font@master/NotoSansKR-Regular.ttf',
+    'https://cdn.jsdelivr.net/gh/nickcaim/noto-sans-korean-jspdf@master/NotoSansKR-Regular.ttf',
+  ]
+  for (const fontUrl of fontUrls) {
+    if (koreanFontLoaded) break
+    try {
+      const resp = await fetch(fontUrl)
+      if (!resp.ok) continue
       const buf = await resp.arrayBuffer()
       const bytes = new Uint8Array(buf)
       let binary = ''
@@ -25,16 +30,15 @@ export async function exportPortfolioPDF({ resume, projects, achievements, hero,
         binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunk))
       }
       const base64 = btoa(binary)
-      doc.addFileToVFS('Pretendard.otf', base64)
-      doc.addFont('Pretendard.otf', 'Pretendard', 'normal')
-      doc.setFont('Pretendard')
+      doc.addFileToVFS('NotoSansKR.ttf', base64)
+      doc.addFont('NotoSansKR.ttf', 'NotoSansKR', 'normal')
+      doc.setFont('NotoSansKR')
       koreanFontLoaded = true
+    } catch (e) {
+      console.warn('Font load attempt failed:', e)
     }
-  } catch (e) {
-    console.warn('Font load failed:', e)
   }
   if (!koreanFontLoaded) {
-    // Fallback: use Helvetica (Korean characters may not render)
     doc.setFont('Helvetica')
   }
 
@@ -259,7 +263,7 @@ export async function exportPortfolioPDF({ resume, projects, achievements, hero,
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
   a.href = url
-  a.download = 'Jessi_Kang_PM_Portfolio.pdf'
+  a.download = 'JihyunKang_PM_Resume.pdf'
   document.body.appendChild(a)
   a.click()
   document.body.removeChild(a)
