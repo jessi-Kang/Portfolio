@@ -3,209 +3,165 @@ import { createAccessToken } from './crypto'
 
 const SITE_URL = 'https://jessi-kang.com'
 
-function esc(text) {
-  if (!text) return ''
-  return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-}
-
-function md2html(text) {
-  if (!text) return ''
-  return esc(text)
-    .replace(/^[-•◦‣]\s*/gm, '• ')
-    .replace(/#{1,4}\s*/g, '')
-    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    .replace(/\n/g, '<br>')
+function esc(t) { return (t || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') }
+function md(t) {
+  if (!t) return ''
+  return esc(t).replace(/^[-•◦‣]\s*/gm, '• ').replace(/#{1,4}\s*/g, '').replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>')
 }
 
 export async function exportPortfolioPDF({ resume, projects, achievements, hero, about, contact }) {
-  // Generate 10-day token
+  // Token
   let tokenValue = ''
   try {
-    const expiry = new Date(Date.now() + 10 * 24 * 60 * 60 * 1000)
+    const expiry = new Date(Date.now() + 10 * 86400000)
     tokenValue = createAccessToken('PDF Export', expiry.toISOString())
-  } catch (e) {
-    console.warn('Token creation failed:', e)
-    tokenValue = ''
-  }
+  } catch { tokenValue = '' }
 
-  // QR Code
-  const qrDataUrl = await QRCode.toDataURL(SITE_URL, { width: 120, margin: 1, color: { dark: '#3b82f6', light: '#ffffff' } })
+  const qrDataUrl = await QRCode.toDataURL(SITE_URL, { width: 140, margin: 1, color: { dark: '#3b82f6', light: '#ffffff' } })
 
-  // Build HTML content
-  const sections = []
+  const s = [] // sections
 
-  // ─── Header ───
-  sections.push(`
-    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;">
-      <div style="flex:1;">
-        <h1 style="font-size:20px;font-weight:700;color:#111;margin:0 0 6px;">${esc(hero?.headline?.replace(/\n/g, ', ') || 'PM Portfolio')}</h1>
-        <p style="font-size:10px;color:#888;margin:0 0 10px;">${esc(hero?.subtitle || '')}</p>
-        <p style="font-size:9px;margin:2px 0;"><a href="${SITE_URL}" style="color:#3b82f6;text-decoration:none;">${SITE_URL}</a></p>
-        ${tokenValue ? `<p style="font-size:8px;color:#999;margin:2px 0;">Access Token: <strong style="color:#333;">${esc(tokenValue)}</strong> (10일 후 만료)</p>` : ''}
-        ${contact?.email ? `<p style="font-size:8px;color:#999;margin:2px 0;">Contact: ${esc(contact.email)}</p>` : ''}
-      </div>
-      <img src="${qrDataUrl}" style="width:70px;height:70px;" />
+  // Header
+  s.push(`<div style="display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:14px;border-bottom:1.5px solid #e5e7eb;margin-bottom:16px;">
+    <div style="flex:1;">
+      <div style="font-size:22px;font-weight:700;color:#111;margin-bottom:5px;">${esc(hero?.headline?.replace(/\n/g, ', ') || 'PM Portfolio')}</div>
+      <div style="font-size:11px;color:#888;margin-bottom:10px;">${esc(hero?.subtitle || '')}</div>
+      <div style="font-size:10px;color:#3b82f6;margin-bottom:3px;">${SITE_URL}</div>
+      ${tokenValue ? `<div style="font-size:9px;color:#999;">Access Token: <b style="color:#333;letter-spacing:1px;">${esc(tokenValue)}</b> &nbsp;(10일 후 만료)</div>` : ''}
+      ${contact?.email ? `<div style="font-size:9px;color:#999;margin-top:2px;">Contact: ${esc(contact.email)}</div>` : ''}
     </div>
-    <hr style="border:none;border-top:1px solid #ddd;margin:10px 0 16px;">
-  `)
+    <img src="${qrDataUrl}" style="width:80px;height:80px;" />
+  </div>`)
 
-  // ─── About ───
+  // About
   if (about?.bio) {
-    sections.push(`
-      <h2 style="font-size:13px;color:#3b82f6;margin:0 0 6px;">About</h2>
-      <p style="font-size:9px;color:#555;line-height:1.6;margin:0 0 12px;">${md2html(about.bio)}</p>
-    `)
+    s.push(`<div style="margin-bottom:14px;"><div style="font-size:14px;font-weight:700;color:#3b82f6;margin-bottom:5px;">About</div>
+      <div style="font-size:10px;color:#444;line-height:1.7;">${md(about.bio)}</div></div>`)
   }
 
-  // ─── Key Achievements ───
-  if (achievements?.items?.length > 0) {
-    let items = achievements.items.map(item =>
-      `<div style="margin-bottom:6px;">
-        <strong style="font-size:9px;color:#222;">${esc(item.icon || '')} ${esc(item.title)}</strong>
-        <div style="font-size:8px;color:#666;margin-top:2px;line-height:1.5;">${md2html(item.description)}</div>
-      </div>`
-    ).join('')
-    sections.push(`
-      <h2 style="font-size:13px;color:#3b82f6;margin:0 0 6px;">Key Achievements</h2>
-      ${items}
-      <hr style="border:none;border-top:1px solid #eee;margin:12px 0;">
-    `)
-  }
-
-  // ─── Featured Projects ───
-  if (projects?.groups?.length > 0) {
-    let groupsHtml = projects.groups.map(group => {
-      let projectsHtml = (group.projects || []).map(p => {
-        let parts = []
-        if (p.problem) parts.push(`<div style="margin-bottom:4px;"><span style="color:#3b82f6;font-weight:600;">[Problem]</span> ${md2html(p.problem)}</div>`)
-        if (p.solution) parts.push(`<div style="margin-bottom:4px;"><span style="color:#3b82f6;font-weight:600;">[Solution]</span> ${md2html(p.solution)}</div>`)
-        if (p.collaboration) parts.push(`<div style="margin-bottom:4px;"><span style="color:#3b82f6;font-weight:600;">[Collab]</span> ${md2html(p.collaboration)}</div>`)
-        if (p.result) parts.push(`<div style="margin-bottom:4px;color:#3b82f6;"><strong>[Result]</strong> ${md2html(p.result)}</div>`)
-        if (p.insight) parts.push(`<div style="color:#999;font-style:italic;">💡 ${md2html(p.insight)}</div>`)
-        return `
-          <div style="margin-bottom:8px;padding-left:8px;border-left:2px solid #e5e7eb;">
-            <strong style="font-size:9px;color:#222;">${esc(p.title)}</strong>
-            <div style="font-size:7.5px;color:#666;line-height:1.5;margin-top:3px;">${parts.join('')}</div>
-          </div>`
-      }).join('')
-      return `
-        <div style="margin-bottom:10px;">
-          <strong style="font-size:10px;color:#222;">${esc(group.title)}</strong>
-          <div style="font-size:7.5px;color:#999;margin:2px 0 6px;">${esc(group.subtitle || '')}</div>
-          ${projectsHtml}
-        </div>`
-    }).join('')
-    sections.push(`
-      <h2 style="font-size:13px;color:#3b82f6;margin:0 0 8px;">Featured Projects</h2>
-      ${groupsHtml}
-      <hr style="border:none;border-top:1px solid #eee;margin:10px 0;">
-    `)
-  }
-
-  // ─── Work Experience ───
-  if (resume?.work?.length > 0) {
-    let workHtml = resume.work.filter(w => w.company).map(job => {
-      let projectsList = (job.projects || []).map(p => {
-        let detail = [p.period, p.role, p.team].filter(Boolean).join(' · ')
-        let resultLine = p.result ? `<div style="color:#3b82f6;font-size:7px;margin-top:1px;">${md2html(p.result)}</div>` : ''
-        return `<div style="margin-bottom:4px;">
-          <span style="font-size:8px;color:#333;">· ${esc(p.title)}</span>
-          ${detail ? `<div style="font-size:7px;color:#aaa;margin-left:8px;">${esc(detail)}</div>` : ''}
-          ${resultLine}
-        </div>`
-      }).join('')
-
-      let otherHtml = ''
-      if (job.otherProjects) {
-        otherHtml = `<div style="margin-top:4px;font-size:7px;color:#aaa;"><strong>Other Tasks:</strong><br>${md2html(job.otherProjects)}</div>`
-      }
-
-      return `
-        <div style="margin-bottom:12px;">
-          <strong style="font-size:10px;color:#222;">${esc(job.company)}</strong>
-          <div style="font-size:7.5px;color:#888;margin:2px 0;">${esc(job.title)} | ${esc(job.period)}</div>
-          ${job.leaveNote ? `<div style="font-size:7px;color:#bbb;">${esc(job.leaveNote)}</div>` : ''}
-          <div style="margin-top:4px;padding-left:6px;">${projectsList}</div>
-          ${otherHtml}
-        </div>`
-    }).join('')
-    sections.push(`
-      <h2 style="font-size:13px;color:#3b82f6;margin:0 0 8px;">Work Experience</h2>
-      ${workHtml}
-      <hr style="border:none;border-top:1px solid #eee;margin:10px 0;">
-    `)
-  }
-
-  // ─── Education ───
-  if (resume?.education?.length > 0) {
-    let eduHtml = resume.education.filter(e => e.school).map(edu =>
-      `<div style="margin-bottom:4px;">
-        <strong style="font-size:9px;color:#222;">${esc(edu.school)}</strong>
-        ${edu.degree ? `<div style="font-size:8px;color:#888;">${esc(edu.degree)} | ${esc(edu.period)}</div>` : ''}
-      </div>`
-    ).join('')
-    sections.push(`
-      <h2 style="font-size:13px;color:#3b82f6;margin:0 0 6px;">Education</h2>
-      ${eduHtml}
-    `)
-  }
-
-  // ─── Activities ───
-  if (resume?.activities?.length > 0) {
-    let actHtml = resume.activities.filter(a => a.summary).map(act =>
-      `<div style="font-size:8px;color:#555;margin-bottom:3px;">${esc(act.year || '')} ${esc(act.category || '')} — ${esc(act.summary)}</div>`
-    ).join('')
-    sections.push(`
-      <h2 style="font-size:13px;color:#3b82f6;margin:6px 0 6px;">Activities</h2>
-      ${actHtml}
-    `)
-  }
-
-  // ─── Skills ───
+  // Skills
   if (about?.skills?.length > 0) {
-    const skillLabels = about.skills.map(s => typeof s === 'string' ? s : s.label).join(' · ')
-    sections.push(`
-      <h2 style="font-size:13px;color:#3b82f6;margin:10px 0 4px;">Skills</h2>
-      <p style="font-size:8px;color:#555;">${esc(skillLabels)}</p>
-    `)
+    const tags = about.skills.map(sk => {
+      const label = typeof sk === 'string' ? sk : sk.label
+      return `<span style="display:inline-block;font-size:9px;color:#555;background:#f3f4f6;border-radius:10px;padding:2px 8px;margin:2px 3px 2px 0;">${esc(label)}</span>`
+    }).join('')
+    s.push(`<div style="margin-bottom:14px;">${tags}</div>`)
   }
 
-  // Create hidden container
+  // Achievements
+  if (achievements?.items?.length > 0) {
+    const items = achievements.items.map(it =>
+      `<div style="margin-bottom:6px;"><b style="font-size:10px;color:#222;">${esc(it.icon||'')} ${esc(it.title)}</b>
+      <div style="font-size:9px;color:#555;line-height:1.6;margin-top:2px;">${md(it.description)}</div></div>`
+    ).join('')
+    s.push(`<div style="margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid #eee;">
+      <div style="font-size:14px;font-weight:700;color:#3b82f6;margin-bottom:6px;">Key Achievements</div>${items}</div>`)
+  }
+
+  // Featured Projects
+  if (projects?.groups?.length > 0) {
+    let html = projects.groups.map(g => {
+      const pHtml = (g.projects||[]).map(p => {
+        let parts = []
+        if (p.problem) parts.push(`<div><span style="color:#3b82f6;font-weight:600;">Problem</span> ${md(p.problem)}</div>`)
+        if (p.solution) parts.push(`<div><span style="color:#3b82f6;font-weight:600;">Solution</span> ${md(p.solution)}</div>`)
+        if (p.result) parts.push(`<div style="color:#3b82f6;"><b>Result</b> ${md(p.result)}</div>`)
+        if (p.insight) parts.push(`<div style="color:#888;font-style:italic;">💡 ${md(p.insight)}</div>`)
+        const highlights = (p.highlights||[]).map(h => `<span style="color:#3b82f6;font-weight:700;">${esc(h.value)}</span> <span style="color:#999;font-size:8px;">${esc(h.label)}</span>`).join('&nbsp;&nbsp;')
+        return `<div style="margin-bottom:10px;padding:8px;background:#fafafa;border-radius:6px;border:1px solid #eee;">
+          <div style="font-size:10px;font-weight:600;color:#222;margin-bottom:3px;">${esc(p.title)}</div>
+          ${p.subtitle ? `<div style="font-size:8px;color:#999;margin-bottom:4px;">${esc(p.subtitle)}</div>` : ''}
+          ${highlights ? `<div style="font-size:9px;margin-bottom:4px;">${highlights}</div>` : ''}
+          <div style="font-size:8px;color:#555;line-height:1.6;">${parts.join('')}</div>
+        </div>`
+      }).join('')
+      return `<div style="margin-bottom:12px;">
+        <div style="font-size:11px;font-weight:700;color:#222;margin-bottom:2px;">${esc(g.title)}</div>
+        <div style="font-size:8px;color:#999;margin-bottom:6px;">${esc(g.subtitle||'')}</div>${pHtml}</div>`
+    }).join('')
+    s.push(`<div style="margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid #eee;">
+      <div style="font-size:14px;font-weight:700;color:#3b82f6;margin-bottom:8px;">Featured Projects</div>${html}</div>`)
+  }
+
+  // Work Experience
+  if (resume?.work?.length > 0) {
+    const html = resume.work.filter(w => w.company).map(job => {
+      const pList = (job.projects||[]).map(p => {
+        const meta = [p.period, p.role, p.team].filter(Boolean).join(' · ')
+        const res = p.result ? `<div style="color:#3b82f6;font-size:8px;">${md(p.result)}</div>` : ''
+        return `<div style="margin-bottom:3px;"><span style="font-size:9px;color:#333;">· ${esc(p.title)}</span>
+          ${meta ? `<div style="font-size:7.5px;color:#aaa;margin-left:10px;">${esc(meta)}</div>` : ''}${res}</div>`
+      }).join('')
+      const other = job.otherProjects ? `<div style="margin-top:4px;font-size:8px;color:#aaa;"><b>Other:</b> ${md(job.otherProjects)}</div>` : ''
+      return `<div style="margin-bottom:12px;">
+        <div style="font-size:11px;font-weight:700;color:#222;">${esc(job.company)}</div>
+        <div style="font-size:8px;color:#888;">${esc(job.title)} | ${esc(job.period)}</div>
+        ${job.leaveNote ? `<div style="font-size:7.5px;color:#bbb;">${esc(job.leaveNote)}</div>` : ''}
+        <div style="margin-top:4px;padding-left:6px;">${pList}</div>${other}</div>`
+    }).join('')
+    s.push(`<div style="margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid #eee;">
+      <div style="font-size:14px;font-weight:700;color:#3b82f6;margin-bottom:8px;">Work Experience</div>${html}</div>`)
+  }
+
+  // Education
+  if (resume?.education?.length > 0) {
+    const html = resume.education.filter(e => e.school).map(e =>
+      `<div style="margin-bottom:4px;"><b style="font-size:10px;color:#222;">${esc(e.school)}</b>
+      ${e.degree ? `<div style="font-size:8px;color:#888;">${esc(e.degree)} | ${esc(e.period)}</div>` : ''}</div>`
+    ).join('')
+    s.push(`<div style="margin-bottom:10px;"><div style="font-size:14px;font-weight:700;color:#3b82f6;margin-bottom:5px;">Education</div>${html}</div>`)
+  }
+
+  // Activities
+  if (resume?.activities?.length > 0) {
+    const html = resume.activities.filter(a => a.summary).map(a =>
+      `<div style="font-size:9px;color:#444;margin-bottom:3px;">${esc(a.year||'')} ${esc(a.category||'')} — ${esc(a.summary)}</div>`
+    ).join('')
+    s.push(`<div style="margin-bottom:10px;"><div style="font-size:14px;font-weight:700;color:#3b82f6;margin-bottom:5px;">Activities</div>${html}</div>`)
+  }
+
+  // Render HTML → Canvas → PDF (page-split)
   const container = document.createElement('div')
-  container.style.cssText = 'position:fixed;left:-9999px;top:0;width:515px;font-family:-apple-system,BlinkMacSystemFont,"Noto Sans KR","Apple SD Gothic Neo",sans-serif;color:#333;line-height:1.5;'
-  container.innerHTML = sections.join('')
+  container.style.cssText = 'position:fixed;left:-9999px;top:0;width:595px;padding:40px;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;color:#333;line-height:1.5;background:#fff;'
+  container.innerHTML = s.join('')
   document.body.appendChild(container)
 
-  // Generate PDF using html() method — uses browser font rendering
-  const { jsPDF } = await import('jspdf')
-  const doc = new jsPDF({ unit: 'pt', format: 'a4', putOnlyUsedFonts: true })
-
-  await new Promise((resolve, reject) => {
-    doc.html(container, {
-      callback: (d) => resolve(d),
-      x: 40,
-      y: 40,
-      width: 515,
-      windowWidth: 515,
-      html2canvas: {
-        scale: 2,
-        useCORS: true,
-        logging: false,
-      },
-    })
-  })
-
+  const html2canvas = (await import('html2canvas-pro')).default
+  const canvas = await html2canvas(container, { scale: 2, useCORS: true, logging: false, backgroundColor: '#ffffff' })
   document.body.removeChild(container)
 
-  // Footer on each page
-  const pageCount = doc.getNumberOfPages()
-  for (let i = 1; i <= pageCount; i++) {
-    doc.setPage(i)
+  const { jsPDF } = await import('jspdf')
+  const imgW = 595 // A4 pt width
+  const imgH = 842 // A4 pt height
+  const pageContentH = imgH - 30 // leave space for footer
+
+  const canvasW = canvas.width
+  const canvasH = canvas.height
+  const ratio = imgW / canvasW
+  const totalH = canvasH * ratio
+  const pages = Math.ceil(totalH / pageContentH)
+
+  const doc = new jsPDF({ unit: 'pt', format: 'a4' })
+
+  for (let i = 0; i < pages; i++) {
+    if (i > 0) doc.addPage()
+    const srcY = (i * pageContentH / ratio)
+    const srcH = Math.min(pageContentH / ratio, canvasH - srcY)
+
+    const pageCanvas = document.createElement('canvas')
+    pageCanvas.width = canvasW
+    pageCanvas.height = srcH
+    const ctx = pageCanvas.getContext('2d')
+    ctx.drawImage(canvas, 0, srcY, canvasW, srcH, 0, 0, canvasW, srcH)
+
+    const pageImg = pageCanvas.toDataURL('image/png')
+    doc.addImage(pageImg, 'PNG', 0, 0, imgW, srcH * ratio)
+
+    // Footer
     doc.setFontSize(7).setTextColor(180, 180, 180)
-    doc.text(`${SITE_URL} — Page ${i}/${pageCount}`, 297, 830, { align: 'center' })
+    doc.text(`${SITE_URL} — Page ${i + 1}/${pages}`, imgW / 2, imgH - 12, { align: 'center' })
   }
 
-  // Download
   const blob = doc.output('blob')
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
