@@ -79,7 +79,7 @@ export async function exportPortfolioPDF({ resume, projects, achievements, hero,
   if (projects?.groups?.length > 0) {
     s.push(h2('Featured Projects'))
     projects.groups.forEach((g, gi) => {
-      if (gi > 0) s.push('<div style="margin-top:16px;"></div>')
+      if (gi > 0) s.push('<div style="margin-top:20px;"></div>')
       s.push(h3(g.title))
       if (g.subtitle) s.push(meta(g.subtitle))
       ;(g.projects||[]).forEach(p => {
@@ -105,7 +105,7 @@ export async function exportPortfolioPDF({ resume, projects, achievements, hero,
   if (resume?.work?.length > 0) {
     s.push(h2('Work Experience'))
     resume.work.filter(w => w.company).forEach((job, ji) => {
-      if (ji > 0) s.push('<div style="border-top:1px solid #eee;margin:18px 0;"></div>')
+      if (ji > 0) s.push('<div style="border-top:1px solid #ddd;margin:24px 0;"></div>')
       s.push(`<div style="margin-bottom:8px;">`)
       s.push(`<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:2px;">
         <span style="font-size:11px;font-weight:700;color:#222;">${esc(job.company)}</span>
@@ -154,41 +154,60 @@ export async function exportPortfolioPDF({ resume, projects, achievements, hero,
     })
   }
 
-  // ─── Render via html2canvas (Korean text reliable) ───
+  // ─── Render via html2canvas ───
+  // Use absolute position so full height is captured (fixed clips to viewport)
+  const wrapper = document.createElement('div')
+  wrapper.style.cssText = 'position:absolute;left:0;top:0;width:100%;height:0;overflow:visible;z-index:99999;pointer-events:none;'
   const container = document.createElement('div')
-  container.style.cssText = 'position:fixed;left:0;top:0;width:595px;padding:36px 40px;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;color:#333;line-height:1.5;background:#fff;z-index:99999;pointer-events:none;'
+  container.style.cssText = 'width:595px;padding:36px 40px;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;color:#333;line-height:1.5;background:#fff;'
   container.innerHTML = s.join('')
-  document.body.appendChild(container)
+  wrapper.appendChild(container)
+  document.body.appendChild(wrapper)
 
-  await new Promise(r => setTimeout(r, 300))
+  await new Promise(r => setTimeout(r, 500))
 
+  const fullH = container.scrollHeight || container.offsetHeight
   const html2canvas = (await import('html2canvas-pro')).default
   const canvas = await html2canvas(container, {
     scale: 2,
     useCORS: true,
     logging: false,
     backgroundColor: '#ffffff',
-    height: container.scrollHeight,
-    windowHeight: container.scrollHeight,
+    width: 595,
+    height: fullH,
+    windowWidth: 595,
+    windowHeight: fullH,
+    scrollX: 0,
+    scrollY: 0,
   })
-  document.body.removeChild(container)
+  document.body.removeChild(wrapper)
 
+  // Split canvas into A4 pages
   const { jsPDF } = await import('jspdf')
   const A4W = 595, A4H = 842
   const cW = canvas.width, cH = canvas.height
-  const ratio = A4W / cW
-  const totalH = cH * ratio // total image height in pt
-  const pages = Math.ceil(totalH / A4H)
+  const scale = A4W / (595 * 2) // html2canvas scale=2
+  const pxPerPage = Math.floor(A4H / scale) // pixels per A4 page
+  const pages = Math.ceil(cH / pxPerPage)
   const doc = new jsPDF({ unit: 'pt', format: 'a4' })
-
-  // Single full image, placed with negative y-offset on each page
-  // This prevents any content from being cut mid-line
-  const imgData = canvas.toDataURL('image/jpeg', 0.92)
 
   for (let i = 0; i < pages; i++) {
     if (i > 0) doc.addPage()
-    // Place the full image, shifted up by page offset
-    doc.addImage(imgData, 'JPEG', 0, -(i * A4H), A4W, totalH)
+    const srcY = i * pxPerPage
+    const srcH = Math.min(pxPerPage, cH - srcY)
+    if (srcH <= 0) break
+
+    // Create per-page canvas
+    const pc = document.createElement('canvas')
+    pc.width = cW
+    pc.height = srcH
+    const ctx = pc.getContext('2d')
+    ctx.fillStyle = '#ffffff'
+    ctx.fillRect(0, 0, cW, srcH)
+    ctx.drawImage(canvas, 0, srcY, cW, srcH, 0, 0, cW, srcH)
+
+    const imgH = srcH * scale
+    doc.addImage(pc.toDataURL('image/jpeg', 0.95), 'JPEG', 0, 0, A4W, imgH)
   }
 
   const blob = doc.output('blob')
