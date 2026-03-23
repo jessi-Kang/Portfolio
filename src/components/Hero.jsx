@@ -64,7 +64,15 @@ export default function Hero() {
         transition={{ duration: 0.6, delay: 0.2 }}
         className="text-3xl md:text-5xl lg:text-6xl font-bold leading-tight max-w-4xl"
       >
-        <TypingAnimation text={hero.headline} speed={60} />
+        {hero.headline.includes('\n') ? (
+          <>
+            {hero.headline.split('\n')[0]}
+            <br />
+            <span className="text-accent">{hero.headline.split('\n').slice(1).join('\n')}</span>
+          </>
+        ) : (
+          hero.headline
+        )}
       </motion.h1>
 
       <motion.p
